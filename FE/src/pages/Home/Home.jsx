@@ -5,10 +5,10 @@ import { Button } from 'antd/es/radio';
 import styles from './Home.module.css';
 import Search from 'antd/es/transfer/search';
 import Slider from 'react-slick';
-import Footer from '../components/footer';
+// import Footer from '../../../components/Footer/footer';
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
-import MyFooter from '../components/footer';
+import MyFooter from '../../components/Footer/footer';
 const { Header, Content, Sider } = Layout;
 
 const items = [
