@@ -2,7 +2,7 @@ import React from 'react';
 import { AccountBookOutlined, UserOutlined, FormOutlined, BookOutlined, SettingOutlined, LogoutOutlined } from '@ant-design/icons';
 import { Card, Image, Layout, Menu, theme } from 'antd';
 import { Button } from 'antd/es/radio';
-import styles from './Home.Module.css';
+import styles from './Home.module.css';
 import Search from 'antd/es/transfer/search';
 import Slider from 'react-slick';
 import Footer from '../components/footer';
