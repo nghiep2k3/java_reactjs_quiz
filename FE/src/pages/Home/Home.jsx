@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { AccountBookOutlined, UserOutlined, FormOutlined, BookOutlined, SettingOutlined, LogoutOutlined } from '@ant-design/icons';
 import { Card, Image, Layout, Menu, theme } from 'antd';
 import { Button } from 'antd/es/radio';
-import styles from './Home.module.css';
 import Search from 'antd/es/transfer/search';
 import Slider from 'react-slick';
 import MyLibrary from '../../components/myLibrary/myLibrary'
@@ -10,6 +9,8 @@ import CourseCard from '../../components/courseCard/courseCard'
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import MyFooter from '../../components/Footer/footer';
+import { Link, Outlet } from 'react-router-dom';
+
 const { Header, Content, Sider } = Layout;
 const siderStyle = {
     overflow: 'auto',
@@ -91,68 +92,56 @@ const Home = () => {
         );
     };
     return (
-        <Layout hasSider>
-            <Sider
+        <div
+            style={{
+                padding: 24,
+                minHeight: 1000,
+                backgroundColor: "#f2f2f2",
+                background: colorBgContainer,
+                borderRadius: borderRadiusLG,
+            }}
+        >
+            <div style={{ margin: "48px" }}>
+                <h3 style={{ fontSize: "2.25rem", fontWeight: "600", textAlign: "center" }}>Bạn sẽ dạy gì hôm nay?</h3>
+            </div>
+            <Search
+                placeholder="input search text"
+                onSearch={onSearch}
                 style={{
-                    siderStyle,
-                    backgroundColor: "#fff",
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                    padding: '20px 0',
-                    borderRight: '1px solid #f2f2f2'
+                    gridColumn: 3 / 11,
+                    height: 200,
+                    width: 200,
                 }}
-            >
-                <Image
-                    src='https://cf.quizizz.com/img/logos/Purple.webp'
-                    preview={false}
-                    width={150}
-                    style={{ marginBottom: '20px' }}
-                />
-                <Button
-                    style={{
-                        textAlign: "center",
-                        height: "40px",
-                        lineHeight: "40px",
-                        borderRadius: "1.2em",
-                        backgroundImage: "linear-gradient(to right, #348F50 0%, #56B4D3  51%, #348F50  100%)",
-                        color: "#fff",
-                        width: '70%',
-                        marginBottom: '20px',
-                    }}
-                >
-                    Thêm mới
-                </Button>
-
-                <Menu
-                    theme="light"
-                    mode="inline"
-                    defaultSelectedKeys={['1']}
-                    items={items}
-                    onClick={handleMenuClick}
-                // style={{ width: '100%' }}
-                />
-            </Sider>
-
-            <Layout>
-                <Header style={{ backgroundColor: "#fff" }}>
-                    <Search placeholder="input search text" enterButton="Search" size="large" />
-                </Header>
-                <Content
-                    style={{
-                        margin: '24px 16px 50px 0',
-                        padding: 24,
-                        minHeight: 1000,
-                        backgroundColor: "#f2f2f2",
-                        background: colorBgContainer,
-                        borderRadius: borderRadiusLG,
-                    }}
-                >
-                    {renderContent()}  {/* Render content based on selected menu */}
-                </Content>
-                <MyFooter />
-            </Layout>
-        </Layout>
+            />
+            <div style={{ marginTop: "100px" }}>
+                <h3 style={{ fontSize: "2.25rem", fontWeight: "600" }}>Khởi động vui vẻ</h3>
+            </div>
+            <Slider {...settings}
+                style={{ margin: '20px 0' }}>
+                <div>
+                    <Card title="Quiz 1">
+                        Content 1
+                        <br />
+                        <Link to="/ViewQuiz"><Button >Bài 1</Button></Link>
+                    </Card>
+                </div>
+                <div>
+                    <Card title="Quiz 2">Content 2</Card>
+                </div>
+                <div>
+                    <Card title="Quiz 3">Content 3</Card>
+                </div>
+                <div>
+                    <Card title="Quiz 4">Content 4</Card>
+                </div>
+                <div>
+                    <Card title="Quiz 5">Content 5</Card>
+                </div>
+                <div>
+                    <Card title="Quiz 6">Content 6</Card>
+                </div>
+            </Slider>
+        </div>
     );
 };
 
