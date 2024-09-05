@@ -12,13 +12,12 @@ root.render(
   <React.StrictMode>
     <Router future={{ v7_startTransition: true }}>
       <Routes>
-        <Route path="/" element={<Home />}>
-          {/* <Route index element={<Home />} /> */}
+        <Route path="/" element={<App />}>
+          <Route index element={<Home />} />
           <Route path="/ViewQuiz"  element={<ViewQuiz />} />
         </Route>
       </Routes>
     </Router>
-    <App />
   </React.StrictMode>
 );
 
