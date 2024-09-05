@@ -5,14 +5,16 @@ import App from "./App";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import reportWebVitals from "./reportWebVitals";
 import Home from "./pages/Home/Home";
+import ViewQuiz from "./pages/ViewQuiz/ViewQuiz";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <React.StrictMode>
     <Router future={{ v7_startTransition: true }}>
       <Routes>
-        <Route path="/" element={<App />}>
-          <Route index element={<Home />} />
+        <Route path="/" element={<Home />}>
+          {/* <Route index element={<Home />} /> */}
+          <Route path="/ViewQuiz"  element={<ViewQuiz />} />
         </Route>
       </Routes>
     </Router>

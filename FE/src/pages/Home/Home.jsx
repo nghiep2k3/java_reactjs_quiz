@@ -2,13 +2,14 @@ import React from 'react';
 import { AccountBookOutlined, UserOutlined, FormOutlined, BookOutlined, SettingOutlined, LogoutOutlined } from '@ant-design/icons';
 import { Card, Image, Layout, Menu, theme } from 'antd';
 import { Button } from 'antd/es/radio';
-import styles from './Home.module.css';
 import Search from 'antd/es/transfer/search';
 import Slider from 'react-slick';
 // import Footer from '../../../components/Footer/footer';
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import MyFooter from '../../components/Footer/footer';
+import { Link, Outlet } from 'react-router-dom';
+
 const { Header, Content, Sider } = Layout;
 
 const items = [
@@ -118,6 +119,7 @@ const Home = () => {
                         margin: '24px 16px 50px 0',
                     }}
                 >
+                    <Outlet></Outlet>
                     <div
                         style={{
                             padding: 24,
@@ -145,7 +147,11 @@ const Home = () => {
                         <Slider {...settings}
                             style={{ margin: '20px 0' }}>
                             <div>
-                                <Card title="Quiz 1">Content 1</Card>
+                                <Card title="Quiz 1">
+                                    Content 1
+                                    <br />
+                                    <Link to="/ViewQuiz"><Button >Bài 1</Button></Link>
+                                </Card>
                             </div>
                             <div>
                                 <Card title="Quiz 2">Content 2</Card>
@@ -164,7 +170,10 @@ const Home = () => {
                             </div>
                         </Slider>
                     </div>
+                
                 </Content>
+
+
                 <MyFooter></MyFooter>
             </Layout>
         </Layout>
