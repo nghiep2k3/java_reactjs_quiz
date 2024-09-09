@@ -15,7 +15,7 @@ import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import MyFooter from "./components/Footer/footer";
-import { Link, Outlet } from "react-router-dom";
+import { Link, Outlet, useLocation } from "react-router-dom";
 import "./App.css";
 import CourseCard from "./components/courseCard/courseCard";
 import MyLibrary from "./components/myLibrary/myLibrary";
@@ -24,64 +24,19 @@ import Meta from "antd/es/card/Meta";
 const { Header, Content, Sider } = Layout;
 
 const items = [
-  {
-    key: "1",
-    icon: React.createElement(BookOutlined),
-    label: "Khám phá",
-  },
-  {
-    key: "2",
-    icon: React.createElement(AccountBookOutlined),
-    label: "Thư viện của tôi",
-  },
-  {
-    key: "3",
-    icon: React.createElement(FormOutlined),
-    label: "Báo cáo",
-  },
-  {
-    key: "4",
-    icon: React.createElement(SettingOutlined),
-    label: "Cài đặt",
-  },
-  {
-    key: "5",
-    icon: React.createElement(UserOutlined),
-    label: "Hồ sơ",
-  },
-  {
-    key: "6",
-    icon: React.createElement(LogoutOutlined),
-    label: "Đăng xuất",
-  },
+  { key: "1", icon: <BookOutlined />, label: "Khám phá", path: "/explore" },
+  { key: "2", icon: <AccountBookOutlined />, label: "Thư viện của tôi", path: "/mylibrary" },
+  { key: "3", icon: <FormOutlined />, label: "Báo cáo", path: "/reports" },
+  { key: "4", icon: <SettingOutlined />, label: "Cài đặt", path: "/settings" },
+  { key: "5", icon: <UserOutlined />, label: "Hồ sơ", path: "/profile" },
+  { key: "6", icon: <LogoutOutlined />, label: "Đăng xuất", path: "/logout" },
 ];
 
 
 const App = () => {
+  const location = useLocation();
   const onSearch = (value, _e, info) => console.log(info?.source, value);
-  const [selectedKey, setSelectedKey] = useState('1');
-  const handleMenuClick = (e) => {
-    setSelectedKey(e.key);
-  };
-  const renderContent = () => {
-    if (selectedKey === '2') {
-      return <MyLibrary />;  // Show MyLibrary component when 'Thư viện của tôi' is clicked
-    }
-    // Default content (e.g., CourseCard)
-    return (
-      // <>
-      //   <div style={{ margin: "48px" }}>
-      //     <h3 style={{ fontSize: "2.25rem", fontWeight: "600", textAlign: "center" }}>Bạn sẽ dạy gì hôm nay?</h3>
-      //   </div>
-      //   <Search placeholder="input search text" enterButton="Search" size="large" />
-      //   <div style={{ marginTop: "100px" }}>
-      //     <h3 style={{ fontSize: "2.25rem", fontWeight: "600" }}>Khởi động vui vẻ</h3>
-      //   </div>
-      //   <CourseCard />
-      // </>
-      <Home></Home>
-    );
-  };
+  // Default content (e.g., CourseCard)
   const [isModalOpen, setIsModalOpen] = useState(false);
   const showModal = () => {
     setIsModalOpen(true);
@@ -146,11 +101,15 @@ const App = () => {
           <Menu
             theme="light"
             mode="inline"
-            defaultSelectedKeys={["1"]}
-            items={items}
+            defaultSelectedKeys={[location.pathname]}
             style={{ width: "100%" }}
-            onClick={handleMenuClick}
-          />
+          >
+            {items.map((item) => (
+              <Menu.Item key={item.path} icon={item.icon}>
+                <Link to={item.path}>{item.label}</Link>
+              </Menu.Item>
+            ))}
+          </Menu>
         </Sider>
 
         <Layout>
@@ -169,7 +128,6 @@ const App = () => {
             }}
           >
             <Outlet></Outlet>
-            {renderContent()}
           </Content>
           <MyFooter></MyFooter>
         </Layout>

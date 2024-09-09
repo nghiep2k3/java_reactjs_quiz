@@ -46,9 +46,9 @@ const data = [
 const settings = {
     dots: true,
     infinite: true,
-    speed: 500,
+    speed: 400,
     slidesToShow: 5,
-    slidesToScroll: 3,
+    slidesToScroll: 4,
     arrows: true
 };
 const CourseCard = () => {
