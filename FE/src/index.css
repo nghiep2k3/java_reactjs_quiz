@@ -15,3 +15,15 @@ code {
 .ant-input-affix-wrapper{
   height: 50px !important;
 }
+.ant-card-head {
+  background-color: #a076cc !important;
+}
+.ant-card-head-title {
+  color: #fff;
+}
+.ant-btn-primary {
+  background-color: #a076cc !important;
+}
+.ant-input::placeholder  {
+  color: #fff !important;
+}

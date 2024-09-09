@@ -1,0 +1,11 @@
+.custom-textarea::placeholder {
+    color: rgba(255, 255, 255, 0.8); /* Đổi màu chữ placeholder thành trắng */
+  }
+  
+  .custom-textarea {
+    display: flex;
+    align-items: center; /* Căn giữa theo chiều dọc */
+    justify-content: center; /* Căn giữa theo chiều ngang */
+    text-align: center; /* Căn giữa placeholder theo chiều ngang */
+  }
+  
