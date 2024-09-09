@@ -10,14 +10,14 @@ const data = [
     {
         id: 1,
         name: "ReactJS Basics",
-        image: "https://example.com/reactjs-course.png",
+        image: "https://cdn.worldvectorlogo.com/logos/react-1.svg",
         questions: 50,
         plays: 45.7,
     },
     {
         id: 2,
         name: "Advanced JavaScript",
-        image: "https://example.com/js-course.png",
+        image: "https://cdn.worldvectorlogo.com/logos/react-1.svg",
         questions: 100,
         plays: 15,
     },

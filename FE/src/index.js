@@ -6,6 +6,8 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import reportWebVitals from "./reportWebVitals";
 import Home from "./pages/Home/Home";
 import ViewQuiz from "./pages/ViewQuiz/ViewQuiz";
+import CreateQuiz from "./pages/createQuiz/createQuiz";
+import CreateQuestion from "./pages/createQuestion/createQuestion";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
@@ -13,9 +15,11 @@ root.render(
     <Router future={{ v7_startTransition: true }}>
       <Routes>
         <Route path="/" element={<App />}>
-          <Route index element={<Home />} />
-          <Route path="/ViewQuiz"  element={<ViewQuiz />} />
+          {/* <Route index element={<Home />} /> */}
+          <Route path="/ViewQuiz" element={<ViewQuiz />} />
         </Route>
+        <Route path="/createquiz" element={<CreateQuiz />}></Route>
+        <Route path="/createquestion" element={<CreateQuestion />}></Route>
       </Routes>
     </Router>
   </React.StrictMode>
