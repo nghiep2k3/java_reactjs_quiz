@@ -10,6 +10,7 @@ import CreateQuiz from "./pages/createQuiz/createQuiz";
 import CreateQuestion from "./pages/createQuestion/createQuestion";
 import MyLibrary from "./components/myLibrary/myLibrary";
 import Explore from "./components/Explore/Explore";
+import InforQuiz from "./components/inforQuiz/inforQuiz";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
@@ -20,10 +21,11 @@ root.render(
           <Route path="/mylibrary" element={<MyLibrary />} />
           <Route path="/ViewQuiz" element={<ViewQuiz />} />
           <Route path="/explore" element={<Explore />} />
-
+          <Route path="/createquiz" element={<CreateQuiz />}>
+            <Route path="inforquiz" element={<InforQuiz />} />
+            <Route path="createquestion" element={<CreateQuestion />} />
+          </Route>
         </Route>
-        <Route path="/createquiz" element={<CreateQuiz />}></Route>
-        <Route path="/createquestion" element={<CreateQuestion />}></Route>
       </Routes>
     </Router>
   </React.StrictMode>

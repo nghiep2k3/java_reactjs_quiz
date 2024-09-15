@@ -6,6 +6,7 @@ import {
   BookOutlined,
   SettingOutlined,
   LogoutOutlined,
+  FileOutlined
 } from "@ant-design/icons";
 import { Card, Image, Layout, Menu, Modal } from "antd";
 import { Button } from "antd/es/radio";
@@ -29,7 +30,8 @@ const items = [
   { key: "3", icon: <FormOutlined />, label: "Báo cáo", path: "/reports" },
   { key: "4", icon: <SettingOutlined />, label: "Cài đặt", path: "/settings" },
   { key: "5", icon: <UserOutlined />, label: "Hồ sơ", path: "/profile" },
-  { key: "6", icon: <LogoutOutlined />, label: "Đăng xuất", path: "/logout" },
+  { key: "6", icon: <FileOutlined />, label: "Đề thi", path: "/filequiz" },
+  { key: "7", icon: <LogoutOutlined />, label: "Đăng xuất", path: "/logout" },
 ];
 
 
@@ -75,7 +77,7 @@ const App = () => {
               lineHeight: "40px",
               borderRadius: "1.2em",
               backgroundImage:
-                "linear-gradient(to right, #348F50 0%, #56B4D3  51%, #348F50  100%)",
+                "linear-gradient(90.57deg, rgb(62, 101, 254) 0%, rgb(210, 60, 255) 100%)",
               color: "#fff",
               width: "70%",
               marginBottom: "20px",
