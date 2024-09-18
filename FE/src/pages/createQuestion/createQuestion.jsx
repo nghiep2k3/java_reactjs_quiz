@@ -18,7 +18,9 @@ const CreateQuestion = () => {
             }
         ];
     });
+
     const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
+
     const saveToLocalStorage = (updatedQuestions) => {
         localStorage.setItem('quizQuestions', JSON.stringify(updatedQuestions));
     };

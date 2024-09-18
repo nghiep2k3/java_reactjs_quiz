@@ -11,6 +11,9 @@ import CreateQuestion from "./pages/createQuestion/createQuestion";
 import MyLibrary from "./components/myLibrary/myLibrary";
 import Explore from "./components/Explore/Explore";
 import InforQuiz from "./components/inforQuiz/inforQuiz";
+import QuizList from "./pages/quizList/quizList";
+import QuizDetail from "./pages/quizDetail/quizDetail";
+import ExamContent from "./components/examContent/examContent";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
@@ -25,10 +28,17 @@ root.render(
             <Route path="inforquiz" element={<InforQuiz />} />
             <Route path="createquestion" element={<CreateQuestion />} />
           </Route>
+          <Route path="/quizlist" element={<QuizList />} />
+        </Route>
+      </Routes>
+      <Routes>
+        <Route path="/" element={<QuizList />} />
+        <Route path="/quizdetail" element={<QuizDetail />} >
+          <Route path="examcontent" element={<ExamContent />} />
         </Route>
       </Routes>
     </Router>
-  </React.StrictMode>
+  </React.StrictMode >
 );
 
 // If you want to start measuring performance in your app, pass a function

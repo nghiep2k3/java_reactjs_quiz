@@ -30,7 +30,7 @@ const items = [
   { key: "3", icon: <FormOutlined />, label: "Báo cáo", path: "/reports" },
   { key: "4", icon: <SettingOutlined />, label: "Cài đặt", path: "/settings" },
   { key: "5", icon: <UserOutlined />, label: "Hồ sơ", path: "/profile" },
-  { key: "6", icon: <FileOutlined />, label: "Đề thi", path: "/filequiz" },
+  { key: "6", icon: <FileOutlined />, label: "Đề thi", path: "/quizlist" },
   { key: "7", icon: <LogoutOutlined />, label: "Đăng xuất", path: "/logout" },
 ];
 
@@ -88,9 +88,10 @@ const App = () => {
           </Button>
           <Modal title="Bạn muốn tạo gì?"
             style={{ textAlign: 'center' }} open={isModalOpen} onOk={handleOk} onCancel={handleCancel}>
-            <Link to={"/createquiz"}>
+            <Link to={"/createquiz/inforquiz"}>
               <Card
                 hoverable
+                onClick={handleCancel}
                 style={{
                   width: 240,
                 }}

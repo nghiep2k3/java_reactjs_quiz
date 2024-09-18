@@ -6,12 +6,13 @@ const { TextArea } = Input;
 const { Option } = Select;
 
 const InforQuiz = () => {
+    const [form] = Form.useForm();
+    const [quizID, setQuizID] = useState('');
     const [quizTitle, setQuizTitle] = useState('');
     const [quizLevel, setQuizLevel] = useState('');
     const [quizDescription, setQuizDescription] = useState('');
     const [fileList, setFileList] = useState([
     ]);
-
     const storedQuiz = localStorage.getItem('quizInfo');
     const parsedQuiz = JSON.parse(storedQuiz);
     console.log("aa", parsedQuiz?.title);
@@ -19,8 +20,6 @@ const InforQuiz = () => {
         console.log("a1", storedQuiz);
 
         if (storedQuiz) {
-
-
             setQuizTitle(parsedQuiz.title || '');
             setQuizLevel(parsedQuiz.level || '');
             setQuizDescription(parsedQuiz.description || '');
@@ -34,20 +33,20 @@ const InforQuiz = () => {
 
     const navigate = useNavigate();
     const handleSave = () => {
+        const values = form.getFieldsValue();
         const imageFiles = fileList.map(file => ({
             uid: file.uid,
             name: file.name,
             url: file.url || URL.createObjectURL(file.originFileObj)
         }));
+
         const quizData = {
-            title: quizTitle,
-            level: quizLevel,
-            description: quizDescription,
+            ...values,
             images: imageFiles,
             questions: []
         };
-        localStorage.setItem('quizInfo', JSON.stringify(quizData));
 
+        localStorage.setItem('quizInfo', JSON.stringify(quizData));
         navigate('/createquiz/createquestion');
     };
     const onChange = ({ fileList: newFileList }) => {
@@ -71,19 +70,21 @@ const InforQuiz = () => {
     return (
         <Form
             layout="vertical"
+            form={form}
             onFinish={handleSave}
             initialValues={{
-                level: quizLevel || 'Cơ bản',
+                level: 'Cơ bản',
+                description: quizDescription,
             }}
         >
             <Form.Item
                 label="Tên đề thi"
-                name="examName"
+                name="title"
                 rules={[{ required: true, message: 'Vui lòng nhập tên đề thi!' }]}
             >
                 <Input
                     placeholder="Nhập tên đề thi"
-                    value={parsedQuiz?.title}
+                    value={quizTitle}
                     onChange={(e) => setQuizTitle(e.target.value)}
                 />
             </Form.Item>
@@ -93,7 +94,7 @@ const InforQuiz = () => {
                 rules={[{ required: true, message: 'Vui lòng chọn trình độ!' }]}
             >
                 <Select
-                    value={quizLevel}
+                    value={quizLevel || "Cơ bản"}
                     onChange={(value) => setQuizLevel(value)}
                     placeholder="Chọn trình độ" style={{ width: "400px" }}>
                     <Option value="Cơ bản">Cơ bản</Option>
