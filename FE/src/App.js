@@ -65,20 +65,9 @@ const App = () => {
   };
   const renderContent = () => {
     if (selectedKey === '2') {
-      return <MyLibrary />;  // Show MyLibrary component when 'Thư viện của tôi' is clicked
+      return <MyLibrary />; 
     }
-    // Default content (e.g., CourseCard)
     return (
-      // <>
-      //   <div style={{ margin: "48px" }}>
-      //     <h3 style={{ fontSize: "2.25rem", fontWeight: "600", textAlign: "center" }}>Bạn sẽ dạy gì hôm nay?</h3>
-      //   </div>
-      //   <Search placeholder="input search text" enterButton="Search" size="large" />
-      //   <div style={{ marginTop: "100px" }}>
-      //     <h3 style={{ fontSize: "2.25rem", fontWeight: "600" }}>Khởi động vui vẻ</h3>
-      //   </div>
-      //   <CourseCard />
-      // </>
       <Home></Home>
     );
   };
