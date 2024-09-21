@@ -14,6 +14,7 @@ import InforQuiz from "./components/inforQuiz/inforQuiz";
 import QuizList from "./pages/quizList/quizList";
 import QuizDetail from "./pages/quizDetail/quizDetail";
 import ExamContent from "./components/examContent/examContent";
+import DoExam from "./pages/doExam/doExam";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
@@ -32,10 +33,10 @@ root.render(
         </Route>
       </Routes>
       <Routes>
-        <Route path="/" element={<QuizList />} />
         <Route path="/quizdetail" element={<QuizDetail />} >
           <Route path="examcontent" element={<ExamContent />} />
         </Route>
+        <Route path="/doexam" element={<DoExam />} />
       </Routes>
     </Router>
   </React.StrictMode >

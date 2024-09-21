@@ -1,7 +1,11 @@
-import { Col, Layout, Row, Space, Menu, Avatar, Image, Button, Tabs } from 'antd';
+import { Col, Layout, Row, Space, Modal, Avatar, Image, Button, Tabs, Radio, Select, Input } from 'antd';
 import React, { useEffect, useState } from 'react';
-import { UserOutlined, QuestionCircleOutlined, LikeOutlined, HeartOutlined, DownloadOutlined, FacebookOutlined, TwitterOutlined, TwitchOutlined } from '@ant-design/icons';
+import {
+    UserOutlined, QuestionCircleOutlined, CheckOutlined, SettingOutlined,
+    LikeOutlined, HeartOutlined, DownloadOutlined, FacebookOutlined, TwitterOutlined, TwitchOutlined
+} from '@ant-design/icons';
 import { Outlet, useLocation, useNavigate } from 'react-router-dom';
+import Headers from '../../components/Headers/headers';
 const { Header, Content } = Layout;
 const items = [
     {
@@ -22,6 +26,39 @@ const items = [
 
 ];
 const QuizDetail = () => {
+    const options = [
+        {
+            value: '15 phút',
+            label: '15 phút',
+        },
+        {
+            value: '30 phút',
+            label: '30 phút',
+        },
+        {
+            value: '45 phút',
+            label: '45 phút',
+        },
+    ];
+    const [selectedTime, setSelectedTime] = useState('30 phút');
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const showModal = () => {
+        setIsModalOpen(true);
+    };
+    const handleOk = () => {
+        const updatedQuiz = { ...quiz, selectedTime };
+        localStorage.setItem('quizInfo', JSON.stringify(updatedQuiz));
+        setIsModalOpen(false);
+        navigate('/doexam')
+    };
+    const handleCancel = () => {
+        setIsModalOpen(false);
+    };
+    const [value, setValue] = useState(1);
+    const onChangeRadio = (e) => {
+        console.log('radio checked', e.target.value);
+        setValue(e.target.value);
+    };
     const [quiz, setQuiz] = useState(null);
     const navigate = useNavigate();
     const location = useLocation();
@@ -42,20 +79,16 @@ const QuizDetail = () => {
             navigate(selectedTab.path);
         }
     };
+    const handleTimeChange = (value) => {
+        setSelectedTime(value);
+        const updateQuiz = { ...quiz, selectedTime: value };
+        localStorage.setItem('quizInfo', JSON.stringify(updateQuiz));
+    }
     return (
 
         <div style={{ background: "#F1F3F5", height: "2000px" }}>
-            <Layout>
-                <Header style={{ position: 'fixed', zIndex: 1, width: '100%', lineHeight: "40px" }}>
-                    <Image src="https://cf.quizizz.com/img/logos/Purple.webp"
-                        preview={false}
-                        width={150} style={{ float: 'left' }}>
-                    </Image>
-
-                    <Avatar style={{ float: 'right', backgroundColor: '#87d068' }} icon={<UserOutlined />} />
-                </Header>
-            </Layout>
-            <Layout style={{ minHeight: '100vh', justifyContent: 'center' }}>
+            <Headers />
+            <Layout style={{ justifyContent: 'center' }}>
                 <Content>
                     <Row justify="center">
                         <Col style={{ padding: "1.25rem!important" }}>
@@ -102,7 +135,26 @@ const QuizDetail = () => {
                                 </Row>
                                 <Row style={{ marginTop: '20px', gap: "1rem" }}>
                                     <Col span={8}><Button type="primary" htmlType="submit" style={{ width: '100%' }}>Thẻ ghi nhớ</Button></Col>
-                                    <Col span={8}><Button type="primary" htmlType="submit" style={{ width: '100%' }}>Bắt đầu ôn thi</Button></Col>
+                                    <Col span={8}><Button onClick={showModal} type="primary" htmlType="submit" style={{ width: '100%' }}>Bắt đầu ôn thi</Button></Col>
+                                    <Modal style={{ fontSize: '16px' }} title="Chế độ luyện thi" open={isModalOpen} onOk={handleOk} onCancel={handleCancel}>
+                                        <Radio.Group onChange={onChangeRadio} value={value}>
+                                            <Radio value={2}>Thi thử</Radio>
+                                        </Radio.Group> <br />
+                                        <CheckOutlined /> Không giới hạn thời gian làm đề thi <br />
+                                        <CheckOutlined /> Không hiển thị ngay đáp án <br />
+                                        <CheckOutlined /> Kết quả được hiển thị ngay sau khi kiểm tra
+                                        <hr style={{ borderWidth: '0px 0px thin', borderStyle: 'solid', borderColor: 'rgba(0, 0, 0, 0.12)' }} />
+                                        <div style={{ display: 'flex', gap: '.5rem' }}>
+                                            <SettingOutlined />
+                                            <h3>Cài đặt đề thi</h3>
+                                        </div>
+                                        <p style={{ fontWeight: 'bold' }}>Thời gian làm bài thi</p>
+                                        <Space.Compact>
+                                            <Select
+                                                defaultValue={selectedTime || "30 phút"}
+                                                onChange={handleTimeChange} options={options} />
+                                        </Space.Compact>
+                                    </Modal>
                                     <Col span={7}><Button type="primary" htmlType="submit" style={{ width: '100%' }}>Tải về</Button></Col>
                                 </Row>
                             </div>
@@ -110,7 +162,7 @@ const QuizDetail = () => {
                     </Row>
                 </Content>
             </Layout>
-            <Layout style={{ marginTop: '30px', minHeight: '100vh', justifyContent: 'center' }}>
+            <Layout style={{ marginTop: '20px', minHeight: '100vh', justifyContent: 'center' }}>
                 <Content>
                     <Row justify="center">
                         <Col>
