@@ -21,7 +21,7 @@ const ExamContent = () => {
             <ul>
                 {quiz.questions && quiz.questions.map((q, index) => (
                     <li key={index}>
-                        <strong>Câu {[index + 1]}</strong>
+                        <strong>Câu {index + 1}: {q.questionText}</strong>
                         <ul>
                             {q.options.map(option => (
                                 <li key={option.id}>
