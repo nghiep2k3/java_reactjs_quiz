@@ -1,173 +1,186 @@
-import React, { useState } from 'react';
-import { Button, Input, Form, Card, Row, Col, Radio, Menu, Select } from 'antd';
-import { PlusOutlined, DeleteOutlined, CheckOutlined } from '@ant-design/icons';
-import { Header } from 'antd/es/layout/layout';
-import styles from './createQuestion.module.css';
+import React, { useState, useEffect } from 'react';
+import { Button, Input, Form, Card, Row, Col, Radio, Anchor } from 'antd';
+import { PlusOutlined, DeleteOutlined } from '@ant-design/icons';
+
 const CreateQuestion = () => {
-    const [options, setOptions] = useState([
-        { id: 1, text: '', correct: false },
-        { id: 2, text: '', correct: false },
-        { id: 3, text: '', correct: false },
-        { id: 4, text: '', correct: false },
-    ]);
-    const [questions, setQuestions] = useState([]);
-    const [selectedScore, setselectedScore] = useState(null);
-    const handleOptionChange = (index, e) => {
-        const newOptions = [...options];
-        newOptions[index].text = e.target.value;
-        setOptions(newOptions);
+    const [questions, setQuestions] = useState(() => {
+        const storedQuestions = localStorage.getItem('quizQuestions');
+        return storedQuestions ? JSON.parse(storedQuestions) : [
+            {
+                questionText: '',
+                options: [
+                    { id: 1, text: '', correct: false },
+                    { id: 2, text: '', correct: false },
+                    { id: 3, text: '', correct: false },
+                    { id: 4, text: '', correct: false },
+                ],
+                score: null
+            }
+        ];
+    });
+
+    const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
+
+    const saveToLocalStorage = (updatedQuestions) => {
+        localStorage.setItem('quizQuestions', JSON.stringify(updatedQuestions));
     };
 
-    const handleCorrectChange = (index) => {
-        const newOptions = options.map((option, i) => ({
-            ...option,
-            correct: i === index
-        }));
-        setOptions(newOptions);
-    };
-
-    const handleDeleteOption = (index) => {
-        const newOptions = options.filter((_, i) => i !== index);
-        setOptions(newOptions);
-    };
-
-    const handleAddOption = () => {
-        const newOption = { id: options.length + 1, text: '', correct: false };
-        setOptions([...options, newOption]);
-    };
-    const handleScoreChange = (value) => {
-        setselectedScore(value);
-    };
-    const handleSubmit = (values) => {
+    const addNewQuestion = () => {
         const newQuestion = {
-            question: values.question,
-            options: options,
-            score: selectedScore
+            questionText: '',
+            options: [
+                { id: 1, text: '', correct: false },
+                { id: 2, text: '', correct: false },
+                { id: 3, text: '', correct: false },
+                { id: 4, text: '', correct: false },
+            ],
+            score: null
         };
-        setQuestions([...questions, newQuestion]);
-        console.log("Câu hỏi đã lưu:", newQuestion);
-        console.log(values.question);
-
+        const updatedQuestions = [...questions, newQuestion];
+        setQuestions(updatedQuestions);
+        saveToLocalStorage(updatedQuestions);
     };
-    const [isFocused, setIsFocused] = useState(false);
+
+    const handleQuestionChange = (qIndex, e) => {
+        const newQuestions = [...questions];
+        newQuestions[qIndex].questionText = e.target.value;
+        setQuestions(newQuestions);
+        saveToLocalStorage(newQuestions);
+    };
+
+    const handleOptionChange = (qIndex, optionIndex, e) => {
+        const newQuestions = [...questions];
+        newQuestions[qIndex].options[optionIndex].text = e.target.value;
+        setQuestions(newQuestions);
+        saveToLocalStorage(newQuestions);
+    };
+
+    const handleAddOption = (qIndex) => {
+        const newQuestions = [...questions];
+        const newOption = { id: newQuestions[qIndex].options.length + 1, text: '', correct: false };
+        newQuestions[qIndex].options.push(newOption);
+        setQuestions(newQuestions);
+        saveToLocalStorage(newQuestions);
+    };
+
+    const handleDeleteOption = (qIndex, optionIndex) => {
+        const newQuestions = [...questions];
+        newQuestions[qIndex].options = newQuestions[qIndex].options.filter((_, i) => i !== optionIndex);
+        setQuestions(newQuestions);
+        saveToLocalStorage(newQuestions);
+    };
+
+    const handleCorrectChange = (qIndex, optionIndex) => {
+        const newQuestions = questions.map((question, qI) => ({
+            ...question,
+            options: question.options.map((option, oI) => ({
+                ...option,
+                correct: qI === qIndex && oI === optionIndex
+            }))
+        }));
+        setQuestions(newQuestions);
+        saveToLocalStorage(newQuestions);
+    };
+
+    const handleSubmit = () => {
+        const storedQuiz = JSON.parse(localStorage.getItem('quizInfo')) || {};
+        const updatedQuiz = {
+            ...storedQuiz,
+            questions
+        };
+        localStorage.setItem('quizInfo', JSON.stringify(updatedQuiz));
+        console.log("Câu hỏi đã lưu:", questions);
+    };
+
+    const handleAnchorClick = (qIndex) => {
+        setCurrentQuestionIndex(qIndex);
+    };
+
     return (
-        <div style={{ backgroundColor: "#E5E5E5" }}>
-            <Header
-                style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                }}
-            >
-                <div className="demo-logo" />
-                <Menu
-                    theme="dark"
-                    mode="horizontal"
-
-                    defaultSelectedKeys={['2']}
-                    style={{
-                        flex: 1,
-                        minWidth: 0,
-                    }}
-
-                >
-                    <Select
-                        showSearch
-                        placeholder="Điểm"
-                        filterOption={(input, option) =>
-                            (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
-                        }
-                        options={Array.from({ length: 10 }, (_, i) => ({ value: (i + 1).toString() }))}
-                        onChange={handleScoreChange}
+        <div>
+            <div style={{ display: 'flex' }}>
+                <Col span={2}>
+                    <Anchor
+                        replace
+                        items={questions.map((_, qIndex) => ({
+                            key: `part-${qIndex + 1}`,
+                            href: `#part-${qIndex + 1}`,
+                            title: `Câu ${qIndex + 1}`,
+                            onClick: () => handleAnchorClick(qIndex),
+                        }))}
                     />
-                </Menu>
-            </Header>
-            <Card style={{ width: '1100px', margin: '50px auto', background: "#451A42" }}>
-                <Form layout="vertical" onFinish={handleSubmit}>
-                    <Form.Item
-                        name="question"
-                        rules={[{ required: true, message: 'Vui lòng nhập câu hỏi' }]}
-                    >
-                        <Input.TextArea
-                            className="custom-textarea"
-                            style={{
-                                height: '250px',
-                                backgroundColor: isFocused ? 'rgba(0, 0, 0, 0.4)' : '#451A42',
-                                color: isFocused ? 'white' : 'black',
-                                textAlign: 'center',
-                                fontSize: '30px',
-                            }}
-                            placeholder="Nhập nội dung câu hỏi..."
-                            onFocus={() => setIsFocused(true)}
-                            onBlur={() => setIsFocused(false)}
-                        />
-                    </Form.Item>
-
-                    <Form.Item label="Tùy chọn trả lời">
-                        {options.map((option, index) => (
-                            <Row key={index} align="middle" style={{ marginBottom: '10px' }}>
-                                <Col span={18}>
-                                    <Input
-                                        placeholder={`Tùy chọn ${index + 1}`}
-                                        value={option.text}
-                                        onChange={(e) => handleOptionChange(index, e)}
-                                    />
-                                </Col>
-                                <Col span={2}>
-                                    <Radio
-                                        checked={option.correct}
-                                        onChange={() => handleCorrectChange(index)}
+                </Col>
+                <Col span={20}>
+                    {questions.map((question, qIndex) => (
+                        <Card key={qIndex} style={{ marginBottom: '20px' }}>
+                            <div id={`part-${qIndex + 1}`}>
+                                <Form layout="vertical">
+                                    <Form.Item
+                                        label={`Câu hỏi ${qIndex + 1}`}
+                                        rules={[{ required: true, message: 'Vui lòng nhập câu hỏi' }]}
                                     >
-                                        <CheckOutlined />
-                                    </Radio>
-                                </Col>
-                                <Col span={2}>
-                                    <Button
-                                        icon={<DeleteOutlined />}
-                                        type="danger"
-                                        onClick={() => handleDeleteOption(index)}
-                                    />
-                                </Col>
-                            </Row>
-                        ))}
+                                        <Input.TextArea
+                                            value={question.questionText}
+                                            onChange={(e) => handleQuestionChange(qIndex, e)}
+                                            placeholder="Nhập nội dung câu hỏi..."
+                                            style={{ height: '100px', fontSize: '16px' }}
+                                        />
+                                    </Form.Item>
 
-                        {/* Nút thêm tùy chọn */}
-                        <Button
-                            icon={<PlusOutlined />}
-                            type="dashed"
-                            onClick={handleAddOption}
-                            style={{ width: '100%', marginTop: '10px' }}
-                        >
-                            Thêm tùy chọn
-                        </Button>
-                    </Form.Item>
+                                    <Form.Item label="Tùy chọn trả lời">
+                                        {question.options.map((option, optionIndex) => (
+                                            <Row key={option.id} align="middle" style={{ marginBottom: '10px' }}>
+                                                <Col span={18}>
+                                                    <Input
+                                                        placeholder={`Tùy chọn ${optionIndex + 1}`}
+                                                        value={option.text}
+                                                        onChange={(e) => handleOptionChange(qIndex, optionIndex, e)}
+                                                    />
+                                                </Col>
+                                                <Col span={2} style={{ marginLeft: "15px" }}>
+                                                    <Radio
+                                                        checked={option.correct}
+                                                        onChange={() => handleCorrectChange(qIndex, optionIndex)}
+                                                    >
+                                                        Đúng
+                                                    </Radio>
+                                                </Col>
+                                                <Col span={2}>
+                                                    <Button
+                                                        style={{ color: "red" }}
+                                                        icon={<DeleteOutlined />}
+                                                        type="danger"
+                                                        onClick={() => handleDeleteOption(qIndex, optionIndex)}
+                                                    />
+                                                </Col>
+                                            </Row>
+                                        ))}
+                                    </Form.Item>
+                                </Form>
+                            </div>
+                            <Button
+                                icon={<PlusOutlined />}
+                                onClick={() => handleAddOption(qIndex)}
+                                style={{
+                                    width: '150px', marginTop: '10px',
+                                    backgroundImage: 'linear-gradient(90deg, rgb(255, 127, 206) 0%, rgb(252, 149, 110) 100%)',
+                                    color: '#fff'
+                                }}
+                            >
+                                Thêm đáp án
+                            </Button>
+                        </Card>
+                    ))}
+                </Col>
+            </div>
 
-                    <Form.Item>
-                        <Button type="primary" htmlType="submit" style={{ width: '100%' }}>
-                            Lưu câu hỏi
-                        </Button>
-                    </Form.Item>
-                </Form>
+            <Button type="dashed" onClick={addNewQuestion} icon={<PlusOutlined />} style={{ width: '100%' }}>
+                Thêm câu hỏi
+            </Button>
 
-                <div style={{ marginTop: '20px' }}>
-                    <h3>Các câu hỏi đã lưu:</h3>
-                    <ul>
-                        {questions.map((q, index) => (
-                            <li key={index}>
-                                <strong>Câu hỏi:</strong> {q.question} <br></br>
-                                <strong>Điểm:</strong> {q.score}
-                                <ul>
-                                    {q.options.map((opt, optIndex) => (
-                                        <li key={optIndex}>
-                                            {opt.text} {opt.correct && <strong>(Đúng)</strong>}
-                                        </li>
-                                    ))}
-                                </ul>
-
-                            </li>
-                        ))}
-                    </ul>
-                </div>
-            </Card>
+            <Button type="primary" onClick={handleSubmit} style={{ width: '100%', marginTop: '20px' }}>
+                Lưu tất cả câu hỏi
+            </Button>
         </div>
     );
 };
