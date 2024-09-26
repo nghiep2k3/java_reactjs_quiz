@@ -11,34 +11,28 @@ import {
 import { Card, Image, Layout, Menu, Modal } from "antd";
 import { Button } from "antd/es/radio";
 import Search from "antd/es/transfer/search";
-import Slider from "react-slick";
-// import Footer from '../../../components/Footer/footer';
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import MyFooter from "./components/Footer/footer";
 import { Link, Outlet, useLocation } from "react-router-dom";
 import "./App.css";
-import CourseCard from "./components/courseCard/courseCard";
-import MyLibrary from "./components/myLibrary/myLibrary";
-import Home from "./pages/Home/Home";
 import Meta from "antd/es/card/Meta";
 const { Header, Content, Sider } = Layout;
 
 const items = [
-  { key: "1", icon: <BookOutlined />, label: "Khám phá", path: "/explore" },
+  { key: "1", icon: <BookOutlined />, label: "Khám phá", path: "/" },
   { key: "2", icon: <AccountBookOutlined />, label: "Thư viện của tôi", path: "/mylibrary" },
   { key: "3", icon: <FormOutlined />, label: "Báo cáo", path: "/reports" },
   { key: "4", icon: <SettingOutlined />, label: "Cài đặt", path: "/settings" },
   { key: "5", icon: <UserOutlined />, label: "Hồ sơ", path: "/profile" },
   { key: "6", icon: <FileOutlined />, label: "Đề thi", path: "/quizlist" },
-  { key: "7", icon: <LogoutOutlined />, label: "Đăng xuất", path: "/logout" },
+  { key: "7", icon: <LogoutOutlined />, label: "Đăng nhập", path: "/login" },
 ];
 
 
 const App = () => {
   const location = useLocation();
   const onSearch = (value, _e, info) => console.log(info?.source, value);
-  // Default content (e.g., CourseCard)
   const [isModalOpen, setIsModalOpen] = useState(false);
   const showModal = () => {
     setIsModalOpen(true);

@@ -15,6 +15,8 @@ import QuizList from "./pages/quizList/quizList";
 import QuizDetail from "./pages/quizDetail/quizDetail";
 import ExamContent from "./components/examContent/examContent";
 import DoExam from "./pages/doExam/doExam";
+import Login from "./pages/login/login";
+import Register from "./pages/register/register";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
@@ -24,7 +26,7 @@ root.render(
         <Route path="/" element={<App />}>
           <Route path="/mylibrary" element={<MyLibrary />} />
           <Route path="/ViewQuiz" element={<ViewQuiz />} />
-          <Route path="/explore" element={<Explore />} />
+          <Route path="/" element={<Explore />} />
           <Route path="/createquiz" element={<CreateQuiz />}>
             <Route path="inforquiz" element={<InforQuiz />} />
             <Route path="createquestion" element={<CreateQuestion />} />
@@ -37,6 +39,8 @@ root.render(
           <Route path="examcontent" element={<ExamContent />} />
         </Route>
         <Route path="/doexam" element={<DoExam />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
       </Routes>
     </Router>
   </React.StrictMode >

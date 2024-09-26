@@ -1,38 +1,31 @@
 import React, { useState } from 'react';
-import { AccountBookOutlined, UserOutlined, FormOutlined, BookOutlined, SettingOutlined, LogoutOutlined } from '@ant-design/icons';
-import { Card, Image, Layout, Menu, theme } from 'antd';
-import { Button } from 'antd/es/radio';
+import { Layout, theme } from 'antd';
 import Search from 'antd/es/transfer/search';
-import Slider from 'react-slick';
-import MyLibrary from '../../components/myLibrary/myLibrary'
 import CourseCard from '../../components/courseCard/courseCard'
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
-import MyFooter from '../../components/Footer/footer';
-import { Link, Outlet } from 'react-router-dom';
 
-const { Header, Content, Sider } = Layout;
-const siderStyle = {
-    overflow: 'auto',
-    height: '100vh',
-    position: 'fixed',
-    insetInlineStart: 0,
-    top: 0,
-    bottom: 0,
-    scrollbarWidth: 'thin',
-    scrollbarColor: 'unset',
-};
+// const siderStyle = {
+//     overflow: 'auto',
+//     height: '100vh',
+//     position: 'fixed',
+//     insetInlineStart: 0,
+//     top: 0,
+//     bottom: 0,
+//     scrollbarWidth: 'thin',
+//     scrollbarColor: 'unset',
+// };
 
 
 const onSearch = (value, _e, info) => console.log(info?.source, value);
-const settings = {
-    dots: true,
-    infinite: true,
-    speed: 500,
-    slidesToShow: 5,
-    slidesToScroll: 3,
-    arrows: true
-};
+// const settings = {
+//     dots: true,
+//     infinite: true,
+//     speed: 500,
+//     slidesToShow: 5,
+//     slidesToScroll: 3,
+//     arrows: true
+// };
 
 const Home = () => {
 

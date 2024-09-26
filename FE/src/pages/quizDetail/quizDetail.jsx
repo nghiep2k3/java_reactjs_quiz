@@ -20,7 +20,7 @@ const items = [
     },
     {
         key: '3',
-        label: 'Thống kê ôn  tập',
+        label: 'Thống kê ôn tập',
         path: '',
     },
 

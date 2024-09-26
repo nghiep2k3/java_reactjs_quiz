@@ -40,7 +40,9 @@ const CreateQuestion = () => {
         setQuestions(updatedQuestions);
         saveToLocalStorage(updatedQuestions);
     };
-
+    const deleteQuestion = () => {
+        
+    }
     const handleQuestionChange = (qIndex, e) => {
         const newQuestions = [...questions];
         newQuestions[qIndex].questionText = e.target.value;
