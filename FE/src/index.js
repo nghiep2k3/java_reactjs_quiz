@@ -15,6 +15,8 @@ import QuizList from "./pages/quizList/quizList";
 import QuizDetail from "./pages/quizDetail/quizDetail";
 import ExamContent from "./components/examContent/examContent";
 import DoExam from "./pages/doExam/doExam";
+import 'bootstrap/dist/js/bootstrap.bundle.min';
+import Result from "./pages/Result/Result";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
@@ -25,6 +27,8 @@ root.render(
           <Route path="/mylibrary" element={<MyLibrary />} />
           <Route path="/ViewQuiz" element={<ViewQuiz />} />
           <Route path="/explore" element={<Explore />} />
+          <Route path="/result" element={<Result />} />
+          
           <Route path="/createquiz" element={<CreateQuiz />}>
             <Route path="inforquiz" element={<InforQuiz />} />
             <Route path="createquestion" element={<CreateQuestion />} />
@@ -32,6 +36,7 @@ root.render(
           <Route path="/quizlist" element={<QuizList />} />
         </Route>
       </Routes>
+
       <Routes>
         <Route path="/quizdetail" element={<QuizDetail />} >
           <Route path="examcontent" element={<ExamContent />} />

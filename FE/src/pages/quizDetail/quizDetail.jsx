@@ -108,8 +108,9 @@ const QuizDetail = () => {
                                         <Image src='https://upload-api.eduquiz.io.vn/default/exam/exam-02.png' preview={false}></Image>
                                     </Col>
                                     <Col span={8} style={{ gap: '.75rem' }}>
-                                        <h2>{quiz.title}</h2>
-                                        <p style={{ fontWeight: "bold" }}>{quiz.level}</p>
+                                        <div className='d-flex align-items-baseline'><b style={{ fontSize: 24 }}>Người tạo đề thi: </b><p className='fs-5 ps-2'>Nguyễn Thiện Nghiệp</p></div>
+                                        <div className='d-flex align-items-baseline'><b style={{ fontSize: 24 }}>Tên bài thi: </b><p className='fs-5 ps-2'>{quiz.title}</p></div>
+                                        <div className='d-flex align-items-baseline'><b style={{ fontSize: 24 }}>Cấp độ: </b><p className='fs-5 ps-2'>{quiz.level}</p></div>
                                         <div style={{ display: 'flex', alignItems: "center", gap: '.5rem' }}>
                                             <QuestionCircleOutlined /> {quiz.questions?.length}
                                             <LikeOutlined />

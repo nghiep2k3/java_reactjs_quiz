@@ -30,6 +30,7 @@ const QuizList = () => {
                                 }}
                                 cover={<img alt="example" src="https://os.alipayobjects.com/rmsportal/QBnOOoLaAfKPirc.png" />}
                             >
+                                
                                 <Meta title={quiz.title} description={`Số lượng câu hỏi: ${quiz.questions?.length}`}></Meta>
                                 <p>Trình độ: {quiz.level || "Không có"}</p>
                                 <p>Mô tả: {quiz.description}</p>
