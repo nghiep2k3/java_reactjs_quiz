@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { Form, Input, Button, Select, Upload } from 'antd';
+import { Form, Input, Button, Select, Upload, notification } from 'antd';
 import ImgCrop from 'antd-img-crop';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 const { TextArea } = Input;
 const { Option } = Select;
 
@@ -12,9 +13,26 @@ const InforQuiz = () => {
     const [quizDescription, setQuizDescription] = useState('');
     const [fileList, setFileList] = useState([
     ]);
+    const [categories, setCategories] = useState([]);
     const storedQuiz = localStorage.getItem('quizInfo');
     const parsedQuiz = JSON.parse(storedQuiz);
+    const navigate = useNavigate();
     useEffect(() => {
+        const fetchCategories = async () => {
+            try {
+                const response = await axios.get('https://api.trandai03.online/api/v1/category/getAll');
+                if (response.status === 200) {
+                    setCategories(response.data);
+                }
+            } catch (error) {
+                notification.error({
+                    message: 'Lỗi khi tải danh sách chủ đề',
+                    description: 'Không thể tải danh sách chủ đề, vui lòng thử lại sau.',
+                });
+            }
+        };
+        fetchCategories();
+
         if (storedQuiz) {
             setQuizTitle(parsedQuiz.title || '');
             setQuizCategory(parsedQuiz.category_id || null);
@@ -29,9 +47,8 @@ const InforQuiz = () => {
             //     setFileList([]);
             // }
         }
-    }, []);
+    }, [storedQuiz]);
 
-    const navigate = useNavigate();
     const handleSave = () => {
         const values = form.getFieldsValue();
         const userCreate = localStorage.getItem("username");
@@ -101,13 +118,11 @@ const InforQuiz = () => {
                     value={quizCategory || "Toán"}
                     onChange={(value) => setQuizCategory(value)}
                     placeholder="Chọn chủ đề" style={{ width: "400px" }}>
-                    <Option value={1}>Toán</Option>
-                    <Option value={2}>Tiếng anh</Option>
-                    <Option value={3}>Vật lý</Option>
-                    <Option value={4}>Sinh học</Option>
-                    <Option value={5}>Địa lý</Option>
-                    <Option value={6}>Lịch sử</Option>
-                    <Option value={7}>Hóa học</Option>
+                    {categories.map(category => (
+                        <Option key={category.id} value={category.id}>
+                            {category.name}
+                        </Option>
+                    ))}
                 </Select>
             </Form.Item>
             <Form.Item
