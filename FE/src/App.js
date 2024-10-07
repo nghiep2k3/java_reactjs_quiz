@@ -6,127 +6,245 @@ import {
   BookOutlined,
   SettingOutlined,
   LogoutOutlined,
-  FileOutlined
+  FileOutlined,
+  MenuUnfoldOutlined,
+  MenuFoldOutlined,
 } from "@ant-design/icons";
-import { Card, Image, Layout, Menu, Modal } from "antd";
-import { Button } from "antd/es/radio";
+import { Avatar, Card, Image, Layout, Menu, Modal, Space, Button, Dropdown } from "antd";
 import Search from "antd/es/transfer/search";
-import "slick-carousel/slick/slick.css";
-import "slick-carousel/slick/slick-theme.css";
+import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
 import MyFooter from "./components/Footer/footer";
-import { Link, Outlet, useLocation } from "react-router-dom";
 import "./App.css";
 import Meta from "antd/es/card/Meta";
+
 const { Header, Content, Sider } = Layout;
 
-const items = [
-  { key: "1", icon: <BookOutlined />, label: "Khám phá", path: "/" },
-  { key: "2", icon: <AccountBookOutlined />, label: "Thư viện của tôi", path: "/mylibrary" },
-  { key: "3", icon: <FormOutlined />, label: "Báo cáo", path: "/reports" },
-  { key: "4", icon: <SettingOutlined />, label: "Cài đặt", path: "/settings" },
-  { key: "5", icon: <UserOutlined />, label: "Hồ sơ", path: "/profile" },
-  { key: "6", icon: <FileOutlined />, label: "Đề thi", path: "/quizlist" },
-  { key: "7", icon: <LogoutOutlined />, label: "Đăng nhập", path: "/login" },
+const menuItems = [
+  {
+    key: "1",
+    icon: <BookOutlined />,
+    label: "Khám phá",
+    path: "/",
+  },
+  {
+    key: "2",
+    icon: <AccountBookOutlined />,
+    label: "Thư viện của tôi",
+    path: "/mylibrary",
+  },
+  {
+    key: "3",
+    icon: <FormOutlined />,
+    label: "Kết quả thi của tôi",
+    path: "/reportquizresult",
+  },
+  {
+    key: "4",
+    icon: <UserOutlined />,
+    label: "Đề thi yêu thích",
+    path: "/favorexam",
+  },
+  {
+    key: "5",
+    icon: <FileOutlined />,
+    label: "Quản lý đề thi",
+    path: "/quizlist",
+  },
+  {
+    key: "7",
+    icon: <SettingOutlined />,
+    label: "Cài đặt",
+    path: "/settings",
+  },
+  {
+    key: "6",
+    icon: <LogoutOutlined />,
+    label: "Lớp học tập",
+    path: "/class",
+  },
 ];
-
 
 const App = () => {
   const location = useLocation();
-  const onSearch = (value, _e, info) => console.log(info?.source, value);
+  const navigate = useNavigate();
+  const username = localStorage.getItem("username")
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [collapsed, setCollapsed] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const showModal = () => {
     setIsModalOpen(true);
   };
+
   const handleOk = () => {
     setIsModalOpen(false);
   };
+
   const handleCancel = () => {
     setIsModalOpen(false);
   };
+
+  const toggleCollapse = () => {
+    setCollapsed(!collapsed);
+  };
+  const handleLogout = () => {
+    localStorage.removeItem("username");
+    localStorage.removeItem("email");
+    setIsAuthenticated(false);
+    setTimeout(() => {
+      navigate('/');
+    }, 2000);
+  };
+  const menu = (
+    <Menu>
+      {username ? (
+        <>
+          <Menu.Item key="1" icon={<UserOutlined />}>
+            <a href="/profile">Hồ sơ</a>
+          </Menu.Item>
+          <Menu.Divider />
+          <Menu.Item key="2" icon={<LogoutOutlined />} onClick={handleLogout}>
+            Đăng xuất
+          </Menu.Item>
+        </>
+      ) : (
+        <Menu.Item key="3" icon={<UserOutlined />}>
+          <a href="/login">Đăng nhập</a>
+        </Menu.Item>
+      )}
+    </Menu>
+  );
   return (
     <div>
       <Layout>
         <Sider
+          width={250}
+          collapsible
+          collapsed={collapsed}
+          onCollapse={setCollapsed}
           style={{
             backgroundColor: "#fff",
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            padding: "20px 0",
             borderRight: "1px solid #f2f2f2",
+            padding: "20px 0",
           }}
         >
-          <Image
-            src="https://cf.quizizz.com/img/logos/Purple.webp"
-            preview={false}
-            width={150}
-            style={{ marginBottom: "20px" }}
-          />
-          <Button
-            type="primary"
-            onClick={showModal}
-            style={{
-              textAlign: "center",
-              height: "40px",
-              lineHeight: "40px",
-              borderRadius: "1.2em",
-              backgroundImage:
-                "linear-gradient(90.57deg, rgb(62, 101, 254) 0%, rgb(210, 60, 255) 100%)",
-              color: "#fff",
-              width: "70%",
-              marginBottom: "20px",
-            }}
+          <div style={{ textAlign: "center", marginBottom: "20px" }}>
+            <Image
+              src="https://cf.quizizz.com/img/logos/Purple.webp"
+              preview={false}
+              width={collapsed ? 50 : 150}
+            />
+          </div>
 
+          <Modal
+            title="Tạo đề thi mới?"
+            style={{ textAlign: "center" }}
+            open={isModalOpen}
+            onOk={handleOk}
+            onCancel={handleCancel}
           >
-            Thêm mới
-          </Button>
-          <Modal title="Bạn muốn tạo gì?"
-            style={{ textAlign: 'center' }} open={isModalOpen} onOk={handleOk} onCancel={handleCancel}>
-            <Link to={"/createquiz/inforquiz"}>
-              <Card
-                hoverable
-                onClick={handleCancel}
-                style={{
-                  width: 240,
-                }}
-                cover={<img alt="example" src="https://templatelab.com/wp-content/uploads/2017/04/puzzle-piece-template-13.jpg" />}
-              >
-                <Meta title="Quiz" description="Đưa ra đánh giá và thực hành" />
-              </Card>
-            </Link>
+            <Card
+              hoverable
+              onClick={() => {
+                const username = localStorage.getItem("username");
+                if (username) {
+                  window.location.href = "/createquiz/inforquiz";  // Chuyển hướng tới trang tạo đề thi
+                } else {
+                  window.location.href = "/login";  // Chuyển hướng tới trang đăng nhập
+                }
+                handleCancel();  // Đóng modal
+              }}
+              style={{
+                width: 240,
+                margin: "0 auto",
+              }}
+              cover={
+                <img
+                  alt="example"
+                  src="https://templatelab.com/wp-content/uploads/2017/04/puzzle-piece-template-13.jpg"
+                />
+              }
+            >
+              <Meta title="Quiz" description="Đưa ra đánh giá và thực hành" />
+            </Card>
           </Modal>
+
           <Menu
-            theme="light"
-            mode="inline"
             defaultSelectedKeys={[location.pathname]}
-            style={{ width: "100%" }}
+            mode="inline"
+            style={{ fontSize: "16px" }}
           >
-            {items.map((item) => (
-              <Menu.Item key={item.path} icon={item.icon}>
-                <Link to={item.path}>{item.label}</Link>
+            <div
+              style={{
+                textAlign: "left",
+                marginTop: "20px",
+              }}
+            >
+              <Button type="text" onClick={toggleCollapse} style={{
+                textAlign: "left"
+              }}>
+                {collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
+              </Button>
+            </div>
+            {menuItems.map((item) => (
+              <Menu.Item key={item.key} icon={item.icon}>
+                <Link to={item.path}>{collapsed ? null : item.label}</Link>
               </Menu.Item>
             ))}
           </Menu>
         </Sider>
 
         <Layout>
-          <Header style={{ backgroundColor: "#fff" }}>
-            <Search
-              placeholder="input search text"
-              enterButton="Search"
-              size="large"
-              onSearch={onSearch}
-            />
-          </Header>
-          <Content
+          <Header
             style={{
-              minHeight: 500,
-              margin: "24px 16px 50px 16px",
+              gap: ".5rem",
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              backgroundColor: "#f5f5f5",
+              padding: "10px 20px",
+              boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
             }}
           >
-            <Outlet></Outlet>
+            <Search
+              placeholder="Tìm kiếm..."
+              enterButton="Tìm kiếm"
+              size="middle"
+              style={{ width: "40%" }}
+            />
+
+            <Button
+              type="primary"
+              onClick={showModal}
+              style={{
+                height: "40px",
+                lineHeight: "40px",
+                borderRadius: "1.2em",
+                backgroundImage:
+                  "linear-gradient(90deg, rgb(62, 101, 254) 0%, rgb(210, 60, 255) 100%)",
+                color: "#fff",
+                width: "150px",
+              }}
+            >
+              Tạo đề thi
+            </Button>
+            <Dropdown overlay={menu} trigger={['click']} placement="bottomRight">
+              <Space size="large" align="center">
+                <Avatar style={{ backgroundColor: "#87d068" }} icon={<UserOutlined />} />
+              </Space>
+            </Dropdown>
+          </Header>
+
+          <Content
+            style={{
+              minHeight: "100vh",
+              padding: "24px",
+              backgroundColor: "#f9f9f9",
+            }}
+          >
+            <Outlet />
           </Content>
-          <MyFooter></MyFooter>
+
+          <MyFooter />
         </Layout>
       </Layout>
     </div>

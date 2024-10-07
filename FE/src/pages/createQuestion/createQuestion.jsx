@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Button, Input, Form, Card, Row, Col, Radio, Anchor } from 'antd';
 import { PlusOutlined, DeleteOutlined } from '@ant-design/icons';
-
+import { useNavigate } from 'react-router-dom';
 const CreateQuestion = () => {
+    const navigate = useNavigate();
     const [questions, setQuestions] = useState(() => {
         const storedQuestions = localStorage.getItem('quizQuestions');
         return storedQuestions ? JSON.parse(storedQuestions) : [
@@ -41,7 +42,7 @@ const CreateQuestion = () => {
         saveToLocalStorage(updatedQuestions);
     };
     const deleteQuestion = () => {
-        
+
     }
     const handleQuestionChange = (qIndex, e) => {
         const newQuestions = [...questions];
@@ -73,25 +74,32 @@ const CreateQuestion = () => {
     };
 
     const handleCorrectChange = (qIndex, optionIndex) => {
-        const newQuestions = questions.map((question, qI) => ({
-            ...question,
-            options: question.options.map((option, oI) => ({
-                ...option,
-                correct: qI === qIndex && oI === optionIndex
-            }))
+        const newQuestions = [...questions];
+        newQuestions[qIndex].options = newQuestions[qIndex].options.map((option, oIndex) => ({
+            ...option,
+            correct: oIndex === optionIndex,
         }));
+
         setQuestions(newQuestions);
         saveToLocalStorage(newQuestions);
-    };
 
+    };
+    const currentDate = new Date().toLocaleDateString('vi-VN', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+    });
     const handleSubmit = () => {
-        const storedQuiz = JSON.parse(localStorage.getItem('quizInfo')) || {};
+        const storedQuiz = JSON.parse(localStorage.getItem('quizInfo')) || [];
+        console.log("aa", storedQuiz);
+
         const updatedQuiz = {
             ...storedQuiz,
-            questions
+            questions,
+            timestamp: currentDate
         };
         localStorage.setItem('quizInfo', JSON.stringify(updatedQuiz));
-        console.log("Câu hỏi đã lưu:", questions);
+        navigate('/quizlist');
     };
 
     const handleAnchorClick = (qIndex) => {

@@ -38,3 +38,10 @@ code {
 
 
 }
+
+a{
+  text-decoration: none;
+}
+.ant-layout-sider-trigger {
+  display: none;
+}

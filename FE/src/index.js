@@ -17,6 +17,10 @@ import ExamContent from "./components/examContent/examContent";
 import DoExam from "./pages/doExam/doExam";
 import Login from "./pages/login/login";
 import Register from "./pages/register/register";
+import 'bootstrap/dist/js/bootstrap.bundle.min';
+import Result from "./pages/Result/Result";
+import ReportQuizResult from "./pages/reportQuizResult/reportQuizResult";
+import ChangePassword from "./pages/changePassword/changePassword";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
@@ -27,6 +31,9 @@ root.render(
           <Route path="/mylibrary" element={<MyLibrary />} />
           <Route path="/ViewQuiz" element={<ViewQuiz />} />
           <Route path="/" element={<Explore />} />
+          <Route path="/explore" element={<Explore />} />
+          <Route path="/result" element={<Result />} />
+          <Route path="/reportquizresult" element={<ReportQuizResult />} />
           <Route path="/createquiz" element={<CreateQuiz />}>
             <Route path="inforquiz" element={<InforQuiz />} />
             <Route path="createquestion" element={<CreateQuestion />} />
@@ -34,6 +41,7 @@ root.render(
           <Route path="/quizlist" element={<QuizList />} />
         </Route>
       </Routes>
+
       <Routes>
         <Route path="/quizdetail" element={<QuizDetail />} >
           <Route path="examcontent" element={<ExamContent />} />
@@ -41,6 +49,7 @@ root.render(
         <Route path="/doexam" element={<DoExam />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
+        <Route path="/changepass" element={<ChangePassword />} />
       </Routes>
     </Router>
   </React.StrictMode >

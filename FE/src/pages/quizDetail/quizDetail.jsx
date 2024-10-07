@@ -1,4 +1,4 @@
-import { Col, Layout, Row, Space, Modal, Avatar, Image, Button, Tabs, Radio, Select, Input } from 'antd';
+import { Col, Layout, Row, Space, Modal, Avatar, Image, Button, Tabs, Radio, Select, Input, Popover, QRCode } from 'antd';
 import React, { useEffect, useState } from 'react';
 import {
     UserOutlined, QuestionCircleOutlined, CheckOutlined, SettingOutlined,
@@ -6,7 +6,7 @@ import {
 } from '@ant-design/icons';
 import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 import Headers from '../../components/Headers/headers';
-const { Header, Content } = Layout;
+const { Content } = Layout;
 const items = [
     {
         key: '1',
@@ -60,6 +60,7 @@ const QuizDetail = () => {
         setValue(e.target.value);
     };
     const [quiz, setQuiz] = useState(null);
+
     const navigate = useNavigate();
     const location = useLocation();
     useEffect(() => {
@@ -86,7 +87,7 @@ const QuizDetail = () => {
     }
     return (
 
-        <div style={{ background: "#F1F3F5", height: "2000px" }}>
+        <div style={{ background: "#F1F3F5" }}>
             <Headers />
             <Layout style={{ justifyContent: 'center' }}>
                 <Content>
@@ -108,8 +109,9 @@ const QuizDetail = () => {
                                         <Image src='https://upload-api.eduquiz.io.vn/default/exam/exam-02.png' preview={false}></Image>
                                     </Col>
                                     <Col span={8} style={{ gap: '.75rem' }}>
-                                        <h2>{quiz.title}</h2>
-                                        <p style={{ fontWeight: "bold" }}>{quiz.level}</p>
+                                        <div className='d-flex align-items-baseline'><b style={{ fontSize: 24 }}>Người tạo đề thi: </b><p className='fs-5 ps-2'>{quiz.userCreate}</p></div>
+                                        <div className='d-flex align-items-baseline'><b style={{ fontSize: 24 }}>Tên bài thi: </b><p className='fs-5 ps-2'>{quiz.title}</p></div>
+                                        <div className='d-flex align-items-baseline'><b style={{ fontSize: 24 }}>Cấp độ: </b><p className='fs-5 ps-2'>{quiz.level}</p></div>
                                         <div style={{ display: 'flex', alignItems: "center", gap: '.5rem' }}>
                                             <QuestionCircleOutlined /> {quiz.questions?.length}
                                             <LikeOutlined />
@@ -129,7 +131,10 @@ const QuizDetail = () => {
                                         </div>
                                         <div style={{ marginTop: '20px' }}>
                                             <Button type="primary" htmlType="submit" style={{ width: '100px' }}>Sao chép</Button>
-                                            <Button type="primary" htmlType="submit" style={{ width: '200px', marginLeft: '20px' }}>Quét mã QRcode</Button>
+                                            <Popover content={<QRCode value="https://ant.design" bordered={false} />}>
+
+                                                <Button type="primary" htmlType="submit" style={{ width: '200px', marginLeft: '20px' }}>Quét mã QRcode</Button>
+                                            </Popover>
                                         </div>
                                     </Col>
                                 </Row>

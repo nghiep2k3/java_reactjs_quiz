@@ -13,7 +13,7 @@ const Register = () => {
         username,
         password
       };
-      const res = await axios.post('', data);
+      const res = await axios.post('https://api.trandai03.online/api/v1/users/create', data);
       if (res.status === 200) {
         notification.success({
           message: "Đăng ký thành công",

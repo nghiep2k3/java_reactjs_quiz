@@ -12,13 +12,15 @@ const Login = () => {
         setLoading(true);
         try {
             const { username, password } = values;
-            const res = await axios.post('', {
+            const res = await axios.post('https://api.trandai03.online/api/v1/users/login', {
                 username,
                 password
             });
-            if (res.status === 200) {
-                const token = res.data.token;
-                localStorage.setItem('authToken', token);
+            if (res.status === 200 && res.data.status === "success") {
+                const { username, email, token } = res.data.data;
+                localStorage.setItem('username', username);
+                localStorage.setItem('email', email);
+                localStorage.setItem('token', token);
                 notification.success({
                     message: "Đăng nhập",
                     description: "Thành công!"

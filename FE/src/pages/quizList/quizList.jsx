@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { List, Card } from 'antd';
 import { Link } from 'react-router-dom';
+import { ClockCircleOutlined } from '@ant-design/icons';
+
 const { Meta } = Card;
 const QuizList = () => {
     const [quizzes, setQuizzes] = useState([]);
@@ -12,7 +14,6 @@ const QuizList = () => {
             setQuizzes([parsedQuiz]);
         }
     }, []);
-
     return (
         <div>
             <h1>Danh sách các đề thi</h1>
@@ -21,8 +22,7 @@ const QuizList = () => {
                 dataSource={quizzes}
                 renderItem={quiz => (
                     <List.Item>
-                        <Link to='/quizdetail'>
-
+                        <Link to='/quizdetail/examcontent'>
                             <Card
                                 hoverable
                                 style={{
@@ -30,7 +30,11 @@ const QuizList = () => {
                                 }}
                                 cover={<img alt="example" src="https://os.alipayobjects.com/rmsportal/QBnOOoLaAfKPirc.png" />}
                             >
-                                <Meta title={quiz.title} description={`Số lượng câu hỏi: ${quiz.questions?.length}`}></Meta>
+                                <p><strong>{quiz.title}</strong></p>
+                                <p>
+                                    <strong><ClockCircleOutlined></ClockCircleOutlined> {quiz.timestamp}</strong>
+                                </p>
+                                <p>Số câu hỏi: {quiz.questions?.length}</p>
                                 <p>Trình độ: {quiz.level || "Không có"}</p>
                                 <p>Mô tả: {quiz.description}</p>
 
