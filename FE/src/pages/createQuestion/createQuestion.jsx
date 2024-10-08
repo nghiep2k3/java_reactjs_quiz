@@ -87,57 +87,51 @@ const CreateQuestion = () => {
 
     };
 
-    const handleSubmit = () => {
+    const handleSubmit = async () => {
         const storedQuiz = JSON.parse(localStorage.getItem('quizInfo')) || [];
         console.log("aa", storedQuiz);
-    
+
         // Updated currentDate formatting
         const currentDate = new Date().toISOString();
-        
+
         // Prepare updated quiz data
         const updatedQuiz = {
             ...storedQuiz,
             questions,
             timestamp: currentDate
         };
-        
+
         // Store updated quiz info back to localStorage
         console.log(token);
         console.log(updatedQuiz);
         localStorage.setItem('quizInfo', JSON.stringify(updatedQuiz));
-        
-        postQuiz();
+
         // Function to post quiz data to API
-        const postQuiz = async () => {
-            try {
-                const response = await axios.post('https://api.trandai03.online/api/v1/quizs/create', updatedQuiz, {
-                    headers: {
-                        'Authorization': `Bearer ${token}`,
-                        'Content-Type': 'application/json',
-                        'Accept': '*/*'
-                    }
-                });
-                if (response.status === 200) {
-                    notification.success({
-                        message: 'Thành công',
-                        description: 'Thành công',
-                    });
+        try {
+            const response = await axios.post('https://api.trandai03.online/api/v1/quizs/create', updatedQuiz, {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                    'Accept': '*/*'
                 }
-            } catch (error) {
-                notification.error({
-                    message: 'Lỗi khi tạo quiz',
-                    description: 'Không thể tạo quiz, vui lòng thử lại sau.',
+            });
+            if (response.status === 200) {
+                notification.success({
+                    message: 'Thành công',
+                    description: 'Thành công',
                 });
-                console.log(error.response);
-                
             }
-        };
-    
-        // Call the postQuiz function
-    
+        } catch (error) {
+            notification.error({
+                message: 'Lỗi khi tạo quiz',
+                description: 'Không thể tạo quiz, vui lòng thử lại sau.',
+            });
+            console.log(error.response);
+        }
+
         // navigate('/quizlist');
     };
-    
+
 
     const handleAnchorClick = (qIndex) => {
         setCurrentQuestionIndex(qIndex);
