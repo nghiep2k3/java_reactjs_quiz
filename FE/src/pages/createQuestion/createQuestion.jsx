@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { Button, Input, Form, Card, Row, Col, Radio, Anchor } from 'antd';
+import { Button, Input, Form, Card, Row, Col, Radio, Anchor, notification } from 'antd';
 import { PlusOutlined, DeleteOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 const CreateQuestion = () => {
     const navigate = useNavigate();
+    const token = localStorage.getItem("token");
     const [questions, setQuestions] = useState(() => {
         const storedQuestions = localStorage.getItem('quizQuestions');
         return storedQuestions ? JSON.parse(storedQuestions) : [
@@ -15,7 +17,7 @@ const CreateQuestion = () => {
                     { id: 3, text: '', correct: false },
                     { id: 4, text: '', correct: false },
                 ],
-                score: null
+                // score: null
             }
         ];
     });
@@ -35,7 +37,7 @@ const CreateQuestion = () => {
                 { id: 3, text: '', correct: false },
                 { id: 4, text: '', correct: false },
             ],
-            score: null
+            // score: null
         };
         const updatedQuestions = [...questions, newQuestion];
         setQuestions(updatedQuestions);
@@ -84,23 +86,58 @@ const CreateQuestion = () => {
         saveToLocalStorage(newQuestions);
 
     };
-    const currentDate = new Date().toLocaleDateString('vi-VN', {
-        day: '2-digit',
-        month: '2-digit',
-        year: 'numeric',
-    });
+
     const handleSubmit = () => {
         const storedQuiz = JSON.parse(localStorage.getItem('quizInfo')) || [];
         console.log("aa", storedQuiz);
-
+    
+        // Updated currentDate formatting
+        const currentDate = new Date().toISOString();
+        
+        // Prepare updated quiz data
         const updatedQuiz = {
             ...storedQuiz,
             questions,
             timestamp: currentDate
         };
+        
+        // Store updated quiz info back to localStorage
+        console.log(token);
+        console.log(updatedQuiz);
         localStorage.setItem('quizInfo', JSON.stringify(updatedQuiz));
-        navigate('/quizlist');
+        
+        postQuiz();
+        // Function to post quiz data to API
+        const postQuiz = async () => {
+            try {
+                const response = await axios.post('https://api.trandai03.online/api/v1/quizs/create', updatedQuiz, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json',
+                        'Accept': '*/*'
+                    }
+                });
+                if (response.status === 200) {
+                    notification.success({
+                        message: 'Thành công',
+                        description: 'Thành công',
+                    });
+                }
+            } catch (error) {
+                notification.error({
+                    message: 'Lỗi khi tạo quiz',
+                    description: 'Không thể tạo quiz, vui lòng thử lại sau.',
+                });
+                console.log(error.response);
+                
+            }
+        };
+    
+        // Call the postQuiz function
+    
+        // navigate('/quizlist');
     };
+    
 
     const handleAnchorClick = (qIndex) => {
         setCurrentQuestionIndex(qIndex);

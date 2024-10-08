@@ -77,6 +77,9 @@ const InforQuiz = () => {
         };
         localStorage.setItem('quizInfo', JSON.stringify(quizData));
         navigate('/createquiz/createquestion');
+
+        console.log(quizData);
+        
     };
     // const onChange = ({ fileList: newFileList }) => {
     //     setFileList(newFileList);
