@@ -147,11 +147,11 @@ const App = () => {
               onClick={() => {
                 const username = localStorage.getItem("username");
                 if (username) {
-                  window.location.href = "/createquiz/inforquiz";  // Chuyển hướng tới trang tạo đề thi
+                  window.location.href = "/createquiz/inforquiz";
                 } else {
-                  window.location.href = "/login";  // Chuyển hướng tới trang đăng nhập
+                  window.location.href = "/login";
                 }
-                handleCancel();  // Đóng modal
+                handleCancel();
               }}
               style={{
                 width: 240,

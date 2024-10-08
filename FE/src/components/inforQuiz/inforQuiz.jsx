@@ -16,11 +16,19 @@ const InforQuiz = () => {
     const [categories, setCategories] = useState([]);
     const storedQuiz = localStorage.getItem('quizInfo');
     const parsedQuiz = JSON.parse(storedQuiz);
+    const token = localStorage.getItem("token");
+
     const navigate = useNavigate();
     useEffect(() => {
         const fetchCategories = async () => {
             try {
-                const response = await axios.get('https://api.trandai03.online/api/v1/category/getAll');
+                const response = await axios.get('https://api.trandai03.online/api/v1/category/getAll', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json',
+                        'Accept': '*/*'
+                    }
+                });
                 if (response.status === 200) {
                     setCategories(response.data);
                 }
