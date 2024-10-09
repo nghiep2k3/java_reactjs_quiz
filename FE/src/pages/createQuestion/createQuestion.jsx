@@ -10,8 +10,8 @@ const CreateQuestion = () => {
         const storedQuestions = localStorage.getItem('quizQuestions');
         return storedQuestions ? JSON.parse(storedQuestions) : [
             {
-                questionText: '',
-                options: [
+                question: '',
+                questionChoiceDTOS: [
                     { id: 1, text: '', correct: false },
                     { id: 2, text: '', correct: false },
                     { id: 3, text: '', correct: false },
@@ -30,8 +30,8 @@ const CreateQuestion = () => {
 
     const addNewQuestion = () => {
         const newQuestion = {
-            questionText: '',
-            options: [
+            question: '',
+            questionChoiceDTOS: [
                 { id: 1, text: '', correct: false },
                 { id: 2, text: '', correct: false },
                 { id: 3, text: '', correct: false },
@@ -43,41 +43,42 @@ const CreateQuestion = () => {
         setQuestions(updatedQuestions);
         saveToLocalStorage(updatedQuestions);
     };
+
     const deleteQuestion = () => {
 
     }
     const handleQuestionChange = (qIndex, e) => {
         const newQuestions = [...questions];
-        newQuestions[qIndex].questionText = e.target.value;
+        newQuestions[qIndex].question = e.target.value;
         setQuestions(newQuestions);
         saveToLocalStorage(newQuestions);
     };
 
     const handleOptionChange = (qIndex, optionIndex, e) => {
         const newQuestions = [...questions];
-        newQuestions[qIndex].options[optionIndex].text = e.target.value;
+        newQuestions[qIndex].questionChoiceDTOS[optionIndex].text = e.target.value;
         setQuestions(newQuestions);
         saveToLocalStorage(newQuestions);
     };
 
     const handleAddOption = (qIndex) => {
         const newQuestions = [...questions];
-        const newOption = { id: newQuestions[qIndex].options.length + 1, text: '', correct: false };
-        newQuestions[qIndex].options.push(newOption);
+        const newOption = { id: newQuestions[qIndex].questionChoiceDTOS.length + 1, text: '', correct: false };
+        newQuestions[qIndex].questionChoiceDTOS.push(newOption);
         setQuestions(newQuestions);
         saveToLocalStorage(newQuestions);
     };
 
     const handleDeleteOption = (qIndex, optionIndex) => {
         const newQuestions = [...questions];
-        newQuestions[qIndex].options = newQuestions[qIndex].options.filter((_, i) => i !== optionIndex);
+        newQuestions[qIndex].questionChoiceDTOS = newQuestions[qIndex].questionChoiceDTOS.filter((_, i) => i !== optionIndex);
         setQuestions(newQuestions);
         saveToLocalStorage(newQuestions);
     };
 
     const handleCorrectChange = (qIndex, optionIndex) => {
         const newQuestions = [...questions];
-        newQuestions[qIndex].options = newQuestions[qIndex].options.map((option, oIndex) => ({
+        newQuestions[qIndex].questionChoiceDTOS = newQuestions[qIndex].questionChoiceDTOS.map((option, oIndex) => ({
             ...option,
             correct: oIndex === optionIndex,
         }));
@@ -87,38 +88,62 @@ const CreateQuestion = () => {
 
     };
 
-    const handleSubmit = async () => {
-        const storedQuiz = JSON.parse(localStorage.getItem('quizInfo')) || [];
-        console.log("aa", storedQuiz);
+    const storedQuiz = JSON.parse(localStorage.getItem('quizInfo')) || [];
+    console.log(33333333333, storedQuiz);
 
-        // Updated currentDate formatting
+    const handleSubmit = async () => {
+        // Lấy dữ liệu từ localStorage
+        const storedQuiz = JSON.parse(localStorage.getItem('quizInfo')) || {};
+
+        // Tạo timestamp hiện tại
         const currentDate = new Date().toISOString();
 
-        // Prepare updated quiz data
-        const updatedQuiz = {
-            ...storedQuiz,
-            questions,
-            timestamp: currentDate
+        // Chuyển đổi câu hỏi sang định dạng cần thiết
+        const formattedQuestions = questions.map((question) => {
+            return {
+                question: question.question,
+                questionChoiceDTOS: question.questionChoiceDTOS.map((option, index) => {
+                    console.log("Option:", option); 
+                    console.log("Option Correct:", option.correct,option.text);
+                    return {
+                        text: option.text,
+                        isCorrect: option.correct,
+                    };
+                }),
+            };
+        });
+        
+
+        // Tạo đối tượng quiz mới dựa trên dữ liệu từ storedQuiz
+        const newQuiz = {
+            title: storedQuiz.title || '',
+            description: storedQuiz.description || '',
+            category_id: storedQuiz.category_id || 2,
+            questions: formattedQuestions,
+            isPublished: storedQuiz.isPublished || false,
+            userCreate: storedQuiz.userCreate || 'JohnDoe',
+            timestamp: currentDate,
         };
 
-        // Store updated quiz info back to localStorage
-        console.log(token);
-        console.log(updatedQuiz);
-        localStorage.setItem('quizInfo', JSON.stringify(updatedQuiz));
+        // Cập nhật lại localStorage với quiz mới
+        // localStorage.setItem('quizInfo', JSON.stringify(newQuiz));
 
-        // Function to post quiz data to API
+        console.log(token);
+        console.log(newQuiz);
+
+        // Post quiz data lên API
         try {
-            const response = await axios.post('https://api.trandai03.online/api/v1/quizs/create', updatedQuiz, {
+            const response = await axios.post('https://api.trandai03.online/api/v1/quizs/create', newQuiz, {
                 headers: {
                     'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json',
-                    'Accept': '*/*'
-                }
+                    'Accept': '*/*',
+                },
             });
             if (response.status === 200) {
                 notification.success({
                     message: 'Thành công',
-                    description: 'Thành công',
+                    description: 'Quiz đã được tạo thành công.',
                 });
             }
         } catch (error) {
@@ -128,9 +153,9 @@ const CreateQuestion = () => {
             });
             console.log(error.response);
         }
-
-        // navigate('/quizlist');
     };
+
+
 
 
     const handleAnchorClick = (qIndex) => {
@@ -161,7 +186,7 @@ const CreateQuestion = () => {
                                         rules={[{ required: true, message: 'Vui lòng nhập câu hỏi' }]}
                                     >
                                         <Input.TextArea
-                                            value={question.questionText}
+                                            value={question.question}
                                             onChange={(e) => handleQuestionChange(qIndex, e)}
                                             placeholder="Nhập nội dung câu hỏi..."
                                             style={{ height: '100px', fontSize: '16px' }}
@@ -169,7 +194,7 @@ const CreateQuestion = () => {
                                     </Form.Item>
 
                                     <Form.Item label="Tùy chọn trả lời">
-                                        {question.options.map((option, optionIndex) => (
+                                        {question.questionChoiceDTOS.map((option, optionIndex) => (
                                             <Row key={option.id} align="middle" style={{ marginBottom: '10px' }}>
                                                 <Col span={18}>
                                                     <Input
