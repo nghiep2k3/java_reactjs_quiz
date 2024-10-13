@@ -1,58 +1,59 @@
-import { Button, Card, Typography } from 'antd';
-import React from 'react';
+import { Card, Image, List, notification, Typography } from 'antd';
+import React, { useEffect, useState } from 'react';
 import Slider from 'react-slick';
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import styles from './courseCard.module.css';
-const { Title, Text } = Typography;
+import axios from 'axios';
+import { Link } from 'react-router-dom';
+import { ClockCircleOutlined } from '@ant-design/icons';
 
-const data = [
-    {
-        id: 1,
-        name: "ReactJS Basics",
-        image: "https://cdn.worldvectorlogo.com/logos/react-1.svg",
-        questions: 50,
-        plays: 45.7,
-    },
-    {
-        id: 2,
-        name: "Advanced JavaScript",
-        image: "https://cdn.worldvectorlogo.com/logos/react-1.svg",
-        questions: 100,
-        plays: 15,
-    },
-    {
-        id: 3,
-        name: "Node.js Mastery",
-        image: "https://example.com/nodejs-course.png",
-        questions: 3000000,
-        plays: 20,
-    },
-    {
-        id: 4,
-        name: "Python for Data Science",
-        image: "https://example.com/python-course.png",
-        questions: 120,
-        plays: 60,
-    },
-    {
-        id: 5,
-        name: "Machine Learning with TensorFlow",
-        image: "https://example.com/ml-course.png",
-        questions: 150,
-        plays: 25,
-    }
-];
-const settings = {
-    dots: true,
-    infinite: true,
-    speed: 400,
-    slidesToShow: 5,
-    slidesToScroll: 4,
-    arrows: true
-};
+const { Title, Text } = Typography;
 const CourseCard = () => {
-    const displayedData = data.slice(0, 5);
+    const [quizzes, setQuizzes] = useState([]);
+    console.log("quiz", quizzes);
+
+    const token = localStorage.getItem("token");
+    useEffect(() => {
+        const fetchAllQuizs = async () => {
+            try {
+                const response = await axios.get('https://api.trandai03.online/api/v1/quizs/getAllQuiz', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json',
+                        'Accept': '*/*'
+                    }
+                });
+                if (response.status === 200) {
+                    setQuizzes(response.data);
+                }
+            } catch (error) {
+                notification.error({
+                    message: 'Lỗi khi tải danh sách đề',
+                    description: 'Không thể tải danh sách đề, vui lòng thử lại sau.',
+                });
+            }
+        };
+        fetchAllQuizs();
+    }, []);
+    console.log("quiz", quizzes);
+
+    const settings = {
+        dots: true,
+        infinite: true,
+        speed: 400,
+        slidesToShow: 5,
+        slidesToScroll: 2,
+        arrows: true
+    };
+    const displayedData = quizzes.slice(0, 5);
+    const formatDate = (dateString) => {
+        const date = new Date(dateString);
+        const day = String(date.getDate()).padStart(2, '0');
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const year = date.getFullYear();
+        return `${day}/${month}/${year}`;
+    };
     return (
         <div>
             <Slider {...settings}
@@ -66,7 +67,7 @@ const CourseCard = () => {
                             >
                                 {/* objectPosition: '50% 50%',  height: 250*/}
                                 <div style={{ height: 250 }}>
-                                    <a href={`/details/${data.id}`}>
+                                    <a href={`/details/`}>
                                         <img
                                             alt={course.name}
                                             src={course.image}
@@ -86,28 +87,46 @@ const CourseCard = () => {
                                 >
                                 </Title>
                                 <Text style={{ fontSize: '16px', color: '#888' }}>
-                                    {course.name}
+                                    {course.id}
+                                </Text> <br />
+                                <Text style={{ fontSize: '16px', color: '#888' }}>
+                                    {course.title}
                                 </Text>
                                 <br></br>
                                 <Text style={{ fontSize: '16px', color: '#888' }}>
-                                    Câu hỏi: {course.questions}
+                                    Câu hỏi: {course.questions.length}
                                 </Text>
                                 <br></br>
                                 <Text style={{ fontSize: '16px', color: '#888' }}>
-                                    Số lượt chơi: {course.plays}
+                                    Ngày tạo: {formatDate(course.createdAt)}
                                 </Text>
-                                <br></br>
-                                {/* <Button
-                                    type="primary"
-                                    style={{ marginTop: '10px', width: '100%' }}
-                                >
-                                    Thêm vào giỏ hàng
-                                </Button> */}
                             </Card>
                         </div>
                     )
                 })}
             </Slider>
+            <List
+                grid={{ gutter: 16, column: 4 }}
+                dataSource={quizzes}
+                renderItem={quiz => (
+                    <List.Item>
+                        <Card
+                            hoverable
+                            style={{ width: 240 }}
+                        >
+                            <Link to={`/quizdetail/examcontent/${quiz.id}`}>
+                                <Image src={quiz.image} preview={false}></Image>
+                                <p><strong>{quiz.title}</strong></p>
+                                <p>Id: {quiz.id}</p>
+                                <p><ClockCircleOutlined /> {formatDate(quiz.createdAt)}</p>
+                                <p>Số câu hỏi: {quiz.questions?.length}</p>
+                                <p>Trình độ: {quiz?.category?.name || "Không có"}</p>
+                                <p>Mô tả: {quiz.description}</p>
+                            </Link>
+                        </Card>
+                    </List.Item>
+                )}
+            />
         </div>
     );
 }

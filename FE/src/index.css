@@ -45,3 +45,9 @@ a{
 .ant-layout-sider-trigger {
   display: none;
 }
+.ant-input-outlined {
+  height: 40px;
+}
+.ant-input-search-button {
+  height: 40px;
+}

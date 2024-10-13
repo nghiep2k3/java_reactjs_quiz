@@ -1,12 +1,15 @@
 import React, { useEffect, useState } from 'react';
-import { List, Card, notification } from 'antd';
-import { Link } from 'react-router-dom';
-import { ClockCircleOutlined } from '@ant-design/icons';
+import { List, Card, notification, Popconfirm, Button, Image } from 'antd';
+import { Link, useParams } from 'react-router-dom';
+import { ClockCircleOutlined, DeleteOutlined } from '@ant-design/icons';
 import axios from 'axios';
 
 const { Meta } = Card;
 const QuizList = () => {
+    const { id } = useParams();
     const [quizzes, setQuizzes] = useState([]);
+    console.log("quiz", quizzes);
+
     const token = localStorage.getItem("token");
     useEffect(() => {
         const fetchCategories = async () => {
@@ -32,10 +35,35 @@ const QuizList = () => {
     }, []);
     const formatDate = (dateString) => {
         const date = new Date(dateString);
-        const day = String(date.getDate()).padStart(2, '0');  // Thêm số 0 nếu là ngày 1 chữ số
-        const month = String(date.getMonth() + 1).padStart(2, '0');  // Tháng bắt đầu từ 0 nên cần +1
+        const day = String(date.getDate()).padStart(2, '0');
+        const month = String(date.getMonth() + 1).padStart(2, '0');
         const year = date.getFullYear();
         return `${day}/${month}/${year}`;
+    };
+    const handleDeleteQuiz = async (quizId) => {
+        console.log(quizId);
+        try {
+            const response = await axios.delete(`https://api.trandai03.online/api/v1/quizs/${quizId}`, {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                    'Accept': '*/*'
+                }
+            });
+
+            if (response.status === 200) {
+                notification.success({
+                    message: 'Xóa thành công!',
+                    description: 'Đề thi đã được xóa.',
+                });
+                setQuizzes(prevQuizzes => prevQuizzes.filter(quiz => quiz.id !== quizId));
+            }
+        } catch (error) {
+            notification.error({
+                message: 'Lỗi khi xóa đề thi',
+                description: 'Không thể xóa đề thi, vui lòng thử lại sau.',
+            });
+        }
     };
     return (
         <div>
@@ -45,24 +73,29 @@ const QuizList = () => {
                 dataSource={quizzes}
                 renderItem={quiz => (
                     <List.Item>
-                        <Link to='/quizdetail/examcontent'>
-                            <Card
-                                hoverable
-                                style={{
-                                    width: 240,
-                                }}
-                                cover={<img alt="example" src="https://os.alipayobjects.com/rmsportal/QBnOOoLaAfKPirc.png" />}
-                            >
+                        <Card
+                            hoverable
+                            style={{ width: 240 }}
+                            actions={[
+                                <Popconfirm
+                                    title="Bạn có chắc chắn muốn xóa đề thi này?"
+                                    onConfirm={() => handleDeleteQuiz(quiz.id)}
+                                    okText="Có"
+                                    cancelText="Không"
+                                >
+                                    <Button danger icon={<DeleteOutlined />}></Button>
+                                </Popconfirm>
+                            ]}
+                        >
+                            <Link to={`/quizdetail/examcontent/${quiz.id}`}>
+                                <Image src="https://os.alipayobjects.com/rmsportal/QBnOOoLaAfKPirc.png" preview={false}></Image>
                                 <p><strong>{quiz.title}</strong></p>
-                                <p>
-                                    <strong><ClockCircleOutlined></ClockCircleOutlined> {formatDate(quiz.createdAt)}</strong>
-                                </p>
+                                <p><ClockCircleOutlined /> {formatDate(quiz.createdAt)}</p>
                                 <p>Số câu hỏi: {quiz.questions?.length}</p>
                                 <p>Trình độ: {quiz?.category?.name || "Không có"}</p>
                                 <p>Mô tả: {quiz.description}</p>
-
-                            </Card>
-                        </Link>
+                            </Link>
+                        </Card>
                     </List.Item>
                 )}
             />

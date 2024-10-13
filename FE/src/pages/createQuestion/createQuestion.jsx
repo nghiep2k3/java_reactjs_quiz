@@ -6,6 +6,8 @@ import axios from 'axios';
 const CreateQuestion = () => {
     const navigate = useNavigate();
     const token = localStorage.getItem("token");
+    console.log("token", token);
+
     const [questions, setQuestions] = useState(() => {
         const storedQuestions = localStorage.getItem('quizQuestions');
         return storedQuestions ? JSON.parse(storedQuestions) : [
@@ -85,26 +87,16 @@ const CreateQuestion = () => {
 
         setQuestions(newQuestions);
         saveToLocalStorage(newQuestions);
-
     };
-
-    const storedQuiz = JSON.parse(localStorage.getItem('quizInfo')) || [];
-    console.log(33333333333, storedQuiz);
-
     const handleSubmit = async () => {
-        // Lấy dữ liệu từ localStorage
         const storedQuiz = JSON.parse(localStorage.getItem('quizInfo')) || {};
-
-        // Tạo timestamp hiện tại
         const currentDate = new Date().toISOString();
-
-        // Chuyển đổi câu hỏi sang định dạng cần thiết
         const formattedQuestions = questions.map((question) => {
+            console.log("aa", questions);
+
             return {
                 question: question.question,
-                questionChoiceDTOS: question.questionChoiceDTOS.map((option, index) => {
-                    console.log("Option:", option); 
-                    console.log("Option Correct:", option.correct,option.text);
+                questionChoiceDTOS: question.questionChoiceDTOS.map((option) => {
                     return {
                         text: option.text,
                         isCorrect: option.correct,
@@ -112,9 +104,7 @@ const CreateQuestion = () => {
                 }),
             };
         });
-        
 
-        // Tạo đối tượng quiz mới dựa trên dữ liệu từ storedQuiz
         const newQuiz = {
             title: storedQuiz.title || '',
             description: storedQuiz.description || '',
@@ -124,14 +114,6 @@ const CreateQuestion = () => {
             userCreate: storedQuiz.userCreate || 'JohnDoe',
             timestamp: currentDate,
         };
-
-        // Cập nhật lại localStorage với quiz mới
-        // localStorage.setItem('quizInfo', JSON.stringify(newQuiz));
-
-        console.log(token);
-        console.log(newQuiz);
-
-        // Post quiz data lên API
         try {
             const response = await axios.post('https://api.trandai03.online/api/v1/quizs/create', newQuiz, {
                 headers: {
@@ -140,11 +122,12 @@ const CreateQuestion = () => {
                     'Accept': '*/*',
                 },
             });
-            if (response.status === 200) {
+            if (response.status === 201) {
                 notification.success({
                     message: 'Thành công',
                     description: 'Quiz đã được tạo thành công.',
                 });
+                navigate('/quizlist')
             }
         } catch (error) {
             notification.error({

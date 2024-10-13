@@ -4,12 +4,12 @@ import "./index.css";
 import App from "./App";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import reportWebVitals from "./reportWebVitals";
-import Home from "./pages/Home/Home";
+import Home from "./pages/home/home";
 import ViewQuiz from "./pages/ViewQuiz/ViewQuiz";
 import CreateQuiz from "./pages/createQuiz/createQuiz";
 import CreateQuestion from "./pages/createQuestion/createQuestion";
 import MyLibrary from "./components/myLibrary/myLibrary";
-import Explore from "./components/Explore/Explore";
+import Explore from "./components/explore/Explore";
 import InforQuiz from "./components/inforQuiz/inforQuiz";
 import QuizList from "./pages/quizList/quizList";
 import QuizDetail from "./pages/quizDetail/quizDetail";
@@ -18,9 +18,10 @@ import DoExam from "./pages/doExam/doExam";
 import Login from "./pages/login/login";
 import Register from "./pages/register/register";
 import 'bootstrap/dist/js/bootstrap.bundle.min';
-import Result from "./pages/Result/Result";
+import Result from "./pages/result/result";
 import ReportQuizResult from "./pages/reportQuizResult/reportQuizResult";
 import ChangePassword from "./pages/changePassword/changePassword";
+import Profile from "./pages/profile/profile";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
@@ -39,14 +40,15 @@ root.render(
             <Route path="createquestion" element={<CreateQuestion />} />
           </Route>
           <Route path="/quizlist" element={<QuizList />} />
+          <Route path="/profile" element={<Profile />} />
         </Route>
       </Routes>
 
       <Routes>
         <Route path="/quizdetail" element={<QuizDetail />} >
-          <Route path="examcontent" element={<ExamContent />} />
+          <Route path="examcontent/:id" element={<ExamContent />} />
         </Route>
-        <Route path="/doexam" element={<DoExam />} />
+        <Route path="/doexam/:id" element={<DoExam />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/changepass" element={<ChangePassword />} />

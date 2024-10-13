@@ -45,26 +45,26 @@ const InforQuiz = () => {
             setQuizTitle(parsedQuiz.title || '');
             setQuizCategory(parsedQuiz.category_id || null);
             setQuizDescription(parsedQuiz.description || '');
-            // if (Array.isArray(parsedQuiz.images)) {
-            //     setFileList(parsedQuiz.images.map(file => ({
-            //         uid: file.uid,
-            //         name: file.name,
-            //         url: file.url,
-            //     })));
-            // } else {
-            //     setFileList([]);
-            // }
+            if (Array.isArray(parsedQuiz.images)) {
+                setFileList(parsedQuiz.images.map(file => ({
+                    uid: file.uid,
+                    name: file.name,
+                    url: file.url,
+                })));
+            } else {
+                setFileList([]);
+            }
         }
     }, [storedQuiz]);
 
     const handleSave = () => {
         const values = form.getFieldsValue();
         const userCreate = localStorage.getItem("username");
-        // const imageFiles = fileList.map(file => ({
-        //     uid: file.uid,
-        //     name: file.name,
-        //     url: file.url || URL.createObjectURL(file.originFileObj)
-        // }));
+        const imageFiles = fileList.map(file => ({
+            uid: file.uid,
+            name: file.name,
+            url: file.url || URL.createObjectURL(file.originFileObj)
+        }));
 
         const quizData = {
             title: values.title,
@@ -72,32 +72,32 @@ const InforQuiz = () => {
             category_id: values.category_id,
             questions: [],
             isPublished: false,
-            // images: imageFiles,
+            images: imageFiles,
             userCreate: userCreate,
         };
         localStorage.setItem('quizInfo', JSON.stringify(quizData));
         navigate('/createquiz/createquestion');
 
         console.log(quizData);
-        
+
     };
-    // const onChange = ({ fileList: newFileList }) => {
-    //     setFileList(newFileList);
-    // };
-    // const onPreview = async (file) => {
-    //     let src = file.url;
-    //     if (!src) {
-    //         src = await new Promise((resolve) => {
-    //             const reader = new FileReader();
-    //             reader.readAsDataURL(file.originFileObj);
-    //             reader.onload = () => resolve(reader.result);
-    //         });
-    //     }
-    //     const image = new Image();
-    //     image.src = src;
-    //     const imgWindow = window.open(src);
-    //     imgWindow?.document.write(image.outerHTML);
-    // };
+    const onChange = ({ fileList: newFileList }) => {
+        setFileList(newFileList);
+    };
+    const onPreview = async (file) => {
+        let src = file.url;
+        if (!src) {
+            src = await new Promise((resolve) => {
+                const reader = new FileReader();
+                reader.readAsDataURL(file.originFileObj);
+                reader.onload = () => resolve(reader.result);
+            });
+        }
+        const image = new Image();
+        image.src = src;
+        const imgWindow = window.open(src);
+        imgWindow?.document.write(image.outerHTML);
+    };
 
     return (
         <Form
@@ -145,7 +145,7 @@ const InforQuiz = () => {
             >
                 <TextArea rows={4} placeholder="Nhập mô tả về đề thi" />
             </Form.Item>
-            {/* <Form.Item
+            <Form.Item
                 label="Chọn ảnh của đề thi"
                 name="image"
                 rules={[{ required: true, message: 'Vui lòng chọn ảnh cho đề thi!' }]}
@@ -161,7 +161,7 @@ const InforQuiz = () => {
                         {fileList.length < 5 && '+ Upload'}
                     </Upload>
                 </ImgCrop>
-            </Form.Item> */}
+            </Form.Item>
             <Form.Item>
                 <Button type="primary" htmlType="submit" style={{ width: '150px' }}
                     onClick={handleSave}>

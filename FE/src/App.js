@@ -11,11 +11,10 @@ import {
   MenuFoldOutlined,
 } from "@ant-design/icons";
 import { Avatar, Card, Image, Layout, Menu, Modal, Space, Button, Dropdown } from "antd";
-import Search from "antd/es/transfer/search";
 import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
-import MyFooter from "./components/Footer/footer";
-import "./App.css";
+import MyFooter from "./components/footer/footer";
 import Meta from "antd/es/card/Meta";
+import SearchQuiz from "./components/searchQuiz/searchQuiz";
 
 const { Header, Content, Sider } = Layout;
 
@@ -89,6 +88,7 @@ const App = () => {
   const handleLogout = () => {
     localStorage.removeItem("username");
     localStorage.removeItem("email");
+    localStorage.removeItem("token");
     setIsAuthenticated(false);
     setTimeout(() => {
       navigate('/');
@@ -199,19 +199,12 @@ const App = () => {
               gap: ".5rem",
               display: "flex",
               justifyContent: "space-between",
-              alignItems: "center",
               backgroundColor: "#f5f5f5",
               padding: "10px 20px",
               boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
             }}
           >
-            <Search
-              placeholder="Tìm kiếm..."
-              enterButton="Tìm kiếm"
-              size="middle"
-              style={{ width: "40%" }}
-            />
-
+            <SearchQuiz />
             <Button
               type="primary"
               onClick={showModal}

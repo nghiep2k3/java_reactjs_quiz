@@ -1,16 +1,33 @@
 import React, { useEffect, useState } from 'react';
 import './ExamContent.css';
+import { useParams } from 'react-router-dom';
+import axios from 'axios';
 
 const ExamContent = () => {
     const [quiz, setQuiz] = useState(null);
+    const { id } = useParams();
+    console.log(id);
 
     useEffect(() => {
-        const storedQuiz = localStorage.getItem('quizInfo');
-        if (storedQuiz) {
-            const parsedQuiz = JSON.parse(storedQuiz);
-            setQuiz(parsedQuiz);
-        }
-    }, []);
+        const fetchQuizData = async () => {
+            try {
+                const response = await axios.get(`https://api.trandai03.online/api/v1/quizs/${id}`, {
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                        'Content-Type': 'application/json',
+                    }
+                });
+
+                if (response.status === 200) {
+                    setQuiz(response.data);
+                }
+            } catch (error) {
+                console.error("Lỗi khi lấy dữ liệu quiz:", error);
+            }
+        };
+
+        fetchQuizData();
+    }, [id]);
 
     if (!quiz) {
         return <div>Loading...</div>;
@@ -18,17 +35,17 @@ const ExamContent = () => {
 
     return (
         <div className="exam-container">
-            <h3>Các câu hỏi:</h3>
+            <h3>Các câu hỏi</h3>
             <ul className="questions-list">
-                {quiz.questions.map((q, index) => (
+                {quiz.questions && quiz.questions.map((q, index) => (
                     <li key={index} className="question-item">
                         <strong className="question-title">
-                            Câu {index + 1}: {q.questionText}
+                            Câu {index + 1}: {q.questionText || q.question}
                         </strong>
                         <div className="options-grid">
-                            {q.options.map((option, idx) => (
-                                <div key={option.id} className={`option-item ${option.correct ? 'correct' : ''}`}>
-                                    {String.fromCharCode(65 + idx)}. {option.text} {option.correct && <span className="correct-text">(Đúng)</span>}
+                            {q.questionChoice && q.questionChoice.map((option, idx) => (
+                                <div key={option.id} className={`option-item ${option.isCorrect ? 'correct' : ''}`}>
+                                    {String.fromCharCode(65 + idx)}. {option.text} {option.isCorrect && <span className="correct-text">(Đúng)</span>}
                                 </div>
                             ))}
                         </div>

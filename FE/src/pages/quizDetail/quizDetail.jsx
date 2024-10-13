@@ -4,8 +4,9 @@ import {
     UserOutlined, QuestionCircleOutlined, CheckOutlined, SettingOutlined,
     LikeOutlined, HeartOutlined, DownloadOutlined, FacebookOutlined, TwitterOutlined, TwitchOutlined
 } from '@ant-design/icons';
-import { Outlet, useLocation, useNavigate } from 'react-router-dom';
-import Headers from '../../components/Headers/headers';
+import { Outlet, useLocation, useNavigate, useParams } from 'react-router-dom';
+import Headers from '../../components/headers/headers';
+import axios from 'axios';
 const { Content } = Layout;
 const items = [
     {
@@ -40,6 +41,7 @@ const QuizDetail = () => {
             label: '45 phút',
         },
     ];
+    const { id } = useParams();
     const [selectedTime, setSelectedTime] = useState('30 phút');
     const [isModalOpen, setIsModalOpen] = useState(false);
     const showModal = () => {
@@ -49,7 +51,7 @@ const QuizDetail = () => {
         const updatedQuiz = { ...quiz, selectedTime };
         localStorage.setItem('quizInfo', JSON.stringify(updatedQuiz));
         setIsModalOpen(false);
-        navigate('/doexam')
+        navigate(`/doexam/${id}`)
     };
     const handleCancel = () => {
         setIsModalOpen(false);
@@ -64,12 +66,25 @@ const QuizDetail = () => {
     const navigate = useNavigate();
     const location = useLocation();
     useEffect(() => {
-        const storedQuiz = localStorage.getItem('quizInfo');
-        if (storedQuiz) {
-            const parsedQuiz = JSON.parse(storedQuiz);
-            setQuiz(parsedQuiz);
-        }
-    }, []);
+        const fetchQuizData = async () => {
+            try {
+                const response = await axios.get(`https://api.trandai03.online/api/v1/quizs/${id}`, {
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                        'Content-Type': 'application/json',
+                    }
+                });
+
+                if (response.status === 200) {
+                    setQuiz(response.data);
+                }
+            } catch (error) {
+                console.error("Lỗi khi lấy dữ liệu quiz:", error);
+            }
+        };
+
+        fetchQuizData();
+    }, [id]);
 
     if (!quiz) {
         return <div>Loading...</div>;
@@ -109,9 +124,9 @@ const QuizDetail = () => {
                                         <Image src='https://upload-api.eduquiz.io.vn/default/exam/exam-02.png' preview={false}></Image>
                                     </Col>
                                     <Col span={8} style={{ gap: '.75rem' }}>
-                                        <div className='d-flex align-items-baseline'><b style={{ fontSize: 24 }}>Người tạo đề thi: </b><p className='fs-5 ps-2'>{quiz.userCreate}</p></div>
+                                        <div className='d-flex align-items-baseline'><b style={{ fontSize: 24 }}>Người tạo đề thi: </b><p className='fs-5 ps-2'>{quiz.usernameCreated}</p></div>
                                         <div className='d-flex align-items-baseline'><b style={{ fontSize: 24 }}>Tên bài thi: </b><p className='fs-5 ps-2'>{quiz.title}</p></div>
-                                        <div className='d-flex align-items-baseline'><b style={{ fontSize: 24 }}>Cấp độ: </b><p className='fs-5 ps-2'>{quiz.level}</p></div>
+                                        <div className='d-flex align-items-baseline'><b style={{ fontSize: 24 }}>Chủ đề: </b><p className='fs-5 ps-2'>{quiz.category.name}</p></div>
                                         <div style={{ display: 'flex', alignItems: "center", gap: '.5rem' }}>
                                             <QuestionCircleOutlined /> {quiz.questions?.length}
                                             <LikeOutlined />
@@ -190,24 +205,6 @@ const QuizDetail = () => {
                     </Row>
                 </Content>
             </Layout>
-            {/* <h1>Chi tiết đề thi: {quiz.title}</h1>
-            <p>Trình độ: {quiz.level}</p>
-            <p>Mô tả: {quiz.description}</p>
-            <h3>Các câu hỏi:</h3>
-            <ul>
-                {quiz.questions && quiz.questions.map((q, index) => (
-                    <li key={index}>
-                        <strong>{q.questionText}</strong>
-                        <ul>
-                            {q.options.map(option => (
-                                <li key={option.id}>
-                                    {option.text} {option.correct ? "(Correct)" : ""}
-                                </li>
-                            ))}
-                        </ul>
-                    </li>
-                ))}
-            </ul> */}
         </div>
     );
 };
