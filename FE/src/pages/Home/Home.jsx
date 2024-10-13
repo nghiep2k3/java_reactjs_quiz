@@ -27,7 +27,7 @@ const onSearch = (value, _e, info) => console.log(info?.source, value);
 //     arrows: true
 // };
 
-const Home = () => {
+const home = () => {
 
     const {
         token: { colorBgContainer, borderRadiusLG },
@@ -62,4 +62,4 @@ const Home = () => {
     );
 };
 
-export default Home;
+export default home;
