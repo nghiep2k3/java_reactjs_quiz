@@ -23,7 +23,7 @@ const QuizExam = () => {
     const [storedQuiz, setQuiz] = useState(null);
     const [submittedTime, setSubmittedTime] = useState(null);
     const [questions, setQuestions] = useState([]);
-    const selectedTime = storedQuiz?.selectedTime || '30 phút';
+    const selectedTime = storedQuiz?.selectedTime || '30 phút'; //error
     const timeInMinutes = parseInt(selectedTime.split(" ")[0], 10);
     let timeInSeconds = timeInMinutes * 60;
     useEffect(() => {
@@ -60,15 +60,14 @@ const QuizExam = () => {
                 });
                 if (response.status === 200) {
                     const quizData = response.data;
-                    const shuffledQuestions = shuffleArray(quizData.questions).map((question) => ({
-                        ...question,
-                        id: question.id,
-                    }));
-                    console.log("shif", shuffledQuestions);
-
-                    setQuestions(shuffledQuestions);
+                    console.log("quizData", quizData);
+                    quizData.questions = shuffleArray(quizData.questions);
+                    quizData.questions.forEach((question) => {
+                        question.questionChoice = shuffleArray(question.questionChoice);
+                    });
+                    console.log("shif", quizData.questions);
+                    setQuestions(quizData.questions);
                     setQuiz(quizData);
-
                 }
             } catch (error) {
                 console.error("Lỗi khi lấy dữ liệu quiz:", error);
@@ -93,7 +92,7 @@ const QuizExam = () => {
         const calculatedTime = remaintimeInMinutes < 1
             ? `0 phút ${timeInSeconds} giây`
             : `${remaintimeInMinutes} phút ${timeInSeconds} giây`;
-
+        const timeSubmit = remaintimeInMinutes * 60 + timeInSeconds;
         setSubmittedTime(calculatedTime);
         const resultDetails = questions.map((question) => {
             const selectedOptionId = selectedAnswers[question.id];
@@ -113,14 +112,15 @@ const QuizExam = () => {
         setScoreExam(score);
         setIsModalOpen(false);
         setIsModalOpen2(true);
+        console.log("ccc", resultDetails);
+
         const quizResult = {
             quizId: storedQuiz.id,
             questionResultDTOS: resultDetails,
             score,
             completedAt: new Date().toISOString(),
-            submittedTime: timeInSeconds,
+            submittedTime: timeSubmit,
         };
-
         localStorage.setItem('quizResult', JSON.stringify(quizResult));
 
         try {
@@ -140,6 +140,7 @@ const QuizExam = () => {
                 setIsModalOpen2(true);
             }
         } catch (error) {
+            console.error("Lỗi submit:", error.response);
             notification.error({
                 message: "Nộp bài không thành công",
                 description: "Có lỗi xảy ra khi nộp bài, vui lòng thử lại."
