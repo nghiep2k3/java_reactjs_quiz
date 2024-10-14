@@ -4,7 +4,7 @@ import "./index.css";
 import App from "./App";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import reportWebVitals from "./reportWebVitals";
-import Home from "./pages/home/home.jsx";
+// import Home from "./pages/home/home.jsx";
 import ViewQuiz from "./pages/ViewQuiz/ViewQuiz";
 import CreateQuiz from "./pages/createQuiz/createQuiz";
 import CreateQuestion from "./pages/createQuestion/createQuestion";
