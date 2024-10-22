@@ -36,6 +36,7 @@ root.render(
           <Route path="/explore" element={<Explore />} />
           <Route path="/result" element={<Result />} />
           <Route path="/reportquizresult" element={<ReportQuizResult />} />
+          <Route path="/test" element={<Test />} />
           <Route path="/createquiz" element={<CreateQuiz />}>
             <Route path="inforquiz" element={<InforQuiz />} />
             <Route path="createquestion" element={<CreateQuestion />} />

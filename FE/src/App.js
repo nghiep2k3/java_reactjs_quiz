@@ -63,8 +63,8 @@ const menuItems = [
   },{
     key: "7",
     icon: <LogoutOutlined />,
-    label: "Xóa đi làm chóa",
-    path: "/class",
+    label: "Môi trường test",
+    path: "/test",
   },
 ];
 
