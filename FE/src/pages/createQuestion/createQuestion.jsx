@@ -4,6 +4,7 @@ import { PlusOutlined, DeleteOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 const CreateQuestion = () => {
+    const [data1, setData1] = useState(null);
     const navigate = useNavigate();
     const token = localStorage.getItem("token");
     const [questions, setQuestions] = useState(() => {
@@ -106,7 +107,10 @@ const CreateQuestion = () => {
             userCreate: storedQuiz.userCreate || 'JohnDoe',
             timestamp: currentDate,
         };
+        const images = storedQuiz.images.base64;
+
         try {
+            // Gọi API tạo đề thi
             const response = await axios.post('https://api.trandai03.online/api/v1/quizs/create', newQuiz, {
                 headers: {
                     'Authorization': `Bearer ${token}`,
@@ -114,46 +118,47 @@ const CreateQuestion = () => {
                     'Accept': '*/*',
                 },
             });
+
             if (response.status === 201) {
+                const createdQuiz = response.data;
+                const quizId = createdQuiz.id;
+                try {
+                    const res2 = await axios.post(`https://api.trandai03.online/api/v1/quizs/image/${quizId}`, images, {
+                        headers: {
+                            'Authorization': `Bearer ${token}`,
+                            'Content-Type': 'application/json',
+                            'Accept': '*/*',
+                        },
+                    });
+
+                    if (res2.status === 201) {
+                        notification.success({
+                            message: 'Thành công',
+                            description: 'Upload ảnh thành công',
+                        });
+                        localStorage.removeItem("quizInfo");
+                        localStorage.removeItem("quizQuestions");
+                        navigate('/quizlist');
+                    }
+                } catch (error) {
+                    notification.error({
+                        message: 'Lỗi khi upload ảnh',
+                        description: 'Không thể upload ảnh, vui lòng thử lại sau.',
+                    });
+                    console.error('Error uploading image:', error.response);
+                }
+
                 notification.success({
                     message: 'Thành công',
                     description: 'Quiz đã được tạo thành công.',
                 });
-                // localStorage.removeItem("quizInfo")
-                // localStorage.removeItem("quizQuestions")
-                // navigate('/quizlist')
             }
         } catch (error) {
             notification.error({
                 message: 'Lỗi khi tạo quiz',
                 description: 'Không thể tạo quiz, vui lòng thử lại sau.',
             });
-            console.log(error.response);
-        }
-        const images = storedQuiz.images
-        try {
-            const response = await axios.post(`https://api.trandai03.online/api/v1/quizs/image/${response.data.id}`, images, {
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json',
-                    'Accept': '*/*',
-                },
-            });
-            if (response.status === 201) {
-                notification.success({
-                    message: 'Thành công',
-                    description: 'Upload ảnh thành công',
-                });
-                localStorage.removeItem("quizInfo")
-                localStorage.removeItem("quizQuestions")
-                navigate('/quizlist')
-            }
-        } catch (error) {
-            notification.error({
-                message: 'Lỗi khi tạo quiz',
-                description: 'Không thể upload ảnh, vui lòng thử lại sau.',
-            });
-            console.log(error.response);
+            console.error('Error creating quiz:', error.response);
         }
     };
 

@@ -16,7 +16,8 @@ code {
   height: 50px !important;
 }
 .ant-card-head {
-  background-color: #a076cc !important;
+  background-image: linear-gradient(90.57deg, rgb(62, 101, 254) 0%, rgb(210, 60, 255) 100%) !important;
+
 }
 .ant-card-head-title {
   color: #fff;
