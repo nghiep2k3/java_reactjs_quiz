@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import './ExamContent.css';
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
+import Loading from '../loading/loading';
 
 const ExamContent = () => {
     const [quiz, setQuiz] = useState(null);
@@ -30,7 +31,7 @@ const ExamContent = () => {
     }, [id]);
 
     if (!quiz) {
-        return <div>Loading...</div>;
+        return Loading;
     }
 
     return (
