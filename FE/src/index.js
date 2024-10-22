@@ -18,10 +18,11 @@ import DoExam from "./pages/doExam/doExam";
 import Login from "./pages/login/login";
 import Register from "./pages/register/register";
 import 'bootstrap/dist/js/bootstrap.bundle.min';
-import Result from "./pages/result/result";
+import Result from "./pages/result/result.jsx";
 import ReportQuizResult from "./pages/reportQuizResult/reportQuizResult";
 import ChangePassword from "./pages/changePassword/changePassword";
 import Profile from "./pages/profile/profile";
+import Test from "./pages/Test/Test.jsx";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(

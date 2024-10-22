@@ -60,6 +60,11 @@ const menuItems = [
     icon: <LogoutOutlined />,
     label: "Lớp học tập",
     path: "/class",
+  },{
+    key: "7",
+    icon: <LogoutOutlined />,
+    label: "Xóa đi làm chóa",
+    path: "/class",
   },
 ];
 
