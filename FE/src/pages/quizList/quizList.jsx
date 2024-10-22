@@ -88,7 +88,7 @@ const QuizList = () => {
                             ]}
                         >
                             <Link to={`/quizdetail/examcontent/${quiz.id}`}>
-                                <Image src="https://os.alipayobjects.com/rmsportal/QBnOOoLaAfKPirc.png" preview={false}></Image>
+                                <Image src={`${quiz.image}`} preview={false}></Image>
                                 <p><strong>{quiz.title}</strong></p>
                                 <p><ClockCircleOutlined /> {formatDate(quiz.createdAt)}</p>
                                 <p>Số câu hỏi: {quiz.questions?.length}</p>

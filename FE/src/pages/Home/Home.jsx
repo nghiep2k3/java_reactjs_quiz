@@ -59,6 +59,7 @@ const home = () => {
             </div>
             <CourseCard></CourseCard>
         </div>
+
     );
 };
 

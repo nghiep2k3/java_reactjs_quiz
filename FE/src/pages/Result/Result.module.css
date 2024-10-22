@@ -2,7 +2,7 @@
   padding: 20px;
   background-color: #f5f7fa;
   border-radius: 8px;
-  max-width: 800px;
+  max-width: 1000px;
   margin: 0 auto;
 }
 
@@ -51,11 +51,16 @@
 
 .optionsContainer {
   display: flex;
+  flex-direction: column;
   flex-wrap: wrap;
   gap: 12px;
   margin-top: 10px;
 }
-
+.optionsContainer span {
+  height: 35px;
+  font-size: 15px;
+  line-height: 35px;
+}
 .optionItem {
   padding: 8px 12px;
   border-radius: 6px;
@@ -63,11 +68,11 @@
 }
 
 .optionItem.correct {
-  background-color: #d9f7be;
-  color: #52c41a;
+    color: #fff;
+    background: #008001;
 }
 
 .optionItem.incorrect {
-  background-color: #ffccc7;
-  color: #f5222d;
+  background-color: #FF0200;
+  color: #fff;
 }

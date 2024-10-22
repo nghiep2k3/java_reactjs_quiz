@@ -1,54 +1,60 @@
 import React, { useEffect, useState } from 'react';
 import { Card, Progress, Tabs, Table, Tag, Button } from 'antd';
 import { CheckCircleOutlined, CloseCircleOutlined, BarChartOutlined } from '@ant-design/icons';
+import Loading from '../../components/loading/loading';
+import axios from 'axios';
 
 const ReportQuizResult = () => {
     const [result, setResult] = useState(null);
     const [quiz, setQuiz] = useState(null);
     const [currentTab, setCurrentTab] = useState("1");
     const [tableData, setTableData] = useState([]);
-
+    // Gọi API lấy dữ liệu
     useEffect(() => {
-        const storedResult = localStorage.getItem('quizResult');
-        const storedQuiz = localStorage.getItem('quizInfo');
-        if (storedResult) {
-            const parsedResult = JSON.parse(storedResult);
-            setResult(parsedResult);
-        }
-        if (storedQuiz) {
-            const parsedQuiz = JSON.parse(storedQuiz);
-            setQuiz(parsedQuiz);
-        }
+        const fetchData = async () => {
+            try {
+                const response = await axios.get('https://api.trandai03.online/api/v1/result/user', {
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                        'Content-Type': 'application/json',
+                        'Accept': '*/*'
+                    }
+                });
+                if (response.status === 200) {
+                    setResult(response.data)
+                }
+            } catch (error) {
+                console.error('Error fetching quiz result:', error);
+            }
+        };
+        fetchData();
     }, []);
+    console.log("data", result);
+
     useEffect(() => {
         if (result && quiz) {
             handleTabChange("1");
         }
     }, [result, quiz]);
+
     if (!result || !quiz) {
-        return <div>Loading...</div>;
+        return <Loading />;
     }
+
     const handleTabChange = (key) => {
-        const rate = (result.correctAnswers / result.resultDetails.length) * 100;
         setCurrentTab(key);
         if (key === "1") {
-            setTableData([{
-                quizTitle: quiz.title,
-                score: result.score,
-                rating: rate >= 80 ? "Giỏi" : rate >= 50 ? "Trung bình" : "Yếu",
-                correctAnswers: result.correctAnswers,
-                incorrectAnswers: result.incorrectAnswers || 0,
-                totalQuestions: result.resultDetails.length,
-                completedTime: result.submittedTime,
-                finishTime: new Date(result.timestamp).toLocaleString(),
+            setTableData(result.map((res) => ({
+                quizTitle: "Quiz " + res.quizId, // Đổi 'quizTitle' thành tên quiz (có thể từ API)
+                score: res.score,
+                rating: res.score >= 80 ? "Giỏi" : res.score >= 50 ? "Trung bình" : "Yếu",
+                correctAnswers: res.correctAnswers || 0,  // Thêm logic xử lý khi hiển thị
+                incorrectAnswers: res.incorrectAnswers || 0,
+                totalQuestions: res.resultQuestionResponses.length,
+                completedTime: res.submittedTime,
+                finishTime: new Date(res.completedAt).toLocaleString(),
                 action: "Xem chi tiết"
-            }]);
-        } else if (key === "2") {
-            const correctQuestions = result.resultDetails.filter(q => q.correctOptionId === q.selectedOptionId);
-            setTableData(correctQuestions);
-        } else if (key === "3") {
-            const incorrectQuestions = result.resultDetails.filter(q => q.correctOptionId !== q.selectedOptionId);
-            setTableData(incorrectQuestions);
+            })));
         }
     };
 
@@ -101,36 +107,6 @@ const ReportQuizResult = () => {
             render: () => <Button type="link">Xem chi tiết</Button>
         }
     ];
-    console.log("tt", columnsForThiThu);
-
-    const columnsForQuestions = [
-        {
-            title: 'Câu hỏi',
-            dataIndex: 'questionText',
-            key: 'questionText',
-        },
-        {
-            title: 'Đáp án của bạn',
-            dataIndex: 'selectedOptionId',
-            key: 'selectedOptionId',
-            render: (selectedOptionId, record) => record.options.find(opt => opt.id === selectedOptionId)?.text || 'N/A',
-        },
-        {
-            title: 'Đáp án đúng',
-            dataIndex: 'correctOptionId',
-            key: 'correctOptionId',
-            render: (correctOptionId, record) => record.options.find(opt => opt.id === correctOptionId)?.text || 'N/A',
-        },
-        {
-            title: 'Trạng thái',
-            key: 'status',
-            render: (text, record) => (
-                record.correctOptionId === record.selectedOptionId ?
-                    <CheckCircleOutlined style={{ color: '#52c41a' }} /> :
-                    <CloseCircleOutlined style={{ color: '#f5222d' }} />
-            )
-        }
-    ];
 
     return (
         <div style={{ padding: '20px' }}>
@@ -139,12 +115,7 @@ const ReportQuizResult = () => {
                 <Tabs.TabPane tab="Thi thử" key="1">
                     <Table columns={columnsForThiThu} dataSource={tableData} rowKey="quizTitle" />
                 </Tabs.TabPane>
-                <Tabs.TabPane tab="Câu đúng" key="2">
-                    <Table columns={columnsForThiThu} dataSource={tableData} rowKey="questionText" />
-                </Tabs.TabPane>
-                <Tabs.TabPane tab="Câu sai" key="3">
-                    <Table columns={columnsForThiThu} dataSource={tableData} rowKey="questionText" />
-                </Tabs.TabPane>
+                {/* Các Tab khác */}
             </Tabs>
         </div>
     );

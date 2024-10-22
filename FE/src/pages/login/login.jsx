@@ -1,13 +1,15 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { Button, Form, Input, Checkbox, Card, notification } from 'antd';
 import { UserOutlined, LockOutlined } from '@ant-design/icons';
 import './login.Module.css';
 import axios from 'axios';
+import { LoginContext } from '../../components/context/login.context';
+import { useNavigate } from 'react-router-dom';
 const Login = () => {
     const [loading, setLoading] = useState(false);
-
+    const { setLogin } = useContext(LoginContext)
+    const navigate = useNavigate();
     const onFinish = async (values) => {
-        console.log('Success:', values);
         setLoading(true);
         try {
             const { username, password } = values;
@@ -17,15 +19,23 @@ const Login = () => {
             });
             if (res.status === 200 && res.data.status === "success") {
                 const { username, email, token } = res.data.data;
-                localStorage.setItem('username', username);
-                localStorage.setItem('email', email);
+                // localStorage.setItem('username', username);
+                // localStorage.setItem('email', email);
                 localStorage.setItem('token', token);
+                setLogin({
+                    isAuthenticated: true,
+                    user: {
+                        username,
+                        email
+                    }
+                });
                 notification.success({
                     message: "Đăng nhập",
                     description: "Thành công!"
                 })
+
                 setTimeout(() => {
-                    window.location.href = '/';
+                    navigate('/');
                 }, 1000);
             } else {
                 notification.error({
@@ -79,7 +89,7 @@ const Login = () => {
                             <Checkbox>Ghi nhớ tôi</Checkbox>
                         </Form.Item>
 
-                        <a className="login-form-forgot" href="">
+                        <a className="login-form-forgot" href="/">
                             Quên mật khẩu?
                         </a>
                     </Form.Item>
