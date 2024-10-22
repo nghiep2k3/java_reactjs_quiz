@@ -49,22 +49,30 @@ const InforQuiz = () => {
                 setFileList(parsedQuiz.images.map(file => ({
                     uid: file.uid,
                     name: file.name,
-                    url: file.url,
+                    url: file.base64,
                 })));
             } else {
                 setFileList([]);
             }
         }
     }, [storedQuiz]);
-
-    const handleSave = () => {
+    const getBase64 = (file) =>
+        new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = () => resolve(reader.result);
+            reader.onerror = (error) => reject(error);
+        });
+    const handleSave = async () => {
         const values = form.getFieldsValue();
         const userCreate = localStorage.getItem("username");
-        const imageFiles = fileList.map(file => ({
-            uid: file.uid,
-            name: file.name,
-            url: file.url || URL.createObjectURL(file.originFileObj)
-        }));
+        const imageFiles = await Promise.all(
+            fileList.map(async (file) => ({
+                uid: file.uid,
+                name: file.name,
+                base64: file.url || await getBase64(file.originFileObj)
+            }))
+        );
 
         const quizData = {
             title: values.title,
@@ -77,9 +85,6 @@ const InforQuiz = () => {
         };
         localStorage.setItem('quizInfo', JSON.stringify(quizData));
         navigate('/createquiz/createquestion');
-
-        console.log(quizData);
-
     };
     const onChange = ({ fileList: newFileList }) => {
         setFileList(newFileList);
@@ -145,19 +150,9 @@ const InforQuiz = () => {
             >
                 <TextArea rows={4} placeholder="Nhập mô tả về đề thi" />
             </Form.Item>
-            <Form.Item
-                label="Chọn ảnh của đề thi"
-                name="image"
-                rules={[{ required: true, message: 'Vui lòng chọn ảnh cho đề thi!' }]}
-            >
+            <Form.Item label="Chọn ảnh của đề thi" name="image" rules={[{ required: true, message: 'Vui lòng chọn ảnh cho đề thi!' }]}>
                 <ImgCrop rotationSlider>
-                    <Upload
-                        action="https://660d2bd96ddfa2943b33731c.mockapi.io/api/upload"
-                        listType="picture-card"
-                        fileList={fileList}
-                        onChange={onChange}
-                        onPreview={onPreview}
-                    >
+                    <Upload listType="picture-card" fileList={fileList} onChange={onChange} onPreview={onPreview}>
                         {fileList.length < 5 && '+ Upload'}
                     </Upload>
                 </ImgCrop>
