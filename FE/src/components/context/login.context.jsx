@@ -4,7 +4,8 @@ export const LoginContext = createContext({
     isAuthenticated: false,
     user: {
         username: "",
-        email: ""
+        email: "",
+        token: ""
     },
     setLogin: () => { }
 });
@@ -13,7 +14,8 @@ export const LoginWrapper = (props) => {
         isAuthenticated: false,
         user: {
             username: "",
-            email: ""
+            email: "",
+            token: ""
         }
     });
     // ...

@@ -1,40 +1,47 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Button, Input, Form, Card, Row, Col, Radio, Anchor, notification, Checkbox } from 'antd';
 import { PlusOutlined, DeleteOutlined } from '@ant-design/icons';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
-const CreateQuestion = () => {
+const EditQuestion = () => {
     const navigate = useNavigate();
-    const token = localStorage.getItem("token");
-    const [questions, setQuestions] = useState(() => {
-        const storedQuestions = localStorage.getItem('quizQuestions');
-        return storedQuestions ? JSON.parse(storedQuestions) : [
-            {
-                question: '',
-                questionChoiceDTOS: [
-                    { id: 1, text: '', correct: false },
-                    { id: 2, text: '', correct: false },
-                    { id: 3, text: '', correct: false },
-                    { id: 4, text: '', correct: false },
-                ],
+    const [questions, setQuestions] = useState([]);
+    useEffect(() => {
+        const storedQuiz = localStorage.getItem('storedQuiz');
+        if (storedQuiz) {
+            const parsedQuiz = JSON.parse(storedQuiz);
+            if (parsedQuiz.questions) {
+                setQuestions(parsedQuiz.questions);
+            } else {
+                notification.error({
+                    message: 'Lỗi',
+                    description: 'Không tìm thấy câu hỏi trong quiz đã lưu',
+                });
             }
-        ];
-    });
+        } else {
+            notification.error({
+                message: 'Lỗi',
+                description: 'Không tìm thấy quiz đã lưu trong localStorage',
+            });
+        }
+    }, []);
 
     const [setCurrentQuestionIndex] = useState(0);
 
     const saveToLocalStorage = (updatedQuestions) => {
-        localStorage.setItem('quizQuestions', JSON.stringify(updatedQuestions));
+        const storedQuiz = JSON.parse(localStorage.getItem('storedQuiz'));
+        storedQuiz.questions = updatedQuestions;
+        localStorage.setItem('storedQuiz', JSON.stringify(storedQuiz));
     };
 
     const addNewQuestion = () => {
         const newQuestion = {
             question: '',
-            questionChoiceDTOS: [
-                { id: 1, text: '', correct: false },
-                { id: 2, text: '', correct: false },
-                { id: 3, text: '', correct: false },
-                { id: 4, text: '', correct: false },
+            questionChoice: [
+                { id: 1, text: '', isCorrect: false },
+                { id: 2, text: '', isCorrect: false },
+                { id: 3, text: '', isCorrect: false },
+                { id: 4, text: '', isCorrect: false },
             ],
         };
         const updatedQuestions = [...questions, newQuestion];
@@ -56,71 +63,84 @@ const CreateQuestion = () => {
 
     const handleOptionChange = (qIndex, optionIndex, e) => {
         const newQuestions = [...questions];
-        newQuestions[qIndex].questionChoiceDTOS[optionIndex].text = e.target.value;
+        newQuestions[qIndex].questionChoice[optionIndex].text = e.target.value;
         setQuestions(newQuestions);
         saveToLocalStorage(newQuestions);
     };
 
     const handleAddOption = (qIndex) => {
         const newQuestions = [...questions];
-        const newOption = { id: newQuestions[qIndex].questionChoiceDTOS.length + 1, text: '', correct: false };
-        newQuestions[qIndex].questionChoiceDTOS.push(newOption);
+        const newOption = { id: newQuestions[qIndex].questionChoice.length + 1, text: '', isCorrect: false };
+        newQuestions[qIndex].questionChoice.push(newOption);
         setQuestions(newQuestions);
         saveToLocalStorage(newQuestions);
     };
 
     const handleDeleteOption = (qIndex, optionIndex) => {
         const newQuestions = [...questions];
-        newQuestions[qIndex].questionChoiceDTOS = newQuestions[qIndex].questionChoiceDTOS.filter((_, i) => i !== optionIndex);
+        newQuestions[qIndex].questionChoice = newQuestions[qIndex].questionChoice.filter((_, i) => i !== optionIndex);
         setQuestions(newQuestions);
         saveToLocalStorage(newQuestions);
     };
 
     const handleCorrectChange = (qIndex, optionIndex, checked) => {
         const newQuestions = [...questions];
-        newQuestions[qIndex].questionChoiceDTOS[optionIndex].correct = checked;
+        newQuestions[qIndex].questionChoice[optionIndex].isCorrect = checked;
         setQuestions(newQuestions);
         saveToLocalStorage(newQuestions);
     };
     const handleSubmit = async () => {
-        const storedQuiz = JSON.parse(localStorage.getItem('quizInfo')) || {};
+        const storedQuiz = JSON.parse(localStorage.getItem('edit')) || {};
+        const oldQuiz = JSON.parse(localStorage.getItem('storedQuiz')) || {};
         const currentDate = new Date().toISOString();
         const formattedQuestions = questions.map((question) => {
             return {
+                id: question.id,
                 question: question.question,
-                questionChoiceDTOS: question.questionChoiceDTOS.map((option) => {
+                createdAt: currentDate,
+                questionChoice: question.questionChoice.map((option) => {
                     return {
+                        id: option.id,
                         text: option.text,
-                        isCorrect: option.correct,
+                        isCorrect: option.isCorrect,
                     };
                 }),
             };
         });
 
-        const newQuiz = {
-            title: storedQuiz.title || '',
-            description: storedQuiz.description || '',
-            category_id: storedQuiz.category_id || 2,
+        const updatedQuiz = {
+            id: oldQuiz.id,
+            title: storedQuiz.title,
+            description: storedQuiz.description,
+            categoryId: storedQuiz.category_id,
             questions: formattedQuestions,
             isPublished: storedQuiz.isPublished || false,
-            userCreate: storedQuiz.userCreate || 'JohnDoe',
-            timestamp: currentDate,
         };
         try {
-            const response = await axios.post('https://api.trandai03.online/api/v1/quizs/create', newQuiz, {
+            const token = localStorage.getItem("token");
+            if (!token) {
+                notification.error({
+                    message: 'Lỗi',
+                    description: 'Không tìm thấy token, vui lòng đăng nhập lại.',
+                });
+                return;
+            }
+            const response = await axios.put(`https://api.trandai03.online/api/v1/quizs/update/${oldQuiz.id}`, updatedQuiz, {
                 headers: {
                     'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json',
-                    'Accept': '*/*',
                 },
             });
-            if (response.status === 201) {
+            if (response.status === 200) {
+                console.log("response tra ve", response.data);
+                console.log("cai nay truyen di", updatedQuiz);
+
                 notification.success({
                     message: 'Thành công',
                     description: 'Quiz đã được tạo thành công.',
                 });
-                localStorage.removeItem("quizInfo")
-                localStorage.removeItem("quizQuestions")
+                localStorage.removeItem("edit")
+                localStorage.removeItem("storedQuiz")
                 navigate('/quizlist')
             }
         } catch (error) {
@@ -168,7 +188,7 @@ const CreateQuestion = () => {
                                     </Form.Item>
 
                                     <Form.Item label="Tùy chọn trả lời">
-                                        {question.questionChoiceDTOS.map((option, optionIndex) => (
+                                        {question.questionChoice.map((option, optionIndex) => (
                                             <Row key={option.id} align="middle" style={{ marginBottom: '10px' }}>
                                                 <Col span={18}>
                                                     <Input
@@ -179,7 +199,7 @@ const CreateQuestion = () => {
                                                 </Col>
                                                 <Col span={2} style={{ marginLeft: "15px" }}>
                                                     <Checkbox
-                                                        checked={option.correct}
+                                                        checked={option.isCorrect}
                                                         onChange={(e) => handleCorrectChange(qIndex, optionIndex, e.target.checked)}
                                                     >
                                                         Đúng
@@ -236,4 +256,4 @@ const CreateQuestion = () => {
     );
 };
 
-export default CreateQuestion;
+export default EditQuestion;

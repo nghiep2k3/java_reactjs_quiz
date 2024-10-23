@@ -26,7 +26,8 @@ const Login = () => {
                     isAuthenticated: true,
                     user: {
                         username,
-                        email
+                        email,
+                        token
                     }
                 });
                 notification.success({

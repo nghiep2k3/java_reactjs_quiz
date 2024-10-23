@@ -12,15 +12,13 @@ import Loading from '../loading/loading';
 const { Title, Text } = Typography;
 const CourseCard = () => {
     const [quizzes, setQuizzes] = useState([]);
-    const token = localStorage.getItem("token");
     useEffect(() => {
         const fetchAllQuizs = async () => {
             try {
                 const response = await axios.get('https://api.trandai03.online/api/v1/quizs/getAllQuiz', {
                     headers: {
-                        'Authorization': `Bearer ${token}`,
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`,
                         'Content-Type': 'application/json',
-                        'Accept': '*/*'
                     }
                 });
                 if (response.status === 200) {

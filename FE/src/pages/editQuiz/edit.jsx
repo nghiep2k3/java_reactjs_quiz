@@ -1,30 +1,31 @@
 import { Col, Layout, Row, Space, Tabs } from 'antd';
 import { Content } from 'antd/es/layout/layout';
 import React from 'react';
-import { Outlet, useLocation, useNavigate } from 'react-router-dom';
-const items = [
-    {
-        key: '1',
-        label: 'Thông tin cơ bản',
-        path: "/createquiz/inforquiz",
-    },
-    {
-        key: '2',
-        label: 'Soạn câu hỏi',
-        path: '/createquiz/createquestion',
-    },
-    {
-        key: '3',
-        label: 'Lịch sử truy cập',
-        path: '/history',
-    },
-    {
-        key: '4',
-        label: 'Thống kê',
-        path: '/statistical',
-    },
-];
-const CreateQuiz = () => {
+import { Outlet, useLocation, useNavigate, useParams } from 'react-router-dom';
+const Edit = () => {
+    const { id } = useParams();
+    const items = [
+        {
+            key: '1',
+            label: 'Thông tin cơ bản',
+            path: `/edit/editquiz/${id}`,
+        },
+        {
+            key: '2',
+            label: 'Soạn câu hỏi',
+            path: `/edit/editquestion/${id}`,
+        },
+        {
+            key: '3',
+            label: 'Lịch sử truy cập',
+            path: '/history',
+        },
+        {
+            key: '4',
+            label: 'Thống kê',
+            path: '/statistical',
+        },
+    ];
     const navigate = useNavigate();
     const location = useLocation();
     const onChange = (key) => {
@@ -63,4 +64,4 @@ const CreateQuiz = () => {
     );
 }
 
-export default CreateQuiz;
+export default Edit;

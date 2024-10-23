@@ -53,13 +53,13 @@ const App = () => {
       path: "/quizlist",
     },
     {
-      key: "7",
+      key: "6",
       icon: <SettingOutlined />,
       label: "Cài đặt",
       path: "/settings",
     },
     {
-      key: "6",
+      key: "7",
       icon: <LogoutOutlined />,
       label: "Lớp học tập",
       path: "/class",

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Card, Tag, List, Avatar, Progress, Affix, Menu } from 'antd';
 import { CheckCircleOutlined, CloseCircleOutlined } from '@ant-design/icons';
-import styles from './Result.module.css';
+import styles from './result.module.css';
 import Loading from '../../components/loading/loading';
 
 const Result = () => {

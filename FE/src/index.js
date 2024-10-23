@@ -22,6 +22,9 @@ import ReportQuizResult from "./pages/reportQuizResult/reportQuizResult";
 import ChangePassword from "./pages/changePassword/changePassword";
 import Profile from "./pages/profile/profile";
 import { LoginWrapper } from "./components/context/login.context";
+import EditQuiz from "./pages/editQuiz/editQuiz";
+import Edit from "./pages/editQuiz/edit";
+import EditQuestion from "./pages/editQuiz/editQuestion";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
@@ -39,6 +42,10 @@ root.render(
             <Route path="/createquiz" element={<CreateQuiz />}>
               <Route path="inforquiz" element={<InforQuiz />} />
               <Route path="createquestion" element={<CreateQuestion />} />
+            </Route>
+            <Route path="/edit" element={<Edit />}>
+              <Route path="editquiz/:id" element={<EditQuiz />} />
+              <Route path="editquestion/:id" element={<EditQuestion />} />
             </Route>
             <Route path="/quizlist" element={<QuizList />} />
             <Route path="/profile" element={<Profile />} />
