@@ -19,6 +19,7 @@ import { LoginContext } from "./components/context/login.context";
 
 const { Header, Content, Sider } = Layout;
 
+
 const App = () => {
   const { login, setLogin } = useContext(LoginContext);
   const menuItems = [
@@ -63,6 +64,12 @@ const App = () => {
       icon: <LogoutOutlined />,
       label: "Lớp học tập",
       path: "/class",
+    },
+    {
+      key: "8",
+      icon: <LogoutOutlined />,
+      label: "Môi trường test",
+      path: "/test",
     },
   ];
   const location = useLocation();

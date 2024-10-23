@@ -8,7 +8,7 @@ import ViewQuiz from "./pages/ViewQuiz/ViewQuiz";
 import CreateQuiz from "./pages/createQuiz/createQuiz";
 import CreateQuestion from "./pages/createQuestion/createQuestion";
 import MyLibrary from "./components/myLibrary/myLibrary";
-import Explore from "./components/explore/Explore";
+import Explore from "./components/explore/explore";
 import InforQuiz from "./components/inforQuiz/inforQuiz";
 import QuizList from "./pages/quizList/quizList";
 import QuizDetail from "./pages/quizDetail/quizDetail";
@@ -17,10 +17,11 @@ import DoExam from "./pages/doExam/doExam";
 import Login from "./pages/login/login";
 import Register from "./pages/register/register";
 import 'bootstrap/dist/js/bootstrap.bundle.min';
-import Result from "./pages/result/result";
+import Result from "./pages/result/result.jsx";
 import ReportQuizResult from "./pages/reportQuizResult/reportQuizResult";
 import ChangePassword from "./pages/changePassword/changePassword";
 import Profile from "./pages/profile/profile";
+import Test from "./pages/Test/Test.jsx";
 import { LoginWrapper } from "./components/context/login.context";
 import EditQuiz from "./pages/editQuiz/editQuiz";
 import Edit from "./pages/editQuiz/edit";
@@ -39,6 +40,7 @@ root.render(
             <Route path="/explore" element={<Explore />} />
             <Route path="/result" element={<Result />} />
             <Route path="/reportquizresult" element={<ReportQuizResult />} />
+            <Route path="/test" element={<Test />} />
             <Route path="/createquiz" element={<CreateQuiz />}>
               <Route path="inforquiz" element={<InforQuiz />} />
               <Route path="createquestion" element={<CreateQuestion />} />
