@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Upload, Button, message, Image } from "antd";
-import { UploadOutlined } from "@ant-design/icons";
+import { UploadOutlined, DeleteOutlined } from "@ant-design/icons";
 import axios from "axios";
 
 // Hàm getBase64 để chuyển file thành chuỗi base64
@@ -37,9 +37,11 @@ const Test = () => {
     // Log toàn bộ đối tượng file
     console.log('Thông tin đầy đủ của file:', file);
 
+    const loadingMessage = message.loading('Đang tải lên...', 10);
+
     try {
       const response = await axios.post(
-        "https://api.trandai03.online/api/v1/quizs/image/68",
+        "https://api.trandai03.online/api/v1/quizs/image/76",
         formData,
         {
           headers: {
@@ -58,7 +60,15 @@ const Test = () => {
     } catch (error) {
       message.error("Upload thất bại!");
       console.error("Error:", error);
+    } finally {
+      loadingMessage(); // Tắt loading sau khi quá trình upload kết thúc
     }
+  };
+
+  // Xử lý xóa ảnh đã chọn
+  const handleRemove = () => {
+    setPreviewUrl(null); // Xóa ảnh xem trước
+    setFile(null); // Xóa file đã chọn
   };
 
   return (
@@ -82,8 +92,16 @@ const Test = () => {
             alt="Xem trước ảnh"
             style={{ maxWidth: "200px", marginBottom: 20 }}
           />
-          {/* Nút Tải lên */}
-          <Button type="primary" onClick={handleUpload}>Tải lên</Button>
+          <div>
+            {/* Nút Tải lên */}
+            <Button type="primary" onClick={handleUpload} style={{ marginRight: 10 }}>
+              Tải lên
+            </Button>
+            {/* Nút Xóa ảnh */}
+            <Button type="default" onClick={handleRemove} icon={<DeleteOutlined />}>
+              Xóa ảnh
+            </Button>
+          </div>
         </div>
       )}
     </div>
