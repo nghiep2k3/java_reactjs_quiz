@@ -7,12 +7,11 @@ import styles from './courseCard.module.css';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
 import { ClockCircleOutlined } from '@ant-design/icons';
+import Loading from '../loading/loading';
 
 const { Title, Text } = Typography;
 const CourseCard = () => {
     const [quizzes, setQuizzes] = useState([]);
-    console.log("quiz", quizzes);
-
     const token = localStorage.getItem("token");
     useEffect(() => {
         const fetchAllQuizs = async () => {
@@ -36,8 +35,6 @@ const CourseCard = () => {
         };
         fetchAllQuizs();
     }, []);
-    console.log("quiz", quizzes);
-
     const settings = {
         dots: true,
         infinite: true,
@@ -120,7 +117,7 @@ const CourseCard = () => {
                                 <p>Id: {quiz.id}</p>
                                 <p><ClockCircleOutlined /> {formatDate(quiz.createdAt)}</p>
                                 <p>Số câu hỏi: {quiz.questions?.length}</p>
-                                <p>Trình độ: {quiz?.category?.name || "Không có"}</p>
+                                <p>Môn học: {quiz?.category?.name || "Không có"}</p>
                                 <p>Mô tả: {quiz.description}</p>
                             </Link>
                         </Card>

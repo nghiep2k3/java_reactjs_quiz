@@ -1,12 +1,13 @@
-import { Col, Layout, Row, Space, Modal, Avatar, Image, Button, Tabs, Radio, Select, Input, Popover, QRCode } from 'antd';
+import { Col, Layout, Row, Space, Modal, Image, Button, Tabs, Radio, Select, Popover, QRCode } from 'antd';
 import React, { useEffect, useState } from 'react';
 import {
-    UserOutlined, QuestionCircleOutlined, CheckOutlined, SettingOutlined,
+    QuestionCircleOutlined, CheckOutlined, SettingOutlined,
     LikeOutlined, HeartOutlined, DownloadOutlined, FacebookOutlined, TwitterOutlined, TwitchOutlined
 } from '@ant-design/icons';
 import { Outlet, useLocation, useNavigate, useParams } from 'react-router-dom';
 import Headers from '../../components/headers/headers';
 import axios from 'axios';
+import Loading from '../../components/loading/loading';
 const { Content } = Layout;
 const items = [
     {
@@ -87,7 +88,7 @@ const QuizDetail = () => {
     }, [id]);
 
     if (!quiz) {
-        return <div>Loading...</div>;
+        return <Loading />;
     }
     const onChange = (key) => {
         const selectedTab = items.find(item => item.key === key);

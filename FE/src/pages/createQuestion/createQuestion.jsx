@@ -1,13 +1,12 @@
-import React, { useState, useEffect } from 'react';
-import { Button, Input, Form, Card, Row, Col, Radio, Anchor, notification } from 'antd';
+import React, { useState } from 'react';
+import { Button, Input, Form, Card, Row, Col, Radio, Anchor, notification, Checkbox } from 'antd';
 import { PlusOutlined, DeleteOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 const CreateQuestion = () => {
+    const [data1, setData1] = useState(null);
     const navigate = useNavigate();
     const token = localStorage.getItem("token");
-    console.log("token", token);
-
     const [questions, setQuestions] = useState(() => {
         const storedQuestions = localStorage.getItem('quizQuestions');
         return storedQuestions ? JSON.parse(storedQuestions) : [
@@ -19,12 +18,11 @@ const CreateQuestion = () => {
                     { id: 3, text: '', correct: false },
                     { id: 4, text: '', correct: false },
                 ],
-                // score: null
             }
         ];
     });
 
-    const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
+    const [setCurrentQuestionIndex] = useState(0);
 
     const saveToLocalStorage = (updatedQuestions) => {
         localStorage.setItem('quizQuestions', JSON.stringify(updatedQuestions));
@@ -39,15 +37,16 @@ const CreateQuestion = () => {
                 { id: 3, text: '', correct: false },
                 { id: 4, text: '', correct: false },
             ],
-            // score: null
         };
         const updatedQuestions = [...questions, newQuestion];
         setQuestions(updatedQuestions);
         saveToLocalStorage(updatedQuestions);
     };
 
-    const deleteQuestion = () => {
-
+    const deleteQuestion = (qIndex) => {
+        const updatedQuestions = questions.filter((_, index) => index !== qIndex);
+        setQuestions(updatedQuestions);
+        saveToLocalStorage(updatedQuestions);
     }
     const handleQuestionChange = (qIndex, e) => {
         const newQuestions = [...questions];
@@ -78,13 +77,9 @@ const CreateQuestion = () => {
         saveToLocalStorage(newQuestions);
     };
 
-    const handleCorrectChange = (qIndex, optionIndex) => {
+    const handleCorrectChange = (qIndex, optionIndex, checked) => {
         const newQuestions = [...questions];
-        newQuestions[qIndex].questionChoiceDTOS = newQuestions[qIndex].questionChoiceDTOS.map((option, oIndex) => ({
-            ...option,
-            correct: oIndex === optionIndex,
-        }));
-
+        newQuestions[qIndex].questionChoiceDTOS[optionIndex].correct = checked;
         setQuestions(newQuestions);
         saveToLocalStorage(newQuestions);
     };
@@ -92,8 +87,6 @@ const CreateQuestion = () => {
         const storedQuiz = JSON.parse(localStorage.getItem('quizInfo')) || {};
         const currentDate = new Date().toISOString();
         const formattedQuestions = questions.map((question) => {
-            console.log("aa", questions);
-
             return {
                 question: question.question,
                 questionChoiceDTOS: question.questionChoiceDTOS.map((option) => {
@@ -114,7 +107,10 @@ const CreateQuestion = () => {
             userCreate: storedQuiz.userCreate || 'JohnDoe',
             timestamp: currentDate,
         };
+        const images = storedQuiz.images.base64;
+
         try {
+            // Gọi API tạo đề thi
             const response = await axios.post('https://api.trandai03.online/api/v1/quizs/create', newQuiz, {
                 headers: {
                     'Authorization': `Bearer ${token}`,
@@ -122,24 +118,49 @@ const CreateQuestion = () => {
                     'Accept': '*/*',
                 },
             });
+
             if (response.status === 201) {
+                const createdQuiz = response.data;
+                const quizId = createdQuiz.id;
+                try {
+                    const res2 = await axios.post(`https://api.trandai03.online/api/v1/quizs/image/${quizId}`, images, {
+                        headers: {
+                            'Authorization': `Bearer ${token}`,
+                            'Content-Type': 'application/json',
+                            'Accept': '*/*',
+                        },
+                    });
+
+                    if (res2.status === 201) {
+                        notification.success({
+                            message: 'Thành công',
+                            description: 'Upload ảnh thành công',
+                        });
+                        localStorage.removeItem("quizInfo");
+                        localStorage.removeItem("quizQuestions");
+                        navigate('/quizlist');
+                    }
+                } catch (error) {
+                    notification.error({
+                        message: 'Lỗi khi upload ảnh',
+                        description: 'Không thể upload ảnh, vui lòng thử lại sau.',
+                    });
+                    console.error('Error uploading image:', error.response);
+                }
+
                 notification.success({
                     message: 'Thành công',
                     description: 'Quiz đã được tạo thành công.',
                 });
-                navigate('/quizlist')
             }
         } catch (error) {
             notification.error({
                 message: 'Lỗi khi tạo quiz',
                 description: 'Không thể tạo quiz, vui lòng thử lại sau.',
             });
-            console.log(error.response);
+            console.error('Error creating quiz:', error.response);
         }
     };
-
-
-
 
     const handleAnchorClick = (qIndex) => {
         setCurrentQuestionIndex(qIndex);
@@ -187,12 +208,12 @@ const CreateQuestion = () => {
                                                     />
                                                 </Col>
                                                 <Col span={2} style={{ marginLeft: "15px" }}>
-                                                    <Radio
+                                                    <Checkbox
                                                         checked={option.correct}
-                                                        onChange={() => handleCorrectChange(qIndex, optionIndex)}
+                                                        onChange={(e) => handleCorrectChange(qIndex, optionIndex, e.target.checked)}
                                                     >
                                                         Đúng
-                                                    </Radio>
+                                                    </Checkbox>
                                                 </Col>
                                                 <Col span={2}>
                                                     <Button
@@ -207,17 +228,28 @@ const CreateQuestion = () => {
                                     </Form.Item>
                                 </Form>
                             </div>
-                            <Button
-                                icon={<PlusOutlined />}
-                                onClick={() => handleAddOption(qIndex)}
-                                style={{
-                                    width: '150px', marginTop: '10px',
-                                    backgroundImage: 'linear-gradient(90deg, rgb(255, 127, 206) 0%, rgb(252, 149, 110) 100%)',
-                                    color: '#fff'
-                                }}
-                            >
-                                Thêm đáp án
-                            </Button>
+                            <div style={{ display: "flex", gap: ".5rem" }}>
+
+                                <Button
+                                    type="danger"
+                                    icon={<DeleteOutlined />}
+                                    onClick={() => deleteQuestion(qIndex)}
+                                    style={{ marginTop: '10px', background: '#ff4d4f', color: '#fff' }}
+                                >
+                                    Xóa câu hỏi
+                                </Button>
+                                <Button
+                                    icon={<PlusOutlined />}
+                                    onClick={() => handleAddOption(qIndex)}
+                                    style={{
+                                        width: '150px', marginTop: '10px',
+                                        backgroundImage: 'linear-gradient(90deg, rgb(255, 127, 206) 0%, rgb(252, 149, 110) 100%)',
+                                        color: '#fff'
+                                    }}
+                                >
+                                    Thêm đáp án
+                                </Button>
+                            </div>
                         </Card>
                     ))}
                 </Col>

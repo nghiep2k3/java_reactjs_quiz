@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import {
   AccountBookOutlined,
   UserOutlined,
@@ -15,61 +15,67 @@ import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
 import MyFooter from "./components/footer/footer";
 import Meta from "antd/es/card/Meta";
 import SearchQuiz from "./components/searchQuiz/searchQuiz";
+import { LoginContext } from "./components/context/login.context";
 
 const { Header, Content, Sider } = Layout;
 
-const menuItems = [
-  {
-    key: "1",
-    icon: <BookOutlined />,
-    label: "Khám phá",
-    path: "/",
-  },
-  {
-    key: "2",
-    icon: <AccountBookOutlined />,
-    label: "Thư viện của tôi",
-    path: "/mylibrary",
-  },
-  {
-    key: "3",
-    icon: <FormOutlined />,
-    label: "Kết quả thi của tôi",
-    path: "/reportquizresult",
-  },
-  {
-    key: "4",
-    icon: <UserOutlined />,
-    label: "Đề thi yêu thích",
-    path: "/favorexam",
-  },
-  {
-    key: "5",
-    icon: <FileOutlined />,
-    label: "Quản lý đề thi",
-    path: "/quizlist",
-  },
-  {
-    key: "7",
-    icon: <SettingOutlined />,
-    label: "Cài đặt",
-    path: "/settings",
-  },
-  {
-    key: "6",
-    icon: <LogoutOutlined />,
-    label: "Lớp học tập",
-    path: "/class",
-  },
-];
 
 const App = () => {
+  const { login, setLogin } = useContext(LoginContext);
+  const menuItems = [
+    {
+      key: "1",
+      icon: <BookOutlined />,
+      label: "Khám phá",
+      path: "/",
+    },
+    {
+      key: "2",
+      icon: <AccountBookOutlined />,
+      label: "Thư viện của tôi",
+      path: "/mylibrary",
+    },
+    {
+      key: "3",
+      icon: <FormOutlined />,
+      label: "Kết quả thi của tôi",
+      path: "/reportquizresult",
+    },
+    {
+      key: "4",
+      icon: <UserOutlined />,
+      label: "Đề thi yêu thích",
+      path: "/favorexam",
+    },
+    {
+      key: "5",
+      icon: <FileOutlined />,
+      label: "Quản lý đề thi",
+      path: "/quizlist",
+    },
+    {
+      key: "6",
+      icon: <SettingOutlined />,
+      label: "Cài đặt",
+      path: "/settings",
+    },
+    {
+      key: "7",
+      icon: <LogoutOutlined />,
+      label: "Lớp học tập",
+      path: "/class",
+    },
+    {
+      key: "8",
+      icon: <LogoutOutlined />,
+      label: "Môi trường test",
+      path: "/test",
+    },
+  ];
   const location = useLocation();
   const navigate = useNavigate();
-  const username = localStorage.getItem("username")
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [collapsed, setCollapsed] = useState(false);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const showModal = () => {
     setIsModalOpen(true);
   };
@@ -86,17 +92,21 @@ const App = () => {
     setCollapsed(!collapsed);
   };
   const handleLogout = () => {
-    localStorage.removeItem("username");
-    localStorage.removeItem("email");
     localStorage.removeItem("token");
-    setIsAuthenticated(false);
+    setLogin({
+      isAuthenticated: false,
+      user: {
+        username: "",
+        email: ""
+      }
+    });
     setTimeout(() => {
       navigate('/');
     }, 2000);
   };
   const menu = (
     <Menu>
-      {username ? (
+      {login.isAuthenticated ? (
         <>
           <Menu.Item key="1" icon={<UserOutlined />}>
             <a href="/profile">Hồ sơ</a>
@@ -128,11 +138,13 @@ const App = () => {
           }}
         >
           <div style={{ textAlign: "center", marginBottom: "20px" }}>
-            <Image
-              src="https://cf.quizizz.com/img/logos/Purple.webp"
-              preview={false}
-              width={collapsed ? 50 : 150}
-            />
+            <Link to='/'>
+              <Image
+                src="https://cf.quizizz.com/img/logos/Purple.webp"
+                preview={false}
+                width={collapsed ? 50 : 150}
+              />
+            </Link>
           </div>
 
           <Modal
@@ -142,30 +154,54 @@ const App = () => {
             onOk={handleOk}
             onCancel={handleCancel}
           >
-            <Card
-              hoverable
-              onClick={() => {
-                const username = localStorage.getItem("username");
-                if (username) {
-                  window.location.href = "/createquiz/inforquiz";
-                } else {
-                  window.location.href = "/login";
+            <div style={{ display: "flex", justifyContent: "center", gap: "20px", }}>
+              <Card
+                hoverable
+                onClick={() => {
+                  if (login.isAuthenticated) {
+                    navigate("/createquiz/inforquiz");
+                  } else {
+                    navigate("/login");
+                  }
+                  handleCancel();
+                }}
+                style={{
+                  width: 240,
+                  margin: "0 auto",
+                }}
+                cover={
+                  <img
+                    alt="example"
+                    src="https://templatelab.com/wp-content/uploads/2017/04/puzzle-piece-template-13.jpg"
+                  />
                 }
-                handleCancel();
-              }}
-              style={{
-                width: 240,
-                margin: "0 auto",
-              }}
-              cover={
-                <img
-                  alt="example"
-                  src="https://templatelab.com/wp-content/uploads/2017/04/puzzle-piece-template-13.jpg"
-                />
-              }
-            >
-              <Meta title="Quiz" description="Đưa ra đánh giá và thực hành" />
-            </Card>
+              >
+                <Meta title="Quiz" description="Ôn tập các câu hỏi trắc nghiệm" />
+              </Card>
+              <Card
+                hoverable
+                onClick={() => {
+                  if (login.isAuthenticated) {
+                    navigate("/createquiz/inforquiz");
+                  } else {
+                    navigate("/login");
+                  }
+                  handleCancel();
+                }}
+                style={{
+                  width: 240,
+                  margin: "0 auto",
+                }}
+                cover={
+                  <img
+                    alt="example"
+                    src="https://quizizz.com/media/resource/gs/quizizz-media/quizzes/1c22eeb6-0b9d-446e-aa03-9c21f3cb3c65?w=400&h=400"
+                  />
+                }
+              >
+                <Meta title="Cuộc thi" description="Đưa ra đánh giá và thực hành" />
+              </Card>
+            </div>
           </Modal>
 
           <Menu

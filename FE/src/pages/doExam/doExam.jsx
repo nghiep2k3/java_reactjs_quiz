@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { Card, Radio, Button, Menu, Affix, Col, Row, message, Modal, Image, notification } from 'antd';
+import { Card, Checkbox, Button, Menu, Affix, Col, Row, message, Modal, Image, notification } from 'antd';
 import { useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
+import Loading from '../../components/loading/loading';
 
-// Hàm xáo trộn mảng câu hỏi
 const shuffleArray = (array) => {
     for (let i = array.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
@@ -23,9 +23,10 @@ const QuizExam = () => {
     const [storedQuiz, setQuiz] = useState(null);
     const [submittedTime, setSubmittedTime] = useState(null);
     const [questions, setQuestions] = useState([]);
-    const selectedTime = storedQuiz?.selectedTime || '30 phút';
+    const selectedTime = storedQuiz?.selectedTime || '30 phút'; //error
     const timeInMinutes = parseInt(selectedTime.split(" ")[0], 10);
     let timeInSeconds = timeInMinutes * 60;
+
     useEffect(() => {
         setRemainingTime(timeInSeconds);
         const interval = setInterval(() => {
@@ -60,15 +61,12 @@ const QuizExam = () => {
                 });
                 if (response.status === 200) {
                     const quizData = response.data;
-                    const shuffledQuestions = shuffleArray(quizData.questions).map((question) => ({
-                        ...question,
-                        id: question.id,
-                    }));
-                    console.log("shif", shuffledQuestions);
-
-                    setQuestions(shuffledQuestions);
+                    quizData.questions = shuffleArray(quizData.questions);
+                    quizData.questions.forEach((question) => {
+                        question.questionChoice = shuffleArray(question.questionChoice);
+                    });
+                    setQuestions(quizData.questions);
                     setQuiz(quizData);
-
                 }
             } catch (error) {
                 console.error("Lỗi khi lấy dữ liệu quiz:", error);
@@ -79,10 +77,14 @@ const QuizExam = () => {
     }, [id]);
 
     if (!questions || questions.length === 0) {
-        return <div>Loading...</div>;
+        return <Loading />;
     }
-    const handleAnswerChange = (questionId, optionId) => {
-        setSelectedAnswers({ ...selectedAnswers, [questionId]: optionId });
+
+    const handleAnswerChange = (questionId, selectedChoices) => {
+        setSelectedAnswers((prevAnswers) => ({
+            ...prevAnswers,
+            [questionId]: selectedChoices
+        }));
     };
 
     const handleSubmit = async () => {
@@ -93,12 +95,12 @@ const QuizExam = () => {
         const calculatedTime = remaintimeInMinutes < 1
             ? `0 phút ${timeInSeconds} giây`
             : `${remaintimeInMinutes} phút ${timeInSeconds} giây`;
-
+        const timeSubmit = remaintimeInMinutes * 60 + timeInSeconds;
         setSubmittedTime(calculatedTime);
         const resultDetails = questions.map((question) => {
-            const selectedOptionId = selectedAnswers[question.id];
-            const correctOption = question.questionChoice.find(opt => opt.isCorrect);
-            const isCorrect = correctOption && selectedOptionId === correctOption.id;
+            const selectedChoices = selectedAnswers[question.id] || [];
+            const correctChoices = question.questionChoice.filter(opt => opt.isCorrect).map(opt => opt.id);
+            const isCorrect = selectedChoices.sort().toString() === correctChoices.sort().toString();
 
             if (isCorrect) {
                 score++;
@@ -106,19 +108,20 @@ const QuizExam = () => {
 
             return {
                 questionId: question.id,
-                isSelected: selectedOptionId,
+                selectedChoiceIds: selectedChoices,
             };
-        });
 
+        });
         setScoreExam(score);
         setIsModalOpen(false);
         setIsModalOpen2(true);
+
         const quizResult = {
             quizId: storedQuiz.id,
             questionResultDTOS: resultDetails,
             score,
-            completedAt: new Date().toISOString(),
-            submittedTime: timeInSeconds,
+            // completedAt: new Date().toISOString(),
+            submittedTime: timeSubmit,
         };
 
         localStorage.setItem('quizResult', JSON.stringify(quizResult));
@@ -135,15 +138,20 @@ const QuizExam = () => {
                     message: "Nộp bài thành công",
                     description: "Bài thi đã được nộp thành công!"
                 });
+                console.log("result", response.data);
+
+                localStorage.setItem("Result", JSON.stringify(response.data));
+
                 setScoreExam(score);
                 setIsModalOpen(false);
                 setIsModalOpen2(true);
             }
         } catch (error) {
+            console.error("Lỗi submit:", error.response);
             notification.error({
                 message: "Nộp bài không thành công",
                 description: "Có lỗi xảy ra khi nộp bài, vui lòng thử lại."
-            })
+            });
         }
     };
 
@@ -170,7 +178,7 @@ const QuizExam = () => {
                             style={{ textAlign: "center" }}
                             title="Hoàn thành"
                             open={isModalOpen2}
-                            onCancel={() => { navigate(`/quizdetail/examcontent/${storedQuiz.id}`) }}
+                            onCancel={() => { navigate(`/quizdetail/examcontent/${storedQuiz.id}`); }}
                             onOk={() => navigate('/result')}
                             okText="Xem kết quả"
                             cancelText="Trở về"
@@ -197,13 +205,16 @@ const QuizExam = () => {
                             title={`Câu hỏi ${index + 1}`}
                         >
                             <h4>{question.question}</h4>
-                            <Radio.Group onChange={(e) => handleAnswerChange(question.id, e.target.value)} value={selectedAnswers[question.id]}>
+                            <Checkbox.Group
+                                onChange={(values) => handleAnswerChange(question.id, values)}
+                                value={selectedAnswers[question.id] || []}
+                            >
                                 {question.questionChoice.map((option, idx) => (
-                                    <Radio key={option.id} value={option.id}>
+                                    <Checkbox key={option.id} value={option.id}>
                                         {option.text}
-                                    </Radio>
+                                    </Checkbox>
                                 ))}
-                            </Radio.Group>
+                            </Checkbox.Group>
                         </Card>
                     ))}
                 </Col>
