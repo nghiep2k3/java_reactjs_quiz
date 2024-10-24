@@ -43,7 +43,6 @@ const QuizList = () => {
         return `${day}/${month}/${year}`;
     };
     const handleDeleteQuiz = async (quizId) => {
-        console.log(quizId);
         try {
             const response = await axios.delete(`https://api.trandai03.online/api/v1/quizs/${quizId}`, {
                 headers: {

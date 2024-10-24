@@ -5,17 +5,19 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 const CreateQuestion = () => {
     const navigate = useNavigate();
+    const fileData = localStorage.getItem("images");
+    const [quiz, setQuiz] = useState(null);
     const token = localStorage.getItem("token");
     const [questions, setQuestions] = useState(() => {
         const storedQuestions = localStorage.getItem('quizQuestions');
         return storedQuestions ? JSON.parse(storedQuestions) : [
             {
                 question: '',
-                questionChoiceDTOS: [
-                    { id: 1, text: '', correct: false },
-                    { id: 2, text: '', correct: false },
-                    { id: 3, text: '', correct: false },
-                    { id: 4, text: '', correct: false },
+                questionChoice: [
+                    { id: 1, text: '', isCorrect: false },
+                    { id: 2, text: '', isCorrect: false },
+                    { id: 3, text: '', isCorrect: false },
+                    { id: 4, text: '', isCorrect: false },
                 ],
             }
         ];
@@ -30,11 +32,11 @@ const CreateQuestion = () => {
     const addNewQuestion = () => {
         const newQuestion = {
             question: '',
-            questionChoiceDTOS: [
-                { id: 1, text: '', correct: false },
-                { id: 2, text: '', correct: false },
-                { id: 3, text: '', correct: false },
-                { id: 4, text: '', correct: false },
+            questionChoice: [
+                { id: 1, text: '', isCorrect: false },
+                { id: 2, text: '', isCorrect: false },
+                { id: 3, text: '', isCorrect: false },
+                { id: 4, text: '', isCorrect: false },
             ],
         };
         const updatedQuestions = [...questions, newQuestion];
@@ -56,29 +58,29 @@ const CreateQuestion = () => {
 
     const handleOptionChange = (qIndex, optionIndex, e) => {
         const newQuestions = [...questions];
-        newQuestions[qIndex].questionChoiceDTOS[optionIndex].text = e.target.value;
+        newQuestions[qIndex].questionChoice[optionIndex].text = e.target.value;
         setQuestions(newQuestions);
         saveToLocalStorage(newQuestions);
     };
 
     const handleAddOption = (qIndex) => {
         const newQuestions = [...questions];
-        const newOption = { id: newQuestions[qIndex].questionChoiceDTOS.length + 1, text: '', correct: false };
-        newQuestions[qIndex].questionChoiceDTOS.push(newOption);
+        const newOption = { id: newQuestions[qIndex].questionChoice.length + 1, text: '', isCorrect: false };
+        newQuestions[qIndex].questionChoice.push(newOption);
         setQuestions(newQuestions);
         saveToLocalStorage(newQuestions);
     };
 
     const handleDeleteOption = (qIndex, optionIndex) => {
         const newQuestions = [...questions];
-        newQuestions[qIndex].questionChoiceDTOS = newQuestions[qIndex].questionChoiceDTOS.filter((_, i) => i !== optionIndex);
+        newQuestions[qIndex].questionChoice = newQuestions[qIndex].questionChoice.filter((_, i) => i !== optionIndex);
         setQuestions(newQuestions);
         saveToLocalStorage(newQuestions);
     };
 
     const handleCorrectChange = (qIndex, optionIndex, checked) => {
         const newQuestions = [...questions];
-        newQuestions[qIndex].questionChoiceDTOS[optionIndex].correct = checked;
+        newQuestions[qIndex].questionChoice[optionIndex].isCorrect = checked;
         setQuestions(newQuestions);
         saveToLocalStorage(newQuestions);
     };
@@ -88,14 +90,15 @@ const CreateQuestion = () => {
         const formattedQuestions = questions.map((question) => {
             return {
                 question: question.question,
-                questionChoiceDTOS: question.questionChoiceDTOS.map((option) => {
+                questionChoiceDTOS: question.questionChoice.map((option) => {
                     return {
                         text: option.text,
-                        isCorrect: option.correct,
+                        isCorrect: option.isCorrect,
                     };
                 }),
             };
         });
+        console.log("question", formattedQuestions);
 
         const newQuiz = {
             title: storedQuiz.title || '',
@@ -115,13 +118,14 @@ const CreateQuestion = () => {
                 },
             });
             if (response.status === 201) {
+                setQuiz(response.data);
                 notification.success({
                     message: 'Thành công',
                     description: 'Quiz đã được tạo thành công.',
                 });
                 localStorage.removeItem("quizInfo")
                 localStorage.removeItem("quizQuestions")
-                navigate('/quizlist')
+                // navigate('/quizlist')
             }
         } catch (error) {
             notification.error({
@@ -129,6 +133,27 @@ const CreateQuestion = () => {
                 description: 'Không thể tạo quiz, vui lòng thử lại sau.',
             });
             console.log(error.response);
+        }
+
+        //api ảnh
+        try {
+            const response = await axios.post(`https://api.trandai03.online/api/v1/quizs/image/${quiz.id}`, fileData, {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                    'Accept': '*/*',
+                },
+            });
+            if (response.status === 201) {
+                localStorage.removeItem("images")
+                navigate('/quizlist')
+            }
+        } catch (error) {
+            notification.error({
+                message: 'Lỗi khi tạo quiz',
+                description: 'Không thể tạo quiz, vui lòng thử lại sau.',
+            });
+            console.log("lỗi", error.response);
         }
     };
 
@@ -168,7 +193,7 @@ const CreateQuestion = () => {
                                     </Form.Item>
 
                                     <Form.Item label="Tùy chọn trả lời">
-                                        {question.questionChoiceDTOS.map((option, optionIndex) => (
+                                        {question.questionChoice.map((option, optionIndex) => (
                                             <Row key={option.id} align="middle" style={{ marginBottom: '10px' }}>
                                                 <Col span={18}>
                                                     <Input
@@ -179,7 +204,7 @@ const CreateQuestion = () => {
                                                 </Col>
                                                 <Col span={2} style={{ marginLeft: "15px" }}>
                                                     <Checkbox
-                                                        checked={option.correct}
+                                                        checked={option.isCorrect}
                                                         onChange={(e) => handleCorrectChange(qIndex, optionIndex, e.target.checked)}
                                                     >
                                                         Đúng

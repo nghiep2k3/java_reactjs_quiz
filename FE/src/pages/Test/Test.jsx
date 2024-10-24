@@ -17,12 +17,17 @@ const Test = () => {
   const token = localStorage.getItem('token');
   const [file, setFile] = useState(null);
   const [previewUrl, setPreviewUrl] = useState(null);
+  const [fileData, setFileData] = useState(null);
 
   const handlePreview = async (file) => {
     // Chuyển file thành base64 để xem trước
     const base64Url = await getBase64(file);
     setPreviewUrl(base64Url); // Set URL dưới dạng base64 để hiển thị ảnh
     setFile(file); // Set file để sử dụng cho upload
+    setFileData({
+      file: file,          // Lưu trữ file gốc
+      previewUrl: base64Url // Lưu trữ URL base64 để xem trước
+    });
   };
 
   const handleUpload = async () => {
@@ -38,11 +43,10 @@ const Test = () => {
     console.log('Thông tin đầy đủ của file:', file);
 
     const loadingMessage = message.loading('Đang tải lên...', 10);
-
     try {
       const response = await axios.post(
-        "https://api.trandai03.online/api/v1/quizs/image/76",
-        formData,
+        "https://api.trandai03.online/api/v1/quizs/image/68",
+        fileData,
         {
           headers: {
             Authorization: `Bearer ${token}`,

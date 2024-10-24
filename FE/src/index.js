@@ -8,7 +8,7 @@ import ViewQuiz from "./pages/ViewQuiz/ViewQuiz";
 import CreateQuiz from "./pages/createQuiz/createQuiz";
 import CreateQuestion from "./pages/createQuestion/createQuestion";
 import MyLibrary from "./components/myLibrary/myLibrary";
-import Explore from "./components/explore/explore";
+import Explore from "./components/explore/explore.jsx";
 import InforQuiz from "./components/inforQuiz/inforQuiz";
 import QuizList from "./pages/quizList/quizList";
 import QuizDetail from "./pages/quizDetail/quizDetail";
