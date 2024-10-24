@@ -51,55 +51,61 @@ const CourseCard = () => {
     };
     return (
         <div>
-            <Slider {...settings}
-                style={{ margin: '20px 0' }}>
+            <Slider {...settings} style={{ margin: '40px 0' }}>
                 {displayedData.map((course) => {
                     return (
-                        <div className={`${styles.item} animate__animated animate__fadeInDownBig`} key={course.id}>
+                        <div className={`${styles.item} animate__animated animate__fadeInDownBig`} key={course.id} style={{ padding: '0 10px' }}>
                             <Card
                                 hoverable
-                                style={{ width: 300 }}
+                                style={{ width: 230, borderRadius: '10px', overflow: 'hidden' }}
                             >
-                                {/* objectPosition: '50% 50%',  height: 250*/}
-                                <div style={{ height: 250 }}>
-                                    <a href={`/details/`}>
+                                <div style={{ height: 200, overflow: 'hidden', borderRadius: '10px 10px 0 0' }}>
+                                    <a href={`/details/${course.id}`}>
                                         <img
                                             alt={course.name}
                                             src={course.image}
-                                            style={{ maxWidth: '100%', objectFit: 'cover', width: '100%', objectPosition: '50% 50%' }}
+                                            style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center' }}
                                             className="product-image"
                                         />
                                     </a>
                                 </div>
-                                <Title
-                                    level={4}
-                                    style={{
-                                        whiteSpace: 'nowrap',
-                                        overflow: 'hidden',
-                                        textOverflow: 'ellipsis',
-                                        width: '100%'
-                                    }}
-                                >
-                                </Title>
-                                <Text style={{ fontSize: '16px', color: '#888' }}>
-                                    {course.id}
-                                </Text> <br />
-                                <Text style={{ fontSize: '16px', color: '#888' }}>
-                                    {course.title}
-                                </Text>
-                                <br></br>
-                                <Text style={{ fontSize: '16px', color: '#888' }}>
-                                    Câu hỏi: {course.questions.length}
-                                </Text>
-                                <br></br>
-                                <Text style={{ fontSize: '16px', color: '#888' }}>
-                                    Ngày tạo: {formatDate(course.createdAt)}
-                                </Text>
+
+                                <div style={{ marginTop: '20px' }}>
+                                    <Title
+                                        level={4}
+                                        style={{
+                                            whiteSpace: 'nowrap',
+                                            overflow: 'hidden',
+                                            textOverflow: 'ellipsis',
+                                            width: '100%',
+                                            fontSize: '18px',
+                                            color: '#333',
+                                            textAlign: 'center'
+                                        }}
+                                    >
+                                        {course.title}
+                                    </Title>
+
+                                    <div style={{ textAlign: 'center', marginTop: '10px' }}>
+                                        <Text style={{ fontSize: '16px', color: '#888', display: 'block', marginBottom: '5px' }}>
+                                            Course ID: {course.id}
+                                        </Text>
+                                        <Text style={{ fontSize: '16px', color: '#888', display: 'block', marginBottom: '5px' }}>
+                                            Câu hỏi: {course.questions.length}
+                                        </Text>
+                                        <Text style={{ fontSize: '16px', color: '#888', display: 'block', marginBottom: '5px' }}>
+                                            Ngày tạo: {formatDate(course.createdAt)}
+                                        </Text>
+                                    </div>
+                                </div>
                             </Card>
                         </div>
                     )
                 })}
             </Slider>
+
+
+
             <List
                 grid={{ gutter: 16, column: 4 }}
                 dataSource={quizzes}
@@ -107,21 +113,75 @@ const CourseCard = () => {
                     <List.Item>
                         <Card
                             hoverable
-                            style={{ width: 240 }}
+                            style={{
+                                width: 280,
+                                borderRadius: '10px',
+                                overflow: 'hidden',
+                                boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)'
+                            }}
+                            // bodyStyle={{ padding: '20px' }}
                         >
                             <Link to={`/quizdetail/examcontent/${quiz.id}`}>
-                                <Image src={quiz.image} preview={false}></Image>
-                                <p><strong>{quiz.title}</strong></p>
-                                <p>Id: {quiz.id}</p>
-                                <p><ClockCircleOutlined /> {formatDate(quiz.createdAt)}</p>
-                                <p>Số câu hỏi: {quiz.questions?.length}</p>
-                                <p>Môn học: {quiz?.category?.name || "Không có"}</p>
-                                <p>Mô tả: {quiz.description}</p>
+                                <div style={{ height: 160, overflow: 'hidden', marginBottom: '15px', borderRadius: '8px' }}>
+                                    <Image
+                                        src={quiz.image}
+                                        alt={quiz.title}
+                                        preview={false}
+                                        style={{
+                                            width: '100%',
+                                            height: '100%',
+                                            objectFit: 'cover',
+                                            objectPosition: 'center',
+                                            borderRadius: '8px'
+                                        }}
+                                    />
+                                </div>
+
+                                <p style={{
+                                    fontSize: '18px',
+                                    fontWeight: 'bold',
+                                    color: '#333',
+                                    marginBottom: '10px',
+                                    whiteSpace: 'nowrap',
+                                    overflow: 'hidden',
+                                    textOverflow: 'ellipsis'
+                                }}>
+                                    {quiz.title}
+                                </p>
+
+                                <p style={{ fontSize: '14px', color: '#888', marginBottom: '5px' }}>
+                                    <strong>Id:</strong> {quiz.id}
+                                </p>
+
+                                <p style={{ fontSize: '14px', color: '#888', marginBottom: '5px' }}>
+                                    <ClockCircleOutlined style={{ marginRight: '5px' }} />
+                                    {formatDate(quiz.createdAt)}
+                                </p>
+
+                                <p style={{ fontSize: '14px', color: '#888', marginBottom: '5px' }}>
+                                    <strong>Số câu hỏi:</strong> {quiz.questions?.length}
+                                </p>
+
+                                <p style={{ fontSize: '14px', color: '#888', marginBottom: '5px' }}>
+                                    <strong>Môn học:</strong> {quiz?.category?.name || "Không có"}
+                                </p>
+
+                                <p style={{
+                                    fontSize: '14px',
+                                    color: '#888',
+                                    whiteSpace: 'nowrap',
+                                    overflow: 'hidden',
+                                    textOverflow: 'ellipsis',
+                                    marginBottom: '5px'
+                                }}>
+                                    <strong>Mô tả:</strong> {quiz.description || 'Không có mô tả'}
+                                </p>
                             </Link>
                         </Card>
                     </List.Item>
                 )}
             />
+
         </div>
     );
 }

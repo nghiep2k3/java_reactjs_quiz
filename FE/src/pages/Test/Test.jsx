@@ -1,12 +1,14 @@
 import React, { useState, useRef } from 'react';
-import { Button, Form, Input, Card, notification } from 'antd';
+import { Button, Form, Input, Card, notification, Modal } from 'antd';
 import axios from 'axios';
 import './verification.css';
 
 const Test = () => {
   const [loading, setLoading] = useState(false);
-  const [resending, setResending] = useState(false); // New state for "Resend Code"
+  const [resending, setResending] = useState(false);
   const [code, setCode] = useState(Array(6).fill(""));
+  const [isModalVisible, setIsModalVisible] = useState(false); // State for modal visibility
+  const [email, setEmail] = useState('21012510@st.phenikaa-uni.edu.vn'); // Email state
   const inputRefs = useRef([]);
 
   // Handle input changes for verification code
@@ -38,11 +40,9 @@ const Test = () => {
 
     try {
       setLoading(true);
-      console.log(33333, verificationCode);
-      // The correct payload structure
       const dataCode = {
-        email: '21012510@st.phenikaa-uni.edu.vn',  // Email as a string
-        verificationCode: verificationCode         // Verification code from the form
+        email: email,  // Email as a string
+        verificationCode: verificationCode // Verification code from the form
       };
 
       const res = await axios.post('https://api.trandai03.online/api/v1/users/verify', dataCode);
@@ -70,14 +70,17 @@ const Test = () => {
     } finally {
       setLoading(false);
     }
-
   };
 
-  // Handle "Resend Code" button click
+  // Show modal when "Resend Code" is clicked
+  const showModal = () => {
+    setIsModalVisible(true);
+  };
+
+  // Handle sending code after entering email in the modal
   const handleResendCode = async () => {
     try {
       setResending(true);
-      const email = "21012510@st.phenikaa-uni.edu.vn"; // Your email, this could be dynamically passed
       const res = await axios.post(`https://api.trandai03.online/api/v1/users/resend-verification/${email}`);
 
       if (res.status === 200) {
@@ -99,7 +102,13 @@ const Test = () => {
       });
     } finally {
       setResending(false);
+      setIsModalVisible(false); // Close modal after sending
     }
+  };
+
+  // Handle modal cancel
+  const handleCancel = () => {
+    setIsModalVisible(false);
   };
 
   return (
@@ -132,13 +141,33 @@ const Test = () => {
         <div style={{ textAlign: 'center', marginTop: '20px' }}>
           <Button
             type="link"
-            onClick={handleResendCode}
+            onClick={showModal}
             loading={resending}
             disabled={resending} // Disable the button while sending the request
           >
             Gửi lại mã
           </Button>
         </div>
+
+        {/* Modal for resending code */}
+        <Modal
+          title="Nhập email để gửi lại mã"
+          open={isModalVisible}
+          onOk={handleResendCode}
+          onCancel={handleCancel}
+          okText="Gửi"
+          cancelText="Hủy"
+          confirmLoading={resending} // Show loading on the "Gửi" button while resending
+        >
+          <Form>
+            <Form.Item label="Email">
+              <Input
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+              />
+            </Form.Item>
+          </Form>
+        </Modal>
       </Card>
     </div>
   );

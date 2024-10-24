@@ -32,41 +32,41 @@ const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <React.StrictMode>
     <FileProvider>
-    <Router future={{ v7_startTransition: true }}>
-      <Routes>
-        <Route path="/" element={<App />}>
-          <Route path="/mylibrary" element={<MyLibrary />} />
-          <Route path="/ViewQuiz" element={<ViewQuiz />} />
-          <Route path="/" element={<Explore />} />
-          <Route path="/explore" element={<Explore />} />
-          <Route path="/result" element={<Result />} />
-          <Route path="/reportquizresult" element={<ReportQuizResult />} />
+      <Router future={{ v7_startTransition: true }}>
+        <Routes>
           <Route path="/test" element={<Test />} />
-          <Route path="/createquiz" element={<CreateQuiz />}>
-            <Route path="inforquiz" element={<InforQuiz />} />
-            <Route path="createquestion" element={<CreateQuestion />} />
-          </Route>
-          <Route path="/edit" element={<Edit />}>
-            <Route path="editquiz/:id" element={<EditQuiz />} />
-            <Route path="editquestion/:id" element={<EditQuestion />} />
+          <Route path="/" element={<App />}>
+            <Route path="/mylibrary" element={<MyLibrary />} />
+            <Route path="/ViewQuiz" element={<ViewQuiz />} />
+            <Route path="/" element={<Explore />} />
+            <Route path="/explore" element={<Explore />} />
+            <Route path="/result" element={<Result />} />
+            <Route path="/reportquizresult" element={<ReportQuizResult />} />
+            <Route path="/createquiz" element={<CreateQuiz />}>
+              <Route path="inforquiz" element={<InforQuiz />} />
+              <Route path="createquestion" element={<CreateQuestion />} />
+            </Route>
+            <Route path="/edit" element={<Edit />}>
+              <Route path="editquiz/:id" element={<EditQuiz />} />
+              <Route path="editquestion/:id" element={<EditQuestion />} />
+            </Route>
+            <Route path="/quizlist" element={<QuizList />} />
+            <Route path="/profile" element={<Profile />} />
           </Route>
           <Route path="/quizlist" element={<QuizList />} />
           <Route path="/profile" element={<Profile />} />
-        </Route>
-        <Route path="/quizlist" element={<QuizList />} />
-        <Route path="/profile" element={<Profile />} />
-      </Routes>
+        </Routes>
 
-      <Routes>
-        <Route path="/quizdetail" element={<QuizDetail />} >
-          <Route path="examcontent/:id" element={<ExamContent />} />
-        </Route>
-        <Route path="/doexam/:id" element={<DoExam />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
-        <Route path="/changepass" element={<ChangePassword />} />
-      </Routes>
-    </Router>
+        <Routes>
+          <Route path="/quizdetail" element={<QuizDetail />} >
+            <Route path="examcontent/:id" element={<ExamContent />} />
+          </Route>
+          <Route path="/doexam/:id" element={<DoExam />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/changepass" element={<ChangePassword />} />
+        </Routes>
+      </Router>
     </FileProvider>
   </React.StrictMode >
 );
