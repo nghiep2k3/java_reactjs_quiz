@@ -90,6 +90,8 @@ const QuizExam = () => {
     const handleSubmit = async () => {
         const token = localStorage.getItem('token');
         let score = 0;
+        let numberOfCorrect = 0;
+        const scoreOfsens = (10 / questions.length).toFixed(2);
         const remaintimeInMinutes = Math.floor(timeInMinutes - (remainingTime / 60));
         const timeInSeconds = (60 - remainingTime % 60);
         const calculatedTime = remaintimeInMinutes < 1
@@ -103,16 +105,16 @@ const QuizExam = () => {
             const isCorrect = selectedChoices.sort().toString() === correctChoices.sort().toString();
 
             if (isCorrect) {
-                score++;
+                numberOfCorrect++;
             }
-
+            score = (numberOfCorrect * scoreOfsens).toFixed(2);
             return {
                 questionId: question.id,
                 selectedChoiceIds: selectedChoices,
             };
 
         });
-        setScoreExam(score);
+        setScoreExam(numberOfCorrect);
         setIsModalOpen(false);
         setIsModalOpen2(true);
 
@@ -123,9 +125,6 @@ const QuizExam = () => {
             // completedAt: new Date().toISOString(),
             submittedTime: timeSubmit,
         };
-
-        localStorage.setItem('quizResult', JSON.stringify(quizResult));
-
         try {
             const response = await axios.post('https://api.trandai03.online/api/v1/quizs/submit', quizResult, {
                 headers: {
@@ -138,11 +137,7 @@ const QuizExam = () => {
                     message: "Nộp bài thành công",
                     description: "Bài thi đã được nộp thành công!"
                 });
-                console.log("result", response.data);
-
                 localStorage.setItem("Result", JSON.stringify(response.data));
-
-                setScoreExam(score);
                 setIsModalOpen(false);
                 setIsModalOpen2(true);
             }
@@ -187,7 +182,8 @@ const QuizExam = () => {
                                 <Image src='https://studio.eduquiz.vn/assets/images/exam/img_hoanthanh@2x.png' preview={false} />
                             </div>
                             <p>Bạn đã hoàn thành bài thi</p>
-                            <h3>{scoreExam} điểm</h3>
+                            <h3>{(scoreExam * (10 / questions.length)).toFixed(2)} điểm</h3>
+
                             <div>
                                 <p>Số câu đúng: {scoreExam}/{questions.length}</p>
                                 <p>Thời gian: {submittedTime}</p>

@@ -1,109 +1,145 @@
-import React, { useState } from 'react';
-import { Upload, Button, message, Image } from "antd";
-import { UploadOutlined, DeleteOutlined } from "@ant-design/icons";
-import axios from "axios";
-
-// Hàm getBase64 để chuyển file thành chuỗi base64
-const getBase64 = (file) => {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.readAsDataURL(file);
-    reader.onload = () => resolve(reader.result);
-    reader.onerror = (error) => reject(error);
-  });
-};
+import React, { useState, useRef } from 'react';
+import { Button, Form, Input, Card, notification } from 'antd';
+import axios from 'axios';
+import './verification.css';
 
 const Test = () => {
-  const token = localStorage.getItem('token');
-  const [file, setFile] = useState(null);
-  const [previewUrl, setPreviewUrl] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [resending, setResending] = useState(false); // New state for "Resend Code"
+  const [code, setCode] = useState(Array(6).fill(""));
+  const inputRefs = useRef([]);
 
-  const handlePreview = async (file) => {
-    // Chuyển file thành base64 để xem trước
-    const base64Url = await getBase64(file);
-    setPreviewUrl(base64Url); // Set URL dưới dạng base64 để hiển thị ảnh
-    setFile(file); // Set file để sử dụng cho upload
+  // Handle input changes for verification code
+  const handleChange = (e, index) => {
+    const newCode = [...code];
+    const value = e.target.value;
+
+    if (/^\d$/.test(value) || value === "") {  // Allow only digits or empty string
+      newCode[index] = value;
+      setCode(newCode);
+
+      // Move to the next input if the current one is filled and we're not at the last input
+      if (value && index < 5) {
+        inputRefs.current[index + 1].focus();
+      }
+    }
   };
 
-  const handleUpload = async () => {
-    if (!file) {
-      message.warning("Chưa có hình ảnh nào được chọn!");
-      return;
+  // Handle backspace key to focus previous input
+  const handleKeyDown = (e, index) => {
+    if (e.key === 'Backspace' && code[index] === "" && index > 0) {
+      inputRefs.current[index - 1].focus();
     }
+  };
 
-    const formData = new FormData();
-    formData.append("file", file);
-
-    // Log toàn bộ đối tượng file
-    console.log('Thông tin đầy đủ của file:', file);
-
-    const loadingMessage = message.loading('Đang tải lên...', 10);
+  // Handle form submission for verification
+  const onFinish = async () => {
+    const verificationCode = code.join(""); // Combine all digits into a single code
 
     try {
-      const response = await axios.post(
-        "https://api.trandai03.online/api/v1/quizs/image/76",
-        formData,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "multipart/form-data",
-            Accept: "*/*",
-          },
-        }
-      );
-      message.success("Upload thành công!");
-      console.log("Response:", response.data);
+      setLoading(true);
+      console.log(33333, verificationCode);
+      // The correct payload structure
+      const dataCode = {
+        email: '21012510@st.phenikaa-uni.edu.vn',  // Email as a string
+        verificationCode: verificationCode         // Verification code from the form
+      };
 
-      // Reset preview và file sau khi upload thành công
-      setPreviewUrl(null);
-      setFile(null);
+      const res = await axios.post('https://api.trandai03.online/api/v1/users/verify', dataCode);
+
+      if (res.status === 200) {
+        notification.success({
+          message: "Xác minh thành công",
+          description: "Success"
+        });
+        setTimeout(() => {
+          window.location.href = "/login";
+        }, 1500);
+      } else {
+        notification.error({
+          message: "Xác minh không thành công",
+          description: "Error"
+        });
+      }
     } catch (error) {
-      message.error("Upload thất bại!");
-      console.error("Error:", error);
+      console.error("Đã xảy ra lỗi khi xác minh: ", error);
+      notification.error({
+        message: "Xác minh không thành công",
+        description: "Kết nối thất bại"
+      });
     } finally {
-      loadingMessage(); // Tắt loading sau khi quá trình upload kết thúc
+      setLoading(false);
     }
+
   };
 
-  // Xử lý xóa ảnh đã chọn
-  const handleRemove = () => {
-    setPreviewUrl(null); // Xóa ảnh xem trước
-    setFile(null); // Xóa file đã chọn
+  // Handle "Resend Code" button click
+  const handleResendCode = async () => {
+    try {
+      setResending(true);
+      const email = "21012510@st.phenikaa-uni.edu.vn"; // Your email, this could be dynamically passed
+      const res = await axios.post(`https://api.trandai03.online/api/v1/users/resend-verification/${email}`);
+
+      if (res.status === 200) {
+        notification.success({
+          message: "Mã xác minh đã được gửi lại",
+          description: "Vui lòng kiểm tra email của bạn"
+        });
+      } else {
+        notification.error({
+          message: "Gửi mã xác minh không thành công",
+          description: "Error"
+        });
+      }
+    } catch (error) {
+      console.error("Error while resending verification code: ", error);
+      notification.error({
+        message: "Gửi mã xác minh không thành công",
+        description: "Kết nối thất bại"
+      });
+    } finally {
+      setResending(false);
+    }
   };
 
   return (
-    <div>
-      {/* Upload component */}
-      <Upload
-        beforeUpload={(file) => {
-          handlePreview(file); // Xử lý xem trước file
-          return false; // Ngăn không cho upload tự động
-        }}
-        showUploadList={false} // Ẩn danh sách file đã tải lên
-      >
-        <Button icon={<UploadOutlined />}>Chọn hình ảnh</Button>
-      </Upload>
-
-      {/* Hiển thị ảnh xem trước */}
-      {previewUrl && (
-        <div style={{ marginTop: 20 }}>
-          <Image
-            src={previewUrl}
-            alt="Xem trước ảnh"
-            style={{ maxWidth: "200px", marginBottom: 20 }}
-          />
-          <div>
-            {/* Nút Tải lên */}
-            <Button type="primary" onClick={handleUpload} style={{ marginRight: 10 }}>
-              Tải lên
-            </Button>
-            {/* Nút Xóa ảnh */}
-            <Button type="default" onClick={handleRemove} icon={<DeleteOutlined />}>
-              Xóa ảnh
-            </Button>
+    <div className="verification-container">
+      <Card className="verification-card">
+        <h2 style={{ textTransform: 'uppercase' }}>Xác minh Email</h2>
+        <Form name="verification_form" onFinish={onFinish} size="large">
+          <div className="verification-inputs">
+            {code.map((digit, index) => (
+              <Input
+                key={index}
+                ref={(el) => inputRefs.current[index] = el}
+                className="verification-input"
+                maxLength={1}
+                value={digit}
+                onChange={(e) => handleChange(e, index)}
+                onKeyDown={(e) => handleKeyDown(e, index)}
+                autoFocus={index === 0} // Auto-focus the first input when the form loads
+              />
+            ))}
           </div>
+
+          <Form.Item className="verification-submit">
+            <Button type="primary" htmlType="submit" loading={loading} block>
+              Xác minh
+            </Button>
+          </Form.Item>
+        </Form>
+
+        <div style={{ textAlign: 'center', marginTop: '20px' }}>
+          <Button
+            type="link"
+            onClick={handleResendCode}
+            loading={resending}
+            disabled={resending} // Disable the button while sending the request
+          >
+            Gửi lại mã
+          </Button>
         </div>
-      )}
+      </Card>
     </div>
   );
 };

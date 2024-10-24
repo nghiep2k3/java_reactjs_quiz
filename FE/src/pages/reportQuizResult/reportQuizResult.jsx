@@ -6,7 +6,6 @@ import axios from 'axios';
 
 const ReportQuizResult = () => {
     const [result, setResult] = useState(null);
-    const [quiz, setQuiz] = useState(null);
     const [currentTab, setCurrentTab] = useState("1");
     const [tableData, setTableData] = useState([]);
     // Gọi API lấy dữ liệu
@@ -30,26 +29,26 @@ const ReportQuizResult = () => {
         fetchData();
     }, []);
     console.log("data", result);
-
     useEffect(() => {
-        if (result && quiz) {
+        if (result) {
             handleTabChange("1");
         }
-    }, [result, quiz]);
+    }, [result]);
 
-    if (!result || !quiz) {
+    if (!result) {
         return <Loading />;
     }
 
     const handleTabChange = (key) => {
+        // const rate = res.score / re
         setCurrentTab(key);
         if (key === "1") {
             setTableData(result.map((res) => ({
-                quizTitle: "Quiz " + res.quizId, // Đổi 'quizTitle' thành tên quiz (có thể từ API)
+                quizTitle: res.quizTitle,
                 score: res.score,
-                rating: res.score >= 80 ? "Giỏi" : res.score >= 50 ? "Trung bình" : "Yếu",
-                correctAnswers: res.correctAnswers || 0,  // Thêm logic xử lý khi hiển thị
-                incorrectAnswers: res.incorrectAnswers || 0,
+                rating: res.score >= 8 ? "Giỏi" : res.score >= 5 ? "Trung bình" : "Yếu",
+                correctAnswers: res.correctAnswers || 0,
+                incorrectAnswers: res.resultQuestionResponses.length - res.correctAnswers || 0,
                 totalQuestions: res.resultQuestionResponses.length,
                 completedTime: res.submittedTime,
                 finishTime: new Date(res.completedAt).toLocaleString(),

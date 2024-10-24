@@ -1,15 +1,17 @@
 import React, { useEffect, useState } from 'react';
 import { List, Card, notification, Popconfirm, Button, Image } from 'antd';
-import { Link, useParams } from 'react-router-dom';
-import { ClockCircleOutlined, DeleteOutlined } from '@ant-design/icons';
+import { Link, useNavigate, useParams } from 'react-router-dom';
+import { ClockCircleOutlined, DeleteOutlined, EditOutlined } from '@ant-design/icons';
 import axios from 'axios';
 
 const { Meta } = Card;
 const QuizList = () => {
     const { id } = useParams();
     const [quizzes, setQuizzes] = useState([]);
-    console.log("quiz", quizzes);
-
+    const navigate = useNavigate();
+    const handleEditQuiz = (quizId) => {
+        navigate(`/edit/editquiz/${quizId}`);
+    };
     const token = localStorage.getItem("token");
     useEffect(() => {
         const fetchCategories = async () => {
@@ -41,7 +43,6 @@ const QuizList = () => {
         return `${day}/${month}/${year}`;
     };
     const handleDeleteQuiz = async (quizId) => {
-        console.log(quizId);
         try {
             const response = await axios.delete(`https://api.trandai03.online/api/v1/quizs/${quizId}`, {
                 headers: {
@@ -77,6 +78,7 @@ const QuizList = () => {
                             hoverable
                             style={{ width: 240 }}
                             actions={[
+                                <Button onClick={() => handleEditQuiz(quiz.id)} icon={<EditOutlined />}></Button>,
                                 <Popconfirm
                                     title="Bạn có chắc chắn muốn xóa đề thi này?"
                                     onConfirm={() => handleDeleteQuiz(quiz.id)}

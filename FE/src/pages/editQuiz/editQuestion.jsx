@@ -1,35 +1,37 @@
-import React, { useContext, useEffect, useState } from 'react';
-import { Button, Input, Form, Card, Row, Col, Radio, Anchor, notification, Checkbox, message } from 'antd';
+import React, { useEffect, useState } from 'react';
+import { Button, Input, Form, Card, Row, Col, Radio, Anchor, notification, Checkbox } from 'antd';
 import { PlusOutlined, DeleteOutlined } from '@ant-design/icons';
-import { useNavigate } from 'react-router-dom';
-
-import {ContextFileImage} from '../../components/context/ContextFileImage'
+import { useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
-const CreateQuestion = () => {
-    var quizId = 0;
-    const { fileImgae } = useContext(ContextFileImage);
+const EditQuestion = () => {
     const navigate = useNavigate();
-    const [quiz, setQuiz] = useState(null);
-    const token = localStorage.getItem("token");
-    const [questions, setQuestions] = useState(() => {
-        const storedQuestions = localStorage.getItem('quizQuestions');
-        return storedQuestions ? JSON.parse(storedQuestions) : [
-            {
-                question: '',
-                questionChoice: [
-                    { id: 1, text: '', isCorrect: false },
-                    { id: 2, text: '', isCorrect: false },
-                    { id: 3, text: '', isCorrect: false },
-                    { id: 4, text: '', isCorrect: false },
-                ],
+    const [questions, setQuestions] = useState([]);
+    useEffect(() => {
+        const storedQuiz = localStorage.getItem('storedQuiz');
+        if (storedQuiz) {
+            const parsedQuiz = JSON.parse(storedQuiz);
+            if (parsedQuiz.questions) {
+                setQuestions(parsedQuiz.questions);
+            } else {
+                notification.error({
+                    message: 'Lỗi',
+                    description: 'Không tìm thấy câu hỏi trong quiz đã lưu',
+                });
             }
-        ];
-    });
+        } else {
+            notification.error({
+                message: 'Lỗi',
+                description: 'Không tìm thấy quiz đã lưu trong localStorage',
+            });
+        }
+    }, []);
 
     const [setCurrentQuestionIndex] = useState(0);
 
     const saveToLocalStorage = (updatedQuestions) => {
-        localStorage.setItem('quizQuestions', JSON.stringify(updatedQuestions));
+        const storedQuiz = JSON.parse(localStorage.getItem('storedQuiz'));
+        storedQuiz.questions = updatedQuestions;
+        localStorage.setItem('storedQuiz', JSON.stringify(storedQuiz));
     };
 
     const addNewQuestion = () => {
@@ -88,51 +90,58 @@ const CreateQuestion = () => {
         saveToLocalStorage(newQuestions);
     };
     const handleSubmit = async () => {
-        const storedQuiz = JSON.parse(localStorage.getItem('quizInfo')) || {};
+        const storedQuiz = JSON.parse(localStorage.getItem('edit')) || {};
+        const oldQuiz = JSON.parse(localStorage.getItem('storedQuiz')) || {};
         const currentDate = new Date().toISOString();
         const formattedQuestions = questions.map((question) => {
             return {
+                id: question.id,
                 question: question.question,
-                questionChoiceDTOS: question.questionChoice.map((option) => {
+                createdAt: currentDate,
+                questionChoice: question.questionChoice.map((option) => {
                     return {
+                        id: option.id,
                         text: option.text,
                         isCorrect: option.isCorrect,
                     };
                 }),
             };
         });
-        console.log("question", formattedQuestions);
 
-        const newQuiz = {
-            title: storedQuiz.title || '',
-            description: storedQuiz.description || '',
-            category_id: storedQuiz.category_id || 2,
+        const updatedQuiz = {
+            id: oldQuiz.id,
+            title: storedQuiz.title,
+            description: storedQuiz.description,
+            categoryId: storedQuiz.category_id,
             questions: formattedQuestions,
             isPublished: storedQuiz.isPublished || false,
-            userCreate: storedQuiz.userCreate || 'JohnDoe',
-            timestamp: currentDate,
         };
-
         try {
-            const response = await axios.post('https://api.trandai03.online/api/v1/quizs/create', newQuiz, {
+            const token = localStorage.getItem("token");
+            if (!token) {
+                notification.error({
+                    message: 'Lỗi',
+                    description: 'Không tìm thấy token, vui lòng đăng nhập lại.',
+                });
+                return;
+            }
+            const response = await axios.put(`https://api.trandai03.online/api/v1/quizs/update/${oldQuiz.id}`, updatedQuiz, {
                 headers: {
                     'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json',
-                    'Accept': '*/*',
                 },
             });
-            if (response.status === 201) {
-                setQuiz(response.data);
-                console.log(response.data.id);
-                quizId = response.data.id
-                
+            if (response.status === 200) {
+                console.log("response tra ve", response.data);
+                console.log("cai nay truyen di", updatedQuiz);
+
                 notification.success({
                     message: 'Thành công',
                     description: 'Quiz đã được tạo thành công.',
                 });
-                localStorage.removeItem("quizInfo")
-                localStorage.removeItem("quizQuestions")
-                // navigate('/quizlist')
+                localStorage.removeItem("edit")
+                localStorage.removeItem("storedQuiz")
+                navigate('/quizlist')
             }
         } catch (error) {
             notification.error({
@@ -141,36 +150,6 @@ const CreateQuestion = () => {
             });
             console.log(error.response);
         }
-
-        const loadingMessage = message.loading('Đang tải lên...', 10);
-        const formData = new FormData();
-        formData.append("file", fileImgae);
-        console.log(quizId);
-        try {
-            const response = await axios.post(
-                `https://api.trandai03.online/api/v1/quizs/image/${quizId}`,
-                formData,
-                {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                        "Content-Type": "multipart/form-data",
-                        Accept: "*/*",
-                    },
-                }
-            );
-            message.success("Upload thành công!");
-            console.log("Response:", response.data);
-
-            // Reset preview và file sau khi upload thành công
-            // setPreviewUrl(null);
-            // setFile(null);
-        } catch (error) {
-            message.error("Upload thất bại!");
-            console.error("Error:", error);
-        } finally {
-            loadingMessage();
-        }
-
     };
 
     const handleAnchorClick = (qIndex) => {
@@ -277,4 +256,4 @@ const CreateQuestion = () => {
     );
 };
 
-export default CreateQuestion;
+export default EditQuestion;
