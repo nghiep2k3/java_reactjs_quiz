@@ -1,7 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { Form, Input, Button, Select, Upload, notification, message, Image } from 'antd';
 import { useNavigate } from 'react-router-dom';
 import { UploadOutlined, DeleteOutlined } from "@ant-design/icons";
+
+import {ContextFileImage} from '../context/ContextFileImage'
 import axios from 'axios';
 const { TextArea } = Input;
 const { Option } = Select;
@@ -14,6 +16,7 @@ const getBase64 = (file) => {
     });
 };
 const InforQuiz = () => {
+    const { setFileImage } = useContext(ContextFileImage);
     const [form] = Form.useForm();
     const [quizTitle, setQuizTitle] = useState('');
     const [quizCategory, setQuizCategory] = useState(null);
@@ -26,6 +29,7 @@ const InforQuiz = () => {
     const [fileData, setFileData] = useState(null);
     const [previewUrl, setPreviewUrl] = useState(null);
     const navigate = useNavigate();
+
     useEffect(() => {
         const fetchCategories = async () => {
             try {
@@ -54,26 +58,59 @@ const InforQuiz = () => {
             setQuizDescription(parsedQuiz.description || '');
         }
     }, [storedQuiz]);
+
     const handlePreview = async (file) => {
         const base64Url = await getBase64(file);
         setPreviewUrl(base64Url);
         setFile(file);
     };
 
+    // const handleUpload = async () => {
+    //     if (!file) {
+    //         message.warning("Chưa có hình ảnh nào được chọn!");
+    //         return;
+    //     }
+    //     const formData = new FormData();
+    //     formData.append("file", file);
+    //     try {
+    //         const response = await axios.post(`https://api.trandai03.online/api/v1/quizs/image/76`, formData, {
+    //             headers: {
+    //                 'Authorization': `Bearer ${token}`,
+    //                 'Content-Type': 'application/json',
+    //                 'Accept': '*/*',
+    //             },
+    //         });
+    //         if (response.status === 201) {
+    //             // localStorage.removeItem("images")
+    //             // navigate('/quizlist')
+    //             alert("ok");
+    //         }
+    //     } catch (error) {
+    //         notification.error({
+    //             message: 'Lỗi khi tạo quiz',
+    //             description: 'Không thể tạo quiz, vui lòng thử lại sau.',
+    //         });
+    //         console.log("lỗi", error.response);
+    //     }
+    //     console.log('Thông tin đầy đủ của file:', file);
+    //     localStorage.setItem("images", file);
+    //     const loadingMessage = message.loading('Đang tải lên...', 10);
+    //     loadingMessage();
+    //     setPreviewUrl(null);
+    //     setFile(null);
+    // };
+
     const handleUpload = async () => {
         if (!file) {
             message.warning("Chưa có hình ảnh nào được chọn!");
             return;
         }
-        // const formData = new FormData();
-        // formData.append("file", file);
+        setFileImage(file)
+        // Log toàn bộ đối tượng file
         console.log('Thông tin đầy đủ của file:', file);
-        localStorage.setItem("images", file);
-        const loadingMessage = message.loading('Đang tải lên...', 10);
-        setPreviewUrl(null);
-        setFile(null);
-        loadingMessage();
     };
+
+
     const handleRemove = () => {
         setPreviewUrl(null);
         setFile(null);
@@ -93,6 +130,7 @@ const InforQuiz = () => {
         localStorage.setItem('quizInfo', JSON.stringify(quizData));
         navigate('/createquiz/createquestion');
     };
+
     return (
         <Form
             layout="vertical"

@@ -22,14 +22,16 @@ import ReportQuizResult from "./pages/reportQuizResult/reportQuizResult";
 import ChangePassword from "./pages/changePassword/changePassword";
 import Profile from "./pages/profile/profile";
 import Test from "./pages/Test/Test.jsx";
-import { LoginWrapper } from "./components/context/login.context";
 import EditQuiz from "./pages/editQuiz/editQuiz";
 import Edit from "./pages/editQuiz/edit";
 import EditQuestion from "./pages/editQuiz/editQuestion";
 
+import { FileProvider } from "./components/context/ContextFileImage.jsx";
+
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <React.StrictMode>
+    <FileProvider>
     <Router future={{ v7_startTransition: true }}>
       <Routes>
         <Route path="/" element={<App />}>
@@ -65,6 +67,7 @@ root.render(
         <Route path="/changepass" element={<ChangePassword />} />
       </Routes>
     </Router>
+    </FileProvider>
   </React.StrictMode >
 );
 
