@@ -81,7 +81,7 @@ const Login = () => {
                             <Checkbox>Ghi nhớ tôi</Checkbox>
                         </Form.Item>
 
-                        <a className="login-form-forgot" href="/">
+                        <a className="login-form-forgot" href="/forgotpass">
                             Quên mật khẩu?
                         </a>
                     </Form.Item>

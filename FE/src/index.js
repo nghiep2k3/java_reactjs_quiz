@@ -22,10 +22,10 @@ import ReportQuizResult from "./pages/reportQuizResult/reportQuizResult";
 import ChangePassword from "./pages/changePassword/changePassword";
 import Profile from "./pages/profile/profile";
 import Test from "./pages/Test/Test.jsx";
-import { LoginWrapper } from "./components/context/login.context";
 import EditQuiz from "./pages/editQuiz/editQuiz";
 import Edit from "./pages/editQuiz/edit";
 import EditQuestion from "./pages/editQuiz/editQuestion";
+import ForgotPassword from "./pages/forgetPassword/forgotPassword.jsx";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
@@ -39,7 +39,7 @@ root.render(
           <Route path="/explore" element={<Explore />} />
           <Route path="/result" element={<Result />} />
           <Route path="/reportquizresult" element={<ReportQuizResult />} />
-          <Route path="/test" element={<Test />} />
+          <Route path="/rechange" element={<Test />} />
           <Route path="/createquiz" element={<CreateQuiz />}>
             <Route path="inforquiz" element={<InforQuiz />} />
             <Route path="createquestion" element={<CreateQuestion />} />
@@ -63,6 +63,7 @@ root.render(
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/changepass" element={<ChangePassword />} />
+        <Route path="/forgotpass" element={<ForgotPassword />} />
       </Routes>
     </Router>
   </React.StrictMode >

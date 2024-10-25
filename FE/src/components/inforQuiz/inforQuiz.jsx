@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Form, Input, Button, Select, Upload, notification, message, Image } from 'antd';
+import { Form, Input, Button, Select, Upload, notification, message, Image, Switch } from 'antd';
 import { useNavigate } from 'react-router-dom';
 import { UploadOutlined, DeleteOutlined } from "@ant-design/icons";
 import axios from 'axios';
@@ -17,13 +17,13 @@ const InforQuiz = () => {
     const [form] = Form.useForm();
     const [quizTitle, setQuizTitle] = useState('');
     const [quizCategory, setQuizCategory] = useState(null);
+    const [isPublished, setIsPublished] = useState(false);
     const [quizDescription, setQuizDescription] = useState('');
     const [categories, setCategories] = useState([]);
     const storedQuiz = localStorage.getItem('quizInfo');
     const parsedQuiz = JSON.parse(storedQuiz);
     const token = localStorage.getItem("token");
     const [file, setFile] = useState(null);
-    const [fileData, setFileData] = useState(null);
     const [previewUrl, setPreviewUrl] = useState(null);
     const navigate = useNavigate();
     useEffect(() => {
@@ -65,13 +65,29 @@ const InforQuiz = () => {
             message.warning("Chưa có hình ảnh nào được chọn!");
             return;
         }
-        // const formData = new FormData();
-        // formData.append("file", file);
         console.log('Thông tin đầy đủ của file:', file);
-        localStorage.setItem("images", file);
         const loadingMessage = message.loading('Đang tải lên...', 10);
-        setPreviewUrl(null);
-        setFile(null);
+        try {
+            const response = await axios.post(`https://api.trandai03.online/api/v1/quizs/image/68`, FormData, {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                    'Accept': '*/*',
+                },
+            });
+            if (response.status === 201) {
+                setPreviewUrl(null);
+                setFile(null);
+                localStorage.removeItem("images")
+                navigate('/quizlist')
+            }
+        } catch (error) {
+            notification.error({
+                message: 'Lỗi khi tạo quiz',
+                description: 'Không thể tạo quiz, vui lòng thử lại sau.',
+            });
+            console.log("lỗi", error.response);
+        }
         loadingMessage();
     };
     const handleRemove = () => {
@@ -86,7 +102,7 @@ const InforQuiz = () => {
             description: values.description,
             category_id: values.category_id,
             questions: [],
-            isPublished: false,
+            isPublished: isPublished,
             // images: imageFiles,
             userCreate: userCreate,
         };
@@ -138,6 +154,12 @@ const InforQuiz = () => {
                 rules={[{ required: true, message: 'Vui lòng nhập mô tả!' }]}
             >
                 <TextArea rows={4} placeholder="Nhập mô tả về đề thi" />
+            </Form.Item>
+            <Form.Item label="Công khai">
+                <Switch
+                    checked={isPublished}
+                    onChange={(checked) => setIsPublished(checked)}
+                />
             </Form.Item>
             <div>
                 {/* Upload component */}

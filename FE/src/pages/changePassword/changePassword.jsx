@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
 import { Form, Input, Button, notification } from 'antd';
-import { LockOutlined, MailOutlined, UserOutlined } from '@ant-design/icons';
+import { LockOutlined } from '@ant-design/icons';
 import axios from 'axios';
 
 const ChangePassword = () => {
     const [loading, setLoading] = useState(false);
 
     const onFinish = async (values) => {
-        const { email, username, password, newPassword, retypePassword } = values;
+        const { password, newPassword, retypePassword } = values;
         if (newPassword !== retypePassword) {
             notification.error({
                 message: 'Mật khẩu mới không khớp!',

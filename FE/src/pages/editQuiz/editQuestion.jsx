@@ -137,7 +137,7 @@ const EditQuestion = () => {
 
                 notification.success({
                     message: 'Thành công',
-                    description: 'Quiz đã được tạo thành công.',
+                    description: 'Quiz đã được sửa thành công.',
                 });
                 localStorage.removeItem("edit")
                 localStorage.removeItem("storedQuiz")
@@ -145,8 +145,8 @@ const EditQuestion = () => {
             }
         } catch (error) {
             notification.error({
-                message: 'Lỗi khi tạo quiz',
-                description: 'Không thể tạo quiz, vui lòng thử lại sau.',
+                message: 'Lỗi khi sửa quiz',
+                description: 'Không thể sửa quiz, vui lòng thử lại sau.',
             });
             console.log(error.response);
         }

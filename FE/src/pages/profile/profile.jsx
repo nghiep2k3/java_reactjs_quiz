@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Card, Avatar, Descriptions, Button, notification } from 'antd';
 import { UserOutlined } from '@ant-design/icons';
 import axios from 'axios';
-
+import Loading from '../../components/loading/loading';
 const Profile = () => {
     const [userData, setUserData] = useState(null);
     const token = localStorage.getItem('token');
@@ -40,7 +40,7 @@ const Profile = () => {
     }, [token]);
 
     if (!userData) {
-        return <div>Loading...</div>;
+        return <Loading></Loading>;
     }
 
     return (

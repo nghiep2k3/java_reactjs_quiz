@@ -98,7 +98,6 @@ const CreateQuestion = () => {
                 }),
             };
         });
-        console.log("question", formattedQuestions);
 
         const newQuiz = {
             title: storedQuiz.title || '',
