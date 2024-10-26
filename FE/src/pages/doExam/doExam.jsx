@@ -125,6 +125,8 @@ const QuizExam = () => {
             // completedAt: new Date().toISOString(),
             submittedTime: timeSubmit,
         };
+        console.log("truyen di", quizResult);
+
         try {
             const response = await axios.post('https://api.trandai03.online/api/v1/quizs/submit', quizResult, {
                 headers: {
