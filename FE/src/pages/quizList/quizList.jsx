@@ -23,6 +23,8 @@ const QuizList = () => {
                     }
                 });
                 if (response.status === 200) {
+                    console.log(response.data);
+
                     setQuizzes(response.data);
                 }
             } catch (error) {
@@ -108,7 +110,7 @@ const QuizList = () => {
                                         }}
                                     />
                                 </div>
-
+                                
                                 <p style={{
                                     fontSize: '18px',
                                     fontWeight: 'bold',
@@ -118,10 +120,12 @@ const QuizList = () => {
                                     overflow: 'hidden',
                                     textOverflow: 'ellipsis'
                                 }}>
-                                    {quiz.title}
+                                    Title: {quiz.title}
                                 </p>
 
-
+                                <p style={{ fontSize: '14px', color: '#888', marginBottom: '5px' }}>
+                                    <strong>Id:</strong> {quiz.id}
+                                </p>
                                 <p style={{ fontSize: '14px', color: '#888', marginBottom: '5px' }}>
                                     <ClockCircleOutlined style={{ marginRight: '5px' }} />
                                     {formatDate(quiz.createdAt)}
@@ -151,9 +155,10 @@ const QuizList = () => {
                             </Link>
                         </Card>
                     </List.Item>
-                )}
+                )
+                }
             />
-        </div>
+        </div >
     );
 };
 

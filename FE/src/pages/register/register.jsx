@@ -20,7 +20,7 @@ const Register = () => {
           description: "Success"
         });
         setTimeout(() => {
-          window.location.href = "/test";
+          window.location.href = "/verify";
         }, 1500);
       } else {
         notification.error({
@@ -29,7 +29,6 @@ const Register = () => {
         })
       }
     } catch (error) {
-      window.location.href = "/test";
       console.error("Đã xảy ra lỗi khi đăng ký: ", error);
       notification.error({
         message: "Đăng ký không thành công",
