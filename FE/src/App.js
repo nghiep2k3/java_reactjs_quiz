@@ -10,7 +10,7 @@ import {
     MenuUnfoldOutlined,
     MenuFoldOutlined,
 } from "@ant-design/icons";
-import { Avatar, Card, Image, Layout, Menu, Modal, Space, Button, Dropdown, Flex } from "antd";
+import { Avatar, Card, Image, Layout, Menu, Modal,message,Form,Input, Space, Button, Dropdown, Flex } from "antd";
 import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
 import MyFooter from "./components/footer/footer";
 import Meta from "antd/es/card/Meta";
@@ -76,8 +76,25 @@ const App = () => {
     const [collapsed, setCollapsed] = useState(false);
     const [isLogin, setIsLogin] = useState('');
     const token = localStorage.getItem("token");
+    const [isModalVisible, setIsModalVisible] = useState(false);
+    const [code, setCode] = useState('');
 
+    const showModalJoinCode = () => {
+        setIsModalVisible(true);
+    };
+    const handleJoin = () => {
+        // Xử lý logic khi nhấn "Gia nhập" (nếu có)
+        if (code.trim() === '') {
+            message.error('Vui lòng nhập mã code!');
+            return;
+        }
+        message.success(`Đã gia nhập với mã: ${code}`);
+        setIsModalVisible(false);
+    };
 
+    const handleCancelJoin = () => {
+        setIsModalVisible(false);
+    };
     const showModal = () => {
         setIsModalOpen(true);
     };
@@ -106,13 +123,11 @@ const App = () => {
             try {
                 const response = await axios.get(`https://api.trandai03.online/api/v1/tokens/${token}`);
                 setIsLogin(response.data.data);
-                // setIsLogin(false);
-                console.log(22222222222222, response.data.data);
-                
+
                 if (response.data.data == "false") {
                     console.log('1111');
                     window.location.href = '/login';
-                } 
+                }
             } catch (error) {
                 console.error("Error fetching data", error);
             }
@@ -202,7 +217,7 @@ const App = () => {
                                 hoverable
                                 onClick={() => {
                                     if (token && isLogin) {
-                                        navigate("/createquiz/inforquiz");
+                                        navigate("/competion");
                                     } else {
                                         navigate("/login");
                                     }
@@ -224,6 +239,25 @@ const App = () => {
                         </div>
                     </Modal>
 
+                    <Modal
+                        title="Nhập mã code"
+                        open={isModalVisible}
+                        onOk={handleJoin}
+                        onCancel={handleCancelJoin}
+                        okText="Gia nhập"
+                        cancelText="Hủy"
+                    >
+                        <Form layout="vertical">
+                            <Form.Item label="Mã code">
+                                <Input
+                                    type="number"
+                                    placeholder="Nhập mã code"
+                                    value={code}
+                                    onChange={(e) => setCode(e.target.value)}
+                                />
+                            </Form.Item>
+                        </Form>
+                    </Modal>
                     <Menu
                         defaultSelectedKeys={[location.pathname]}
                         mode="inline"
@@ -275,6 +309,20 @@ const App = () => {
                             }}
                         >
                             Tạo đề thi
+                        </Button>
+                        <Button
+                            type="primary"
+                            onClick={showModalJoinCode}
+                            style={{
+                                height: "40px",
+                                lineHeight: "40px",
+                                borderRadius: "1.2em",
+                                backgroundImage: "linear-gradient(90deg, rgb(62, 101, 254) 0%, rgb(210, 60, 255) 100%)",
+                                color: "#fff",
+                                width: "150px",
+                            }}
+                        >
+                            Gia nhập với code
                         </Button>
                         <Dropdown overlay={menu} trigger={['click']} placement="bottomRight">
                             <Space size="large" align="center">

@@ -28,6 +28,8 @@ import EditQuestion from "./pages/editQuiz/editQuestion";
 import ForgotPassword from "./pages/forgetPassword/forgotPassword.jsx";
 
 import { FileProvider } from "./components/context/ContextFileImage.jsx";
+import VerifyAccount from "./pages/VerifyAccount/VerifyAccount.jsx";
+import Competion from "./pages/Competion/Competion.jsx";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
@@ -36,6 +38,7 @@ root.render(
       <Router future={{ v7_startTransition: true }}>
         <Routes>
           <Route path="/test" element={<Test />} />
+          <Route path="/verify" element={<VerifyAccount />} />
           <Route path="/" element={<App />}>
             <Route path="/mylibrary" element={<MyLibrary />} />
             <Route path="/ViewQuiz" element={<ViewQuiz />} />
@@ -43,6 +46,7 @@ root.render(
             {/* <Route path="/explore" element={<Explore />} /> */}
             <Route path="/result/:idResult" element={<Result />} />
             <Route path="/reportquizresult" element={<ReportQuizResult />} />
+            <Route path="/competion" element={<Competion />} />
             <Route path="/createquiz" element={<CreateQuiz />}>
               <Route path="inforquiz" element={<InforQuiz />} />
               <Route path="createquestion" element={<CreateQuestion />} />
