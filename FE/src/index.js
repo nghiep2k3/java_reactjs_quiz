@@ -46,10 +46,10 @@ root.render(
             {/* <Route path="/explore" element={<Explore />} /> */}
             <Route path="/result/:idResult" element={<Result />} />
             <Route path="/reportquizresult" element={<ReportQuizResult />} />
-            <Route path="/competion" element={<Competion />} />
             <Route path="/createquiz" element={<CreateQuiz />}>
               <Route path="inforquiz" element={<InforQuiz />} />
               <Route path="createquestion" element={<CreateQuestion />} />
+              <Route path="competition/:quizId" element={<Competion />} />
             </Route>
             <Route path="/edit" element={<Edit />}>
               <Route path="editquiz/:id" element={<EditQuiz />} />

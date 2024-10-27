@@ -122,7 +122,6 @@ const CreateQuestion = () => {
             });
             if (response.status === 201) {
                 setQuiz(response.data);
-                console.log(response.data.id);
                 quizId = response.data.id
 
                 notification.success({
@@ -158,8 +157,7 @@ const CreateQuestion = () => {
                 }
             );
             message.success("Upload thành công!");
-            console.log("Response:", response.data);
-            navigate('/');
+            navigate(`/createquiz/competition/${quizId}`);
         } catch (error) {
             message.error("Upload thất bại!");
             console.error("Error:", error);

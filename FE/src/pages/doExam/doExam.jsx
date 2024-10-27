@@ -24,7 +24,7 @@ const QuizExam = () => {
     const [storedQuiz, setQuiz] = useState(null);
     const [submittedTime, setSubmittedTime] = useState(null);
     const [questions, setQuestions] = useState([]);
-    const selectedTime = storedQuiz?.selectedTime || '30 phút'; //error
+    const selectedTime = JSON.parse(localStorage.getItem('Time')) || '30 phút';
     const timeInMinutes = parseInt(selectedTime.split(" ")[0], 10);
     let timeInSeconds = timeInMinutes * 60;
 
@@ -140,6 +140,7 @@ const QuizExam = () => {
                     message: "Nộp bài thành công",
                     description: "Bài thi đã được nộp thành công!"
                 });
+                localStorage.removeItem("Time");
                 setIdResult(response.data.id);
                 setIsModalOpen(false);
                 setIsModalOpen2(true);

@@ -15,8 +15,8 @@ const items = [
     },
     {
         key: '3',
-        label: 'Lịch sử truy cập',
-        path: '/history',
+        label: 'Tạo cuộc thi',
+        path: '/createquiz/competition',
     },
     {
         key: '4',
