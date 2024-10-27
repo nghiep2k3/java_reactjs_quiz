@@ -15,6 +15,7 @@ const shuffleArray = (array) => {
 const QuizExam = () => {
     const navigate = useNavigate();
     const { id } = useParams();
+    const [idResult, setIdResult] = useState(null);
     const [selectedAnswers, setSelectedAnswers] = useState({});
     const [remainingTime, setRemainingTime] = useState(0);
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -122,10 +123,10 @@ const QuizExam = () => {
             quizId: storedQuiz.id,
             questionResultDTOS: resultDetails,
             score,
+            totalCorrect: numberOfCorrect,
             // completedAt: new Date().toISOString(),
             submittedTime: timeSubmit,
         };
-        console.log("truyen di", quizResult);
 
         try {
             const response = await axios.post('https://api.trandai03.online/api/v1/quizs/submit', quizResult, {
@@ -139,7 +140,7 @@ const QuizExam = () => {
                     message: "Nộp bài thành công",
                     description: "Bài thi đã được nộp thành công!"
                 });
-                localStorage.setItem("Result", JSON.stringify(response.data));
+                setIdResult(response.data.id);
                 setIsModalOpen(false);
                 setIsModalOpen2(true);
             }
@@ -176,7 +177,7 @@ const QuizExam = () => {
                             title="Hoàn thành"
                             open={isModalOpen2}
                             onCancel={() => { navigate(`/quizdetail/examcontent/${storedQuiz.id}`); }}
-                            onOk={() => navigate('/result')}
+                            onOk={() => navigate(`/result/${idResult}`)}
                             okText="Xem kết quả"
                             cancelText="Trở về"
                         >
