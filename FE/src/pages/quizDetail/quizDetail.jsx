@@ -9,25 +9,17 @@ import Headers from '../../components/headers/headers';
 import axios from 'axios';
 import Loading from '../../components/loading/loading';
 const { Content } = Layout;
-const items = [
-    {
-        key: '1',
-        label: 'Nội dung đề thi',
-        path: "/quizdetail/examcontent",
-    },
-    {
-        key: '2',
-        label: 'Kết quả ôn tập',
-        path: '',
-    },
-    {
-        key: '3',
-        label: 'Thống kê ôn tập',
-        path: '',
-    },
-
-];
 const QuizDetail = () => {
+    const { id } = useParams();
+    const items = [
+        {
+            key: '1',
+            label: 'Nội dung đề thi',
+            path: `/quizdetail/examcontent/${id}`,
+        },
+
+
+    ];
     const options = [
         {
             value: '15 phút',
@@ -42,7 +34,6 @@ const QuizDetail = () => {
             label: '45 phút',
         },
     ];
-    const { id } = useParams();
     const [selectedTime, setSelectedTime] = useState('30 phút');
     const [isModalOpen, setIsModalOpen] = useState(false);
     const showModal = () => {

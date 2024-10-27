@@ -2,7 +2,7 @@ import { Avatar, Dropdown, Image, Layout, Menu, Space } from 'antd';
 import { Header } from 'antd/es/layout/layout';
 import React, { useState } from 'react';
 import { UserOutlined, LogoutOutlined } from '@ant-design/icons';
-import { useLocation, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 const Headers = () => {
     const location = useLocation();
     const navigate = useNavigate();
@@ -46,10 +46,12 @@ const Headers = () => {
                 padding: "10px 20px",
                 boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
             }}>
-                <Image src="https://cf.quizizz.com/img/logos/Purple.webp"
-                    preview={false}
-                    width={150} style={{ float: 'left' }}>
-                </Image>
+                <Link to='/'>
+                    <Image src="https://cf.quizizz.com/img/logos/Purple.webp"
+                        preview={false}
+                        width={150} style={{ float: 'left' }}>
+                    </Image>
+                </Link>
                 <Dropdown overlay={menu} trigger={['click']} placement="bottomRight">
                     <Space size="large" align="center">
                         <Avatar style={{ backgroundColor: "#87d068" }} icon={<UserOutlined />} />

@@ -41,7 +41,7 @@ root.render(
             <Route path="/ViewQuiz" element={<ViewQuiz />} />
             <Route path="/" element={<Explore />} />
             {/* <Route path="/explore" element={<Explore />} /> */}
-            <Route path="/result" element={<Result />} />
+            <Route path="/result/:idResult" element={<Result />} />
             <Route path="/reportquizresult" element={<ReportQuizResult />} />
             <Route path="/createquiz" element={<CreateQuiz />}>
               <Route path="inforquiz" element={<InforQuiz />} />

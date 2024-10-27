@@ -3,14 +3,29 @@ import { Card, Tag, List, Avatar, Progress, Affix, Menu } from 'antd';
 import { CheckCircleOutlined, CloseCircleOutlined } from '@ant-design/icons';
 import styles from './result.module.css';
 import Loading from '../../components/loading/loading';
+import { useParams } from 'react-router-dom';
+import axios from 'axios';
 
 const Result = () => {
   const [result, setResult] = useState(null);
+  const { idResult } = useParams()
   useEffect(() => {
     const fetchData = async () => {
-      const resultData = JSON.parse(localStorage.getItem('Result'));
-      await new Promise((resolve) => setTimeout(resolve, 500));
-      setResult(resultData);
+      try {
+        const response = await axios.get(`https://api.trandai03.online/api/v1/result/${idResult}`, {
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('token')}`,
+            'Content-Type': 'application/json',
+            'Accept': '*/*'
+          }
+        });
+        if (response.status === 200) {
+          setResult(response.data)
+          console.log("ketQua", result);
+        }
+      } catch (error) {
+        console.error('Error fetching quiz result:', error);
+      }
     };
     fetchData();
   }, []);

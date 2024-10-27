@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Card, Progress, Tabs, Table, Tag, Button } from 'antd';
 import { CheckCircleOutlined, CloseCircleOutlined, BarChartOutlined } from '@ant-design/icons';
+import { useNavigate } from 'react-router-dom';
 import Loading from '../../components/loading/loading';
 import axios from 'axios';
 
@@ -8,6 +9,8 @@ const ReportQuizResult = () => {
     const [result, setResult] = useState(null);
     const [currentTab, setCurrentTab] = useState("1");
     const [tableData, setTableData] = useState([]);
+    const navigate = useNavigate();
+
     // Gọi API lấy dữ liệu
     useEffect(() => {
         const fetchData = async () => {
@@ -20,7 +23,7 @@ const ReportQuizResult = () => {
                     }
                 });
                 if (response.status === 200) {
-                    setResult(response.data)
+                    setResult(response.data);
                 }
             } catch (error) {
                 console.error('Error fetching quiz result:', error);
@@ -28,7 +31,7 @@ const ReportQuizResult = () => {
         };
         fetchData();
     }, []);
-    console.log("data", result);
+
     useEffect(() => {
         if (result) {
             handleTabChange("1");
@@ -40,19 +43,18 @@ const ReportQuizResult = () => {
     }
 
     const handleTabChange = (key) => {
-        // const rate = res.score / re
         setCurrentTab(key);
         if (key === "1") {
             setTableData(result.map((res) => ({
+                idResult: res.id, // Thêm idResult để dùng cho điều hướng
                 quizTitle: res.quizTitle,
                 score: res.score,
                 rating: res.score >= 8 ? "Giỏi" : res.score >= 5 ? "Trung bình" : "Yếu",
-                correctAnswers: res.correctAnswers || 0,
-                incorrectAnswers: res.resultQuestionResponses.length - res.correctAnswers || 0,
+                correctAnswers: res.totalCorrect || 0,
+                incorrectAnswers: res.resultQuestionResponses.length - res.totalCorrect || 0,
                 totalQuestions: res.resultQuestionResponses.length,
                 completedTime: res.submittedTime,
                 finishTime: new Date(res.completedAt).toLocaleString(),
-                action: "Xem chi tiết"
             })));
         }
     };
@@ -101,20 +103,27 @@ const ReportQuizResult = () => {
         },
         {
             title: 'Hành động',
-            dataIndex: 'action',
+            dataIndex: 'idResult',
             key: 'action',
-            render: () => <Button type="link">Xem chi tiết</Button>
+            render: (idResult) => (
+                <Button type="link" onClick={() => navigate(`/result/${idResult}`)}>
+                    Xem chi tiết
+                </Button>
+            ),
         }
     ];
 
     return (
         <div style={{ padding: '20px' }}>
-            <h3 style={{ textAlign: 'left' }}><BarChartOutlined style={{ color: "blue" }} /> Kết quả thi</h3>
+            <h3 style={{ textAlign: 'left' }}>
+                <BarChartOutlined style={{ color: "blue" }} /> Kết quả thi
+            </h3>
             <Tabs defaultActiveKey="1" onChange={handleTabChange}>
                 <Tabs.TabPane tab="Thi thử" key="1">
-                    <Table columns={columnsForThiThu} dataSource={tableData} rowKey="quizTitle" />
+                    <Table columns={columnsForThiThu} dataSource={tableData} rowKey="idResult" />
                 </Tabs.TabPane>
-                {/* Các Tab khác */}
+                <Tabs.TabPane tab="Cuộc thi" key="2">
+                </Tabs.TabPane>
             </Tabs>
         </div>
     );

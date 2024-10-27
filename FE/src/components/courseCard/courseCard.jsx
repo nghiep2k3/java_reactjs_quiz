@@ -60,7 +60,7 @@ const CourseCard = () => {
                                 style={{ width: 230, borderRadius: '10px', overflow: 'hidden' }}
                             >
                                 <div style={{ height: 200, overflow: 'hidden', borderRadius: '10px 10px 0 0' }}>
-                                    <a href={`/details/${course.id}`}>
+                                    <a href={`/quizdetail/examcontent/${course.id}`}>
                                         <img
                                             alt={course.name}
                                             src={course.image}
