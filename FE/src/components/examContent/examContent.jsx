@@ -7,8 +7,6 @@ import Loading from '../loading/loading';
 const ExamContent = () => {
     const [quiz, setQuiz] = useState(null);
     const { id } = useParams();
-    console.log(id);
-
     useEffect(() => {
         const fetchQuizData = async () => {
             try {

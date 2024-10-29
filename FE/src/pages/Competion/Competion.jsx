@@ -7,20 +7,21 @@ const Competion = () => {
     const [form] = Form.useForm();
     const token = localStorage.getItem("token");
     const [timeInMinutes, setTimeInMinutes] = useState(0);
-    const [isModalOpen, setIsModalOpen] = useState(true);
     const [isModalOpen2, setIsModalOpen2] = useState(false);
-    const { quizId } = useParams();
+    const [competition, setCompetition] = useState(null);
     const navigate = useNavigate();
     const [codeCompetition, setCodeCompetition] = useState(null);
-
+    const convertToUTC = (dateString) => {
+        const date = new Date(dateString);
+        return date.toISOString();
+    };
     const onFinish = async (values) => {
         const timeInSeconds = timeInMinutes > 0 ? timeInMinutes * 60 : values.time;
         const payload = {
             time: timeInSeconds,
             name: values.name,
             description: values.description,
-            startTime: values.startTime.format(),
-            quizId: quizId,
+            startTime: convertToUTC(values.startTime),
         };
 
         try {
@@ -31,9 +32,12 @@ const Competion = () => {
                     'Accept': '*/*',
                 },
             });
-            message.success('Tạo bài thi thành công!');
+            if (response.status === 200) {
+                message.success('Tạo bài thi thành công!');
+                navigate(`/createcompetition/showquizcompe/${response.data.id}`)
+            }
             setCodeCompetition(response.data.code);
-            setIsModalOpen2(true); // Mở modal khi tạo thành công
+            setIsModalOpen2(true);
         } catch (error) {
             message.error('Failed to create competition');
             console.error(error);
@@ -42,12 +46,6 @@ const Competion = () => {
 
     return (
         <div>
-            <Modal
-                title="Bạn có muốn tạo một cuộc thi cho đề?"
-                open={isModalOpen}
-                onOk={() => setIsModalOpen(false)}
-                onCancel={() => navigate('/')}
-            />
             <Form style={{ maxWidth: "1000px" }} form={form} layout="vertical" onFinish={onFinish}>
                 <Form.Item
                     label="Tên cuộc thi"

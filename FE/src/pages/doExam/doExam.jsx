@@ -108,7 +108,7 @@ const QuizExam = () => {
             if (isCorrect) {
                 numberOfCorrect++;
             }
-            score = (numberOfCorrect * scoreOfsens).toFixed(2);
+            score = (numberOfCorrect / questions.length * 10).toFixed(2);
             return {
                 questionId: question.id,
                 selectedChoiceIds: selectedChoices,
@@ -127,6 +127,7 @@ const QuizExam = () => {
             // completedAt: new Date().toISOString(),
             submittedTime: timeSubmit,
         };
+        console.log("result", quizResult);
 
         try {
             const response = await axios.post('https://api.trandai03.online/api/v1/quizs/submit', quizResult, {

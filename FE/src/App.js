@@ -10,12 +10,13 @@ import {
     MenuUnfoldOutlined,
     MenuFoldOutlined,
 } from "@ant-design/icons";
-import { Avatar, Card, Image, Layout, Menu, Modal,message,Form,Input, Space, Button, Dropdown, Flex } from "antd";
+import { Avatar, Card, Image, Layout, Menu, Modal, message, Form, Input, Space, Button, Dropdown } from "antd";
 import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
 import MyFooter from "./components/footer/footer";
 import Meta from "antd/es/card/Meta";
 import SearchQuiz from "./components/searchQuiz/searchQuiz";
 import axios from "axios";
+import ListByCategory from "./components/listByCategory/listByCategory";
 
 const { Header, Content, Sider } = Layout;
 
@@ -78,18 +79,32 @@ const App = () => {
     const token = localStorage.getItem("token");
     const [isModalVisible, setIsModalVisible] = useState(false);
     const [code, setCode] = useState('');
-
     const showModalJoinCode = () => {
         setIsModalVisible(true);
     };
     const handleJoin = () => {
-        // Xử lý logic khi nhấn "Gia nhập" (nếu có)
         if (code.trim() === '') {
             message.error('Vui lòng nhập mã code!');
             return;
         }
-        message.success(`Đã gia nhập với mã: ${code}`);
         setIsModalVisible(false);
+        const fetchCompetitionData = async () => {
+            try {
+                const response = await axios.get(`https://api.trandai03.online/api/v1/competitions/getByCode/${code}`, {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                        'Content-Type': 'application/json',
+                    },
+                });
+                if (response.status === 200) {
+                    navigate(`/joincompetition/${code}`)
+
+                }
+            } catch (error) {
+                message.error("Mã code không tồn tại!");
+            }
+        };
+        fetchCompetitionData();
     };
 
     const handleCancelJoin = () => {
@@ -127,8 +142,11 @@ const App = () => {
                 if (response.data.data == "false") {
                     console.log('1111');
                     window.location.href = '/login';
+
                 }
             } catch (error) {
+
+                window.location.href = '/login';
                 console.error("Error fetching data", error);
             }
         };
@@ -217,7 +235,7 @@ const App = () => {
                                 hoverable
                                 onClick={() => {
                                     if (token && isLogin) {
-                                        navigate("/competion");
+                                        navigate("/createcompetition/competition");
                                     } else {
                                         navigate("/login");
                                     }
@@ -250,7 +268,7 @@ const App = () => {
                         <Form layout="vertical">
                             <Form.Item label="Mã code">
                                 <Input
-                                    type="number"
+                                    type="text"
                                     placeholder="Nhập mã code"
                                     value={code}
                                     onChange={(e) => setCode(e.target.value)}

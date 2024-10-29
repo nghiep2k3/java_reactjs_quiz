@@ -1,9 +1,10 @@
 import React, { useContext, useState } from 'react';
 import { Button, Form, Input, Checkbox, Card, notification } from 'antd';
-import { UserOutlined, LockOutlined } from '@ant-design/icons';
+import { UserOutlined, LockOutlined, GoogleOutlined } from '@ant-design/icons';
 import './login.Module.css';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import GoogleButton from 'react-google-button'
 const Login = () => {
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
@@ -91,6 +92,14 @@ const Login = () => {
                             Đăng Nhập
                         </Button>
                         <br />
+                    </Form.Item>
+                    <Form.Item>
+
+                        <GoogleButton
+                            label='Đăng nhập bằng Google'
+                            style={{ borderRadius: ".2rem", width: "100%" }}
+                            onClick={() => { console.log('Google button clicked') }}
+                        /> <br />
                         Hoặc <a href="/register">Đăng ký ngay!</a>
                     </Form.Item>
                 </Form>

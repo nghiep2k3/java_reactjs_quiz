@@ -7,7 +7,6 @@ import styles from './courseCard.module.css';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
 import { ClockCircleOutlined } from '@ant-design/icons';
-import Loading from '../loading/loading';
 
 const { Title, Text } = Typography;
 const CourseCard = () => {
@@ -51,6 +50,7 @@ const CourseCard = () => {
     };
     return (
         <div>
+
             <Slider {...settings} style={{ margin: '40px 0' }}>
                 {displayedData.map((course) => {
                     return (

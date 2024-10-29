@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { Card, Progress, Tabs, Table, Tag, Button } from 'antd';
-import { CheckCircleOutlined, CloseCircleOutlined, BarChartOutlined } from '@ant-design/icons';
+import { Tabs, Table, Tag, Button } from 'antd';
+import { BarChartOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import Loading from '../../components/loading/loading';
 import axios from 'axios';
@@ -41,12 +41,11 @@ const ReportQuizResult = () => {
     if (!result) {
         return <Loading />;
     }
-
     const handleTabChange = (key) => {
         setCurrentTab(key);
         if (key === "1") {
             setTableData(result.map((res) => ({
-                idResult: res.id, // Thêm idResult để dùng cho điều hướng
+                idResult: res.id,
                 quizTitle: res.quizTitle,
                 score: res.score,
                 rating: res.score >= 8 ? "Giỏi" : res.score >= 5 ? "Trung bình" : "Yếu",

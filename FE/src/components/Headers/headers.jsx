@@ -2,9 +2,8 @@ import { Avatar, Dropdown, Image, Layout, Menu, Space } from 'antd';
 import { Header } from 'antd/es/layout/layout';
 import React, { useState } from 'react';
 import { UserOutlined, LogoutOutlined } from '@ant-design/icons';
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 const Headers = () => {
-    const location = useLocation();
     const navigate = useNavigate();
     const username = localStorage.getItem("username")
     const [isAuthenticated, setIsAuthenticated] = useState(false);
