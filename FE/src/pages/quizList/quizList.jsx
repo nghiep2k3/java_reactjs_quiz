@@ -24,7 +24,6 @@ const QuizList = () => {
                     }
                 });
                 if (response.status === 200) {
-                    console.log(response.data);
 
                     setQuizzes(response.data);
                 }

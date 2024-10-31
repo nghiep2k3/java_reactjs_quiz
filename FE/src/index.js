@@ -34,6 +34,7 @@ import CreateCompetition from "./pages/createCompetition/createCompetition.jsx";
 import CreateQuizCompetition from "./pages/createQuizCompetition/createQuizCompetition.jsx";
 import ShowQuizCompe from "./components/showQuizCompe/showQuizCompe.jsx";
 import QuestionCompe from "./components/questionCompe/questionCompe.jsx";
+import UserCompetitions from "./pages/userCompetitions/userCompetitions.jsx";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
@@ -41,8 +42,8 @@ root.render(
     <FileProvider>
       <Router future={{ v7_startTransition: true }}>
         <Routes>
+          <Route path="/verify" element={<VerifyAccount />} />
           <Route element={<PrivateRoute />}>
-            <Route path="/verify" element={<VerifyAccount />} />
             <Route path="/" element={<App />}>
               <Route path="/joincompetition/:code" element={<JoinCompetition />} />
               <Route path="/mylibrary" element={<MyLibrary />} />
@@ -50,6 +51,7 @@ root.render(
               <Route path="/" element={<Explore />} />
               <Route path="/result/:idResult" element={<Result />} />
               <Route path="/reportquizresult" element={<ReportQuizResult />} />
+              <Route path="/usercompetitions" element={<UserCompetitions />} />
               <Route path="/createquiz" element={<CreateQuiz />}>
                 <Route path="inforquiz" element={<InforQuiz />} />
                 <Route path="createquestion" element={<CreateQuestion />} />

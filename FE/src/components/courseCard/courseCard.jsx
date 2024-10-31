@@ -14,12 +14,7 @@ const CourseCard = () => {
     useEffect(() => {
         const fetchAllQuizs = async () => {
             try {
-                const response = await axios.get('https://api.trandai03.online/api/v1/quizs/getAllQuiz', {
-                    headers: {
-                        'Authorization': `Bearer ${localStorage.getItem('token')}`,
-                        'Content-Type': 'application/json',
-                    }
-                });
+                const response = await axios.get('https://api.trandai03.online/api/v1/quizs/getAllQuiz');
                 if (response.status === 200) {
                     setQuizzes(response.data);
                 }

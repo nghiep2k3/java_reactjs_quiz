@@ -14,7 +14,7 @@ const SearchQuiz = () => {
     const debounceSearch = debounce(async (value) => {
         try {
             const response = await axios.get(
-                `https://api.trandai03.online/api/v1/quizs/search?page=0&size=5&sort=title&filter=${encodeURIComponent(value)}&onlyValid=false`,
+                `https://api.trandai03.online/api/v1/quizs/search?page=0&size=1&sort=title&filter=${encodeURIComponent(value)}&onlyValid=false`,
                 {
                     headers: {
                         'Authorization': `Bearer ${token}`,

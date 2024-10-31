@@ -4,6 +4,7 @@ import axios from 'axios';
 import { useNavigate, useParams } from 'react-router-dom';
 import moment from 'moment';
 import { PlusOutlined } from "@ant-design/icons";
+import Loading from '../loading/loading';
 
 const { Title, Text } = Typography;
 const ShowQuizCompe = () => {
@@ -30,7 +31,7 @@ const ShowQuizCompe = () => {
         fetchCompetition();
     }, [competitionId, token]);
 
-    if (!competition) return <p>Loading...</p>;
+    if (!competition) return <Loading />;
     return (
         <div style={{ padding: '20px' }}>
             <Card style={{ marginBottom: '20px', textAlign: 'center' }}>

@@ -9,6 +9,7 @@ import {
     FileOutlined,
     MenuUnfoldOutlined,
     MenuFoldOutlined,
+    TabletOutlined
 } from "@ant-design/icons";
 import { Avatar, Card, Image, Layout, Menu, Modal, message, Form, Input, Space, Button, Dropdown } from "antd";
 import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
@@ -60,9 +61,9 @@ const App = () => {
         },
         {
             key: "7",
-            icon: <LogoutOutlined />,
-            label: "Lớp học tập",
-            path: "/class",
+            icon: <TabletOutlined />,
+            label: "Cuộc thi",
+            path: "/usercompetitions",
         },
         {
             key: "8",
@@ -140,7 +141,6 @@ const App = () => {
                 setIsLogin(response.data.data);
 
                 if (response.data.data == "false") {
-                    console.log('1111');
                     window.location.href = '/login';
 
                 }

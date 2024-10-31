@@ -19,6 +19,7 @@ const Register = () => {
           message: "Đăng ký thành công",
           description: "Success"
         });
+        localStorage.setItem("email", data.email)
         setTimeout(() => {
           window.location.href = "/verify";
         }, 1500);
