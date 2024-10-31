@@ -108,9 +108,10 @@ const CreateQuestion = () => {
             category_id: storedQuiz.category_id || 2,
             questions: formattedQuestions,
             isPublished: storedQuiz.isPublished || false,
-            userCreate: storedQuiz.userCreate || 'JohnDoe',
-            timestamp: currentDate,
+            // userCreate: storedQuiz.userCreate || 'JohnDoe',
+            // timestamp: currentDate,
         };
+        console.log(newQuiz);
 
         try {
             const response = await axios.post('https://api.trandai03.online/api/v1/quizs/create', newQuiz, {

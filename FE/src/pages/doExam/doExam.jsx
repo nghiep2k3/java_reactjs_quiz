@@ -64,7 +64,7 @@ const QuizExam = () => {
                     const quizData = response.data;
                     quizData.questions = shuffleArray(quizData.questions);
                     quizData.questions.forEach((question) => {
-                        question.questionChoice = shuffleArray(question.questionChoice);
+                        question.questionChoice = shuffleArray(question.questionChoices);
                     });
                     setQuestions(quizData.questions);
                     setQuiz(quizData);
@@ -76,7 +76,6 @@ const QuizExam = () => {
 
         fetchQuizData();
     }, [id]);
-
     if (!questions || questions.length === 0) {
         return <Loading />;
     }

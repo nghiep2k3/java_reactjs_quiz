@@ -35,6 +35,8 @@ import CreateQuizCompetition from "./pages/createQuizCompetition/createQuizCompe
 import ShowQuizCompe from "./components/showQuizCompe/showQuizCompe.jsx";
 import QuestionCompe from "./components/questionCompe/questionCompe.jsx";
 import UserCompetitions from "./pages/userCompetitions/userCompetitions.jsx";
+import Update from "./pages/updateCompetition/update.jsx";
+import UpdateCompetition from "./pages/updateCompetition/updateCompetiton.jsx";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
@@ -61,6 +63,9 @@ root.render(
                 <Route path="createquizcompetition/:competitionId" element={<CreateQuizCompetition />} />
                 <Route path="questioncompe/:competitionId" element={<QuestionCompe />} />
                 <Route path="showquizcompe/:competitionId" element={<ShowQuizCompe />} />
+              </Route>
+              <Route path="/update" element={<Update />}>
+                <Route path="updatecompetition/:competitionId" element={<UpdateCompetition />} />
               </Route>
               <Route path="/edit" element={<Edit />}>
                 <Route path="editquiz/:id" element={<EditQuiz />} />

@@ -32,15 +32,20 @@ const ShowQuizCompe = () => {
     }, [competitionId, token]);
 
     if (!competition) return <Loading />;
+    console.log(competition);
+
     return (
         <div style={{ padding: '20px' }}>
-            <Card style={{ marginBottom: '20px', textAlign: 'center' }}>
-                <Title level={3}>{competition.name}</Title>
+            <Card style={{ marginBottom: '20px', textAlign: 'start', lineHeight: "30px" }}>
+                <Title style={{ textAlign: "center" }} level={3}>{competition.name}</Title>
                 <Text strong>Mã Tham Gia: </Text><Tag color="blue">{competition.code}</Tag><br />
                 <Text strong>Người Tổ Chức: </Text>{competition.organizedBy}<br />
                 <Text strong>Mô Tả: </Text>{competition.description}<br />
                 <Text strong>Thời Gian Làm Bài: </Text>{competition.time / 60} phút<br />
-                <Text strong>Bắt Đầu Vào Lúc: </Text>{moment(competition.startTime).format('DD/MM/YYYY HH:mm:ss')}
+                <Text strong>Bắt Đầu Vào Lúc: </Text>{moment(competition.startTime).format('DD/MM/YYYY HH:mm:ss')} <br />
+                <Button type="primary" icon={<PlusOutlined />} onClick={() => navigate(`/update/updatecompetition/${competitionId}`)}>
+                    Chỉnh sửa
+                </Button>
             </Card>
 
             <Title level={4}>Danh Sách Đề Thi</Title>
@@ -54,7 +59,7 @@ const ShowQuizCompe = () => {
                             <Text strong>Người Tạo: </Text>{quizItem.quizResponses.usernameCreated}<br />
                             <Text strong>Ngày Tạo: </Text>{moment(quizItem.quizResponses.createdAt).format('DD/MM/YYYY')}<br />
                             <Text strong>Số Câu Hỏi: </Text>{quizItem.quizResponses.questions.length}<br />
-                            <Button type="primary" style={{ marginTop: '10px' }}>Xem Chi Tiết</Button>
+                            <Button onClick={() => navigate(`/edit/editquiz/${quizItem?.quizResponses?.id}`)} type="primary" style={{ marginTop: '10px' }}>Xem Chi Tiết</Button>
                         </Card>
                     </List.Item>
                 )}
