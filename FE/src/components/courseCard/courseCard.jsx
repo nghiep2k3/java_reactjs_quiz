@@ -7,7 +7,6 @@ import styles from './courseCard.module.css';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
 import { ClockCircleOutlined } from '@ant-design/icons';
-import Loading from '../loading/loading';
 
 const { Title, Text } = Typography;
 const CourseCard = () => {
@@ -15,12 +14,7 @@ const CourseCard = () => {
     useEffect(() => {
         const fetchAllQuizs = async () => {
             try {
-                const response = await axios.get('https://api.trandai03.online/api/v1/quizs/getAllQuiz', {
-                    headers: {
-                        'Authorization': `Bearer ${localStorage.getItem('token')}`,
-                        'Content-Type': 'application/json',
-                    }
-                });
+                const response = await axios.get('https://api.trandai03.online/api/v1/quizs/getAllQuiz');
                 if (response.status === 200) {
                     setQuizzes(response.data);
                 }
@@ -51,6 +45,7 @@ const CourseCard = () => {
     };
     return (
         <div>
+
             <Slider {...settings} style={{ margin: '40px 0' }}>
                 {displayedData.map((course) => {
                     return (
@@ -60,7 +55,7 @@ const CourseCard = () => {
                                 style={{ width: 230, borderRadius: '10px', overflow: 'hidden' }}
                             >
                                 <div style={{ height: 200, overflow: 'hidden', borderRadius: '10px 10px 0 0' }}>
-                                    <a href={`/details/${course.id}`}>
+                                    <a href={`/quizdetail/examcontent/${course.id}`}>
                                         <img
                                             alt={course.name}
                                             src={course.image}

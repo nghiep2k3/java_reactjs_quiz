@@ -147,19 +147,17 @@ const InforQuiz = () => {
                     onChange={(checked) => setIsPublished(checked)}
                 />
             </Form.Item>
-            <div>
-                {/* Upload component */}
+            <Form.Item>
+
                 <Upload
                     beforeUpload={(file) => {
-                        handlePreview(file); // Xử lý xem trước file
-                        return false; // Ngăn không cho upload tự động
+                        handlePreview(file);
+                        return false;
                     }}
-                    showUploadList={false} // Ẩn danh sách file đã tải lên
+                    showUploadList={false}
                 >
                     <Button icon={<UploadOutlined />}>Chọn hình ảnh</Button>
                 </Upload>
-
-                {/* Hiển thị ảnh xem trước */}
                 {previewUrl && (
                     <div style={{ marginTop: 20 }}>
                         <Image
@@ -179,7 +177,7 @@ const InforQuiz = () => {
                         </div>
                     </div>
                 )}
-            </div>
+            </Form.Item>
             <Form.Item>
                 <Button type="primary" htmlType="submit" style={{ width: '150px' }}
                     onClick={handleSave}>

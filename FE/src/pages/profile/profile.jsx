@@ -211,14 +211,6 @@ const ProfileForm = () => {
                                 dependencies={['newPassword']}
                                 rules={[
                                     { required: true, message: 'Vui lòng nhập lại mật khẩu mới!' },
-                                    ({ getFieldValue }) => ({
-                                        validator(_, value) {
-                                            if (!value || getFieldValue('newPassword') === value) {
-                                                return Promise.resolve();
-                                            }
-                                            return Promise.reject(new Error('Mật khẩu mới không khớp!'));
-                                        },
-                                    }),
                                 ]}
                             >
                                 <Input.Password prefix={<LockOutlined />} placeholder="Nhập lại mật khẩu mới" />

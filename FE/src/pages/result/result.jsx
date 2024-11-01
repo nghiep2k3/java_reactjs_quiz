@@ -3,21 +3,34 @@ import { Card, Tag, List, Avatar, Progress, Affix, Menu } from 'antd';
 import { CheckCircleOutlined, CloseCircleOutlined } from '@ant-design/icons';
 import styles from './result.module.css';
 import Loading from '../../components/loading/loading';
+import { useParams } from 'react-router-dom';
+import axios from 'axios';
 
 const Result = () => {
   const [result, setResult] = useState(null);
+  const { idResult } = useParams()
   useEffect(() => {
     const fetchData = async () => {
-      const resultData = JSON.parse(localStorage.getItem('Result'));
-      await new Promise((resolve) => setTimeout(resolve, 500));
-      setResult(resultData);
+      try {
+        const response = await axios.get(`https://api.trandai03.online/api/v1/result/${idResult}`, {
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('token')}`,
+            'Content-Type': 'application/json',
+            'Accept': '*/*'
+          }
+        });
+        if (response.status === 200) {
+          setResult(response.data)
+        }
+      } catch (error) {
+        console.error('Error fetching quiz result:', error);
+      }
     };
     fetchData();
   }, []);
   if (!result) {
     return <Loading></Loading>
   }
-
   const questionLength = result.resultQuestionResponses.length;
   const correctAnswers = result.resultQuestionResponses.filter(opt => opt.isCorrect)
   const calculateScorePercent = () => {
@@ -80,8 +93,8 @@ const Result = () => {
 
               <div className={styles.optionsContainer}>
 
-                {questionResponse.question.questionChoice.map((option, idx) => {
-                  const selectedIds = questionResponse.selectedChoice.map(selected => selected.choice.id);
+                {questionResponse.question.questionChoices.map((option, idx) => {
+                  const selectedIds = questionResponse.selectedChoice.map(selected => selected.choiceId);
                   const isUserAnswer = selectedIds.includes(option.id);
                   const isCorrectAnswer = option.isCorrect;
 

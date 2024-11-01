@@ -155,6 +155,7 @@ const EditQuestion = () => {
     const handleAnchorClick = (qIndex) => {
         setCurrentQuestionIndex(qIndex);
     };
+    console.log(questions);
 
     return (
         <div>

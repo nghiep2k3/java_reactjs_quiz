@@ -15,6 +15,7 @@ const shuffleArray = (array) => {
 const QuizExam = () => {
     const navigate = useNavigate();
     const { id } = useParams();
+    const [idResult, setIdResult] = useState(null);
     const [selectedAnswers, setSelectedAnswers] = useState({});
     const [remainingTime, setRemainingTime] = useState(0);
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -23,7 +24,7 @@ const QuizExam = () => {
     const [storedQuiz, setQuiz] = useState(null);
     const [submittedTime, setSubmittedTime] = useState(null);
     const [questions, setQuestions] = useState([]);
-    const selectedTime = storedQuiz?.selectedTime || '30 phút'; //error
+    const selectedTime = JSON.parse(localStorage.getItem('Time')) || '30 phút';
     const timeInMinutes = parseInt(selectedTime.split(" ")[0], 10);
     let timeInSeconds = timeInMinutes * 60;
 
@@ -63,7 +64,7 @@ const QuizExam = () => {
                     const quizData = response.data;
                     quizData.questions = shuffleArray(quizData.questions);
                     quizData.questions.forEach((question) => {
-                        question.questionChoice = shuffleArray(question.questionChoice);
+                        question.questionChoice = shuffleArray(question.questionChoices);
                     });
                     setQuestions(quizData.questions);
                     setQuiz(quizData);
@@ -75,7 +76,6 @@ const QuizExam = () => {
 
         fetchQuizData();
     }, [id]);
-
     if (!questions || questions.length === 0) {
         return <Loading />;
     }
@@ -107,7 +107,7 @@ const QuizExam = () => {
             if (isCorrect) {
                 numberOfCorrect++;
             }
-            score = (numberOfCorrect * scoreOfsens).toFixed(2);
+            score = (numberOfCorrect / questions.length * 10).toFixed(2);
             return {
                 questionId: question.id,
                 selectedChoiceIds: selectedChoices,
@@ -122,10 +122,11 @@ const QuizExam = () => {
             quizId: storedQuiz.id,
             questionResultDTOS: resultDetails,
             score,
+            totalCorrect: numberOfCorrect,
             // completedAt: new Date().toISOString(),
             submittedTime: timeSubmit,
         };
-        console.log("truyen di", quizResult);
+        console.log("result", quizResult);
 
         try {
             const response = await axios.post('https://api.trandai03.online/api/v1/quizs/submit', quizResult, {
@@ -139,7 +140,8 @@ const QuizExam = () => {
                     message: "Nộp bài thành công",
                     description: "Bài thi đã được nộp thành công!"
                 });
-                localStorage.setItem("Result", JSON.stringify(response.data));
+                localStorage.removeItem("Time");
+                setIdResult(response.data.id);
                 setIsModalOpen(false);
                 setIsModalOpen2(true);
             }
@@ -176,7 +178,7 @@ const QuizExam = () => {
                             title="Hoàn thành"
                             open={isModalOpen2}
                             onCancel={() => { navigate(`/quizdetail/examcontent/${storedQuiz.id}`); }}
-                            onOk={() => navigate('/result')}
+                            onOk={() => navigate(`/result/${idResult}`)}
                             okText="Xem kết quả"
                             cancelText="Trở về"
                         >

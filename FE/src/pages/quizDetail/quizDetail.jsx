@@ -9,25 +9,17 @@ import Headers from '../../components/headers/headers';
 import axios from 'axios';
 import Loading from '../../components/loading/loading';
 const { Content } = Layout;
-const items = [
-    {
-        key: '1',
-        label: 'Nội dung đề thi',
-        path: "/quizdetail/examcontent",
-    },
-    {
-        key: '2',
-        label: 'Kết quả ôn tập',
-        path: '',
-    },
-    {
-        key: '3',
-        label: 'Thống kê ôn tập',
-        path: '',
-    },
-
-];
 const QuizDetail = () => {
+    const { id } = useParams();
+    const items = [
+        {
+            key: '1',
+            label: 'Nội dung đề thi',
+            path: `/quizdetail/examcontent/${id}`,
+        },
+
+
+    ];
     const options = [
         {
             value: '15 phút',
@@ -41,8 +33,19 @@ const QuizDetail = () => {
             value: '45 phút',
             label: '45 phút',
         },
+        {
+            value: '60 phút',
+            label: '60 phút',
+        },
+        {
+            value: '90 phút',
+            label: '90 phút',
+        },
+        {
+            value: '120 phút',
+            label: '120 phút',
+        },
     ];
-    const { id } = useParams();
     const [selectedTime, setSelectedTime] = useState('30 phút');
     const [isModalOpen, setIsModalOpen] = useState(false);
     const showModal = () => {
@@ -98,8 +101,7 @@ const QuizDetail = () => {
     };
     const handleTimeChange = (value) => {
         setSelectedTime(value);
-        const updateQuiz = { ...quiz, selectedTime: value };
-        localStorage.setItem('quizInfo', JSON.stringify(updateQuiz));
+        localStorage.setItem('Time', JSON.stringify(value));
     }
     return (
 
@@ -162,7 +164,6 @@ const QuizDetail = () => {
                                             <Radio value={2}>Thi thử</Radio>
                                         </Radio.Group> <br />
                                         <CheckOutlined /> Không giới hạn thời gian làm đề thi <br />
-                                        <CheckOutlined /> Không hiển thị ngay đáp án <br />
                                         <CheckOutlined /> Kết quả được hiển thị ngay sau khi kiểm tra
                                         <hr style={{ borderWidth: '0px 0px thin', borderStyle: 'solid', borderColor: 'rgba(0, 0, 0, 0.12)' }} />
                                         <div style={{ display: 'flex', gap: '.5rem' }}>
