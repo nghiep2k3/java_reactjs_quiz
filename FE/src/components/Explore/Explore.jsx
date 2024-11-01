@@ -1,14 +1,20 @@
 import React from 'react';
 import CourseCard from '../courseCard/courseCard';
 import ListByCategory from '../listByCategory/listByCategory';
+import SearchCategory from '../searchCategory/searchCategory';
+import SliderItems from '../SliderItems/SliderItems';
 
 const Explore = () => {
     return (
-        <>
-            <ListByCategory />
+        <div>
+            {/* <ListByCategory />
 
-            <CourseCard></CourseCard>
-        </>
+            <CourseCard></CourseCard> */}
+
+
+
+            <SliderItems />
+        </div>
     );
 }
 

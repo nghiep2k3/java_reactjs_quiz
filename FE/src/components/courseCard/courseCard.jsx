@@ -46,7 +46,7 @@ const CourseCard = () => {
     return (
         <div>
 
-            <Slider {...settings} style={{ margin: '40px 0' }}>
+            {/* <Slider {...settings} style={{ margin: '40px 0' }}>
                 {displayedData.map((course) => {
                     return (
                         <div className={`${styles.item} animate__animated animate__fadeInDownBig`} key={course.id} style={{ padding: '0 10px' }}>
@@ -97,11 +97,11 @@ const CourseCard = () => {
                         </div>
                     )
                 })}
-            </Slider>
+            </Slider> */}
 
 
 
-            <List
+            {/* <List
                 grid={{ gutter: 16, column: 4 }}
                 dataSource={quizzes}
                 renderItem={quiz => (
@@ -175,7 +175,7 @@ const CourseCard = () => {
                         </Card>
                     </List.Item>
                 )}
-            />
+            /> */}
 
         </div>
     );

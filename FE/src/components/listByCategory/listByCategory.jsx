@@ -19,6 +19,8 @@ const ListByCategory = () => {
                 }
             });
             setQuizzes(response.data);
+            console.log(222222222, response.data);
+
         } catch (error) {
             console.error('Error fetching quiz data:', error);
         }

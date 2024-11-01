@@ -52,3 +52,7 @@ a{
 .ant-input-search .ant-input-search-button {
   height: 40px;
 }
+
+.slick-prev, .slick-next {
+  display: none !important;
+}
