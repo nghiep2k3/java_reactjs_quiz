@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Form, Input, Button, Card, Typography, Modal, message, Progress, Row, Col } from 'antd';
 import axios from 'axios';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import Loading from '../../components/loading/loading';
 import moment from 'moment';
 
@@ -10,11 +10,12 @@ const { Title, Text } = Typography;
 const JoinCompetition = () => {
     const [competitionData, setCompetitionData] = useState(null);
     const [isModalVisible, setIsModalVisible] = useState(false);
-    const [joinCode, setJoinCode] = useState('');
     const [remainingTime, setRemainingTime] = useState(0);
     const token = localStorage.getItem("token");
     const { code } = useParams();
-    //lỗi
+    const [isStart, setIsStart] = useState(false);
+    const navigate = useNavigate()
+
     useEffect(() => {
         const fetchCompetitionData = async () => {
             try {
@@ -25,52 +26,77 @@ const JoinCompetition = () => {
                     },
                 });
                 setCompetitionData(response.data);
+                const startTime = new Date(response.data.startTime).getTime();
+                const duration = response.data.time * 1000;
+                const endTime = startTime + duration;
+                const currentTime = Date.now();
+                if (currentTime >= startTime) {
+                    setIsStart(true);
+                    const initialRemainingTime = Math.floor((endTime - currentTime) / 1000);
 
-                const startTime = new Date(response.data.startTime).getTime(); // Lấy thời gian bắt đầu
-                console.log(startTime);
+                    if (initialRemainingTime > 0) {
+                        setRemainingTime(initialRemainingTime);
 
-                const duration = response.data.time * 1000; // Đổi sang milliseconds
-                const endTime = startTime + duration; // Tính thời gian kết thúc
-                const initialRemainingTime = Math.floor((endTime - Date.now()) / 1000); // Thời gian còn lại tính bằng giây
+                        const interval = setInterval(() => {
+                            const now = Date.now();
+                            const newRemainingTime = Math.floor((endTime - now) / 1000);
 
-                if (initialRemainingTime > 0) {
-                    setRemainingTime(initialRemainingTime);
-
-                    const interval = setInterval(() => {
-                        setRemainingTime((prevTime) => {
-                            if (prevTime <= 1) {
+                            if (newRemainingTime <= 0) {
                                 clearInterval(interval);
-                                return 0;
+                                setRemainingTime(0);
+                            } else {
+                                setRemainingTime(newRemainingTime);
                             }
-                            return prevTime - 1;
-                        });
-                    }, 1000);
+                        }, 1000);
 
-                    return () => clearInterval(interval);
+                        return () => clearInterval(interval);
+                    }
                 }
             } catch (error) {
                 message.error("Failed to fetch competition data.");
             }
         };
+
         fetchCompetitionData();
     }, [token, code]);
-
-
-
     const handleJoin = () => {
-        if (joinCode === competitionData?.code) {
+        if (remainingTime <= 0) {
+            message.error("Đã hết thời gian làm bài.");
+            return;
+        }
+        if (!isStart) {
+            message.error("Chưa đến thời gian làm bài");
+            return;
+        }
+        if (code === competitionData?.code) {
             setIsModalVisible(true);
         } else {
             message.error("Incorrect code. Please try again.");
         }
     };
+    const handleModalOk = () => {
+        const startTime = new Date(competitionData.startTime).getTime();
+        const endTime = startTime + competitionData.time * 1000;
+        const remainingTime = (endTime - Date.now()) / 1000;
+        console.log(remainingTime);
 
+        if (competitionData?.competitionQuizResponses?.length > 0) {
+            const randomQuiz = competitionData.competitionQuizResponses[Math.floor(Math.random() * competitionData.competitionQuizResponses.length)];
+            navigate(`/examcompetition/${randomQuiz?.quizResponses.id}`, {
+                state: {
+                    quizData: randomQuiz.quizResponses,
+                    remainingTime: remainingTime
+                }
+            });
+        } else {
+            message.error("Không có đề thi nào khả dụng.");
+        }
+        setIsModalVisible(false);
+    };
     if (!competitionData) {
         return <Loading />;
     }
-
     const timeInMinutes = competitionData.time / 60;
-
     return (
         <Row>
 
@@ -112,7 +138,7 @@ const JoinCompetition = () => {
                             <Input value={`${timeInMinutes} phút`} disabled />
                         </Form.Item>
 
-                        {remainingTime > 0 && (
+                        {isStart && remainingTime > 0 ? (
                             <>
                                 <Form.Item label="Remaining Time">
                                     <Progress
@@ -125,25 +151,20 @@ const JoinCompetition = () => {
                                     Time Left: {Math.floor(remainingTime / 60)}:{remainingTime % 60 < 10 ? '0' : ''}{remainingTime % 60} minutes
                                 </Text>
                             </>
-                        )}
+                        ) : (null)}
 
                         <Form.Item>
-                            <Button type="primary">
-                                Join Competition
+                            <Button type="primary" htmlType="submit">
+                                Bắt đầu làm bài
                             </Button>
                         </Form.Item>
                     </Form>
 
                     <Modal
-                        title="Competition Details"
+                        title="Bắt đầu làm bài?"
                         visible={isModalVisible}
-                        onOk={() => setIsModalVisible(false)}
-                        onCancel={() => setIsModalVisible(false)}
-                    >
-                        <p><Text strong>Name:</Text> {competitionData.name}</p>
-                        <p><Text strong>Organized By:</Text> {competitionData.organizedBy}</p>
-                        <p><Text strong>Start Time:</Text> {moment(competitionData.startTime).format('DD/MM/YYYY HH:mm:ss')}</p>
-                        <p><Text strong>Duration:</Text> {timeInMinutes} phút</p>
+                        onOk={handleModalOk}
+                        onCancel={() => setIsModalVisible(false)}>
                     </Modal>
                 </Card>
             </Col>
