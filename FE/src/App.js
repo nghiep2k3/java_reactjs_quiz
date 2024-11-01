@@ -129,6 +129,7 @@ const App = () => {
                     window.location.href = '/login';
                 }
             } catch (error) {
+                window.location.href = '/login';
                 console.error("Error fetching data", error);
             }
         };
