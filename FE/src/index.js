@@ -37,6 +37,7 @@ import QuestionCompe from "./components/questionCompe/questionCompe.jsx";
 import UserCompetitions from "./pages/userCompetitions/userCompetitions.jsx";
 import Update from "./pages/updateCompetition/update.jsx";
 import UpdateCompetition from "./pages/updateCompetition/updateCompetiton.jsx";
+import ExamCompetition from "./pages/examCompetition/examCompetition.jsx";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
@@ -86,6 +87,7 @@ root.render(
             </Route>
             <Route path="/changepass" element={<ChangePassword />} />
             <Route path="/doexam/:id" element={<DoExam />} />
+            <Route path="/examcompetition/:id" element={<ExamCompetition />} />
           </Route>
         </Routes>
         <Routes>

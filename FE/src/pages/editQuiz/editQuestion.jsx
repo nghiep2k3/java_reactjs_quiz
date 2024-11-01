@@ -132,8 +132,6 @@ const EditQuestion = () => {
                 },
             });
             if (response.status === 200) {
-                console.log("response tra ve", response.data);
-                console.log("cai nay truyen di", updatedQuiz);
 
                 notification.success({
                     message: 'Thành công',
@@ -141,7 +139,7 @@ const EditQuestion = () => {
                 });
                 localStorage.removeItem("edit")
                 localStorage.removeItem("storedQuiz")
-                navigate('/quizlist')
+                navigate('/')
             }
         } catch (error) {
             notification.error({

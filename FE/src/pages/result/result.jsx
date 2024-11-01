@@ -93,7 +93,7 @@ const Result = () => {
 
               <div className={styles.optionsContainer}>
 
-                {questionResponse.question.questionChoices.map((option, idx) => {
+                {questionResponse.question.questionChoice.map((option, idx) => {
                   const selectedIds = questionResponse.selectedChoice.map(selected => selected.choiceId);
                   const isUserAnswer = selectedIds.includes(option.id);
                   const isCorrectAnswer = option.isCorrect;

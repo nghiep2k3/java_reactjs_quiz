@@ -83,22 +83,6 @@ const QuizList = () => {
                             hoverable
                             actions={[
                                 <Button onClick={() => handleEditQuiz(quiz.id)} icon={<EditOutlined />}></Button>,
-                                <Dropdown
-                                    menu={{
-                                        items: [{
-                                            key: '1',
-                                            label: (
-                                                <Link to={`/createquiz/competition/${quiz.id}`} target="_blank">
-                                                    Tạo cuộc thi
-                                                </Link>
-                                            ),
-                                        }]
-                                    }}
-                                >
-                                    <a onClick={(e) => e.preventDefault()}>
-                                        <Button icon={<DownCircleOutlined />}></Button>,
-                                    </a>
-                                </Dropdown>,
                                 <Popconfirm
                                     title="Bạn có chắc chắn muốn xóa đề thi này?"
                                     onConfirm={() => handleDeleteQuiz(quiz.id)}

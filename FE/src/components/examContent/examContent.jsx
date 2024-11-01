@@ -41,7 +41,7 @@ const ExamContent = () => {
                             Câu {index + 1}: {q.question}
                         </strong>
                         <div className="options-grid">
-                            {q.questionChoices && q.questionChoices.map((option, idx) => (
+                            {q.questionChoice && q.questionChoice.map((option, idx) => (
                                 <div key={option.id} className={`option-item ${option.isCorrect ? 'correct' : ''}`}>
                                     {String.fromCharCode(65 + idx)}. {option.text} {option.isCorrect && <span className="correct-text">(Đúng)</span>}
                                 </div>
