@@ -1,20 +1,18 @@
 import React, { useEffect, useState } from 'react';
-import { List, Card, notification, Popconfirm, Button, Image, Dropdown } from 'antd';
-import { Link, useNavigate, useParams } from 'react-router-dom';
-import { ClockCircleOutlined, DeleteOutlined, EditOutlined, DownCircleOutlined } from '@ant-design/icons';
+import { List, Card, notification, Popconfirm, Button, Image, message } from 'antd';
+import { Link, useNavigate } from 'react-router-dom';
+import { ClockCircleOutlined, DeleteOutlined, EditOutlined, HeartFilled, HeartOutlined } from '@ant-design/icons';
 import axios from 'axios';
 import Loading from '../../components/loading/loading';
 
-const { Meta } = Card;
 const QuizList = () => {
     const [quizzes, setQuizzes] = useState([]);
+    const [favoriteQuizzes, setFavoriteQuizzes] = useState(new Set());
     const navigate = useNavigate();
-    const handleEditQuiz = (quizId) => {
-        navigate(`/edit/editquiz/${quizId}`);
-    };
     const token = localStorage.getItem("token");
+
     useEffect(() => {
-        const fetchCategories = async () => {
+        const fetchQuizzes = async () => {
             try {
                 const response = await axios.get('https://api.trandai03.online/api/v1/quizs/user', {
                     headers: {
@@ -24,7 +22,6 @@ const QuizList = () => {
                     }
                 });
                 if (response.status === 200) {
-
                     setQuizzes(response.data);
                 }
             } catch (error) {
@@ -34,15 +31,13 @@ const QuizList = () => {
                 });
             }
         };
-        fetchCategories();
+        fetchQuizzes();
     }, []);
-    const formatDate = (dateString) => {
-        const date = new Date(dateString);
-        const day = String(date.getDate()).padStart(2, '0');
-        const month = String(date.getMonth() + 1).padStart(2, '0');
-        const year = date.getFullYear();
-        return `${day}/${month}/${year}`;
+
+    const handleEditQuiz = (quizId) => {
+        navigate(`/edit/editquiz/${quizId}`);
     };
+
     const handleDeleteQuiz = async (quizId) => {
         try {
             const response = await axios.delete(`https://api.trandai03.online/api/v1/quizs/${quizId}`, {
@@ -67,9 +62,46 @@ const QuizList = () => {
             });
         }
     };
+
+    const toggleFavorite = async (quizId) => {
+        const updatedFavorites = new Set(favoriteQuizzes);
+        try {
+            if (updatedFavorites.has(quizId)) {
+                await axios.delete(`https://api.trandai03.online/api/v1/quizs/unfavorite/${quizId}`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json',
+                    }
+                });
+                message.success('Đã bỏ yêu thích!');
+                updatedFavorites.delete(quizId);
+            } else {
+                await axios.post(`https://api.trandai03.online/api/v1/quizs/favorite/${quizId}`, {}, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json',
+                    }
+                });
+                message.success('Thêm vào mục yêu thích thành công!');
+                updatedFavorites.add(quizId);
+            }
+            setFavoriteQuizzes(updatedFavorites);
+        } catch (error) {
+            message.error('Lỗi khi cập nhật mục yêu thích, vui lòng thử lại.');
+            console.log(error.message);
+
+        }
+    };
+
+    const formatDate = (dateString) => {
+        const date = new Date(dateString);
+        return `${String(date.getDate()).padStart(2, '0')}/${String(date.getMonth() + 1).padStart(2, '0')}/${date.getFullYear()}`;
+    };
+
     if (!quizzes) {
-        return <Loading />
+        return <Loading />;
     }
+
     return (
         <div>
             <h1>Danh sách các đề thi</h1>
@@ -82,15 +114,19 @@ const QuizList = () => {
                         <Card
                             hoverable
                             actions={[
-                                <Button onClick={() => handleEditQuiz(quiz.id)} icon={<EditOutlined />}></Button>,
+                                <Button onClick={() => handleEditQuiz(quiz.id)} icon={<EditOutlined />} />,
                                 <Popconfirm
                                     title="Bạn có chắc chắn muốn xóa đề thi này?"
                                     onConfirm={() => handleDeleteQuiz(quiz.id)}
                                     okText="Có"
                                     cancelText="Không"
                                 >
-                                    <Button danger icon={<DeleteOutlined />}></Button>
-                                </Popconfirm>
+                                    <Button danger icon={<DeleteOutlined />} />
+                                </Popconfirm>,
+                                <Button
+                                    icon={favoriteQuizzes.has(quiz.id) ? <HeartFilled style={{ color: 'red' }} /> : <HeartOutlined />}
+                                    onClick={() => toggleFavorite(quiz.id)}
+                                />
                             ]}
                             style={{
                                 width: 280,
@@ -114,7 +150,6 @@ const QuizList = () => {
                                         }}
                                     />
                                 </div>
-
                                 <p style={{
                                     fontSize: '18px',
                                     fontWeight: 'bold',
@@ -124,9 +159,8 @@ const QuizList = () => {
                                     overflow: 'hidden',
                                     textOverflow: 'ellipsis'
                                 }}>
-                                    Title: {quiz.title}
+                                    {quiz.title}
                                 </p>
-
                                 <p style={{ fontSize: '14px', color: '#888', marginBottom: '5px' }}>
                                     <strong>Id:</strong> {quiz.id}
                                 </p>
@@ -134,18 +168,15 @@ const QuizList = () => {
                                     <ClockCircleOutlined style={{ marginRight: '5px' }} />
                                     {formatDate(quiz.createdAt)}
                                 </p>
-
                                 <p style={{ fontSize: '14px', color: '#888', marginBottom: '5px' }}>
                                     <strong>Người tạo:</strong> {quiz.usernameCreated}
                                 </p>
                                 <p style={{ fontSize: '14px', color: '#888', marginBottom: '5px' }}>
                                     <strong>Số câu hỏi:</strong> {quiz.questions?.length}
                                 </p>
-
                                 <p style={{ fontSize: '14px', color: '#888', marginBottom: '5px' }}>
                                     <strong>Môn học:</strong> {quiz?.category?.name || "Không có"}
                                 </p>
-
                                 <p style={{
                                     fontSize: '14px',
                                     color: '#888',
@@ -159,10 +190,9 @@ const QuizList = () => {
                             </Link>
                         </Card>
                     </List.Item>
-                )
-                }
+                )}
             />
-        </div >
+        </div>
     );
 };
 

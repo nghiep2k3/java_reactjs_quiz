@@ -6,14 +6,14 @@ import Loading from '../../components/loading/loading';
 import axios from 'axios';
 
 const ReportQuizResult = () => {
-    const [result, setResult] = useState(null);
+    const [resultThiThu, setResultThiThu] = useState(null);
+    const [resultCompetition, setResultCompetition] = useState(null);
     const [currentTab, setCurrentTab] = useState("1");
     const [tableData, setTableData] = useState([]);
     const navigate = useNavigate();
 
-    // Gọi API lấy dữ liệu
     useEffect(() => {
-        const fetchData = async () => {
+        const fetchThiThuData = async () => {
             try {
                 const response = await axios.get('https://api.trandai03.online/api/v1/result/user', {
                     headers: {
@@ -23,28 +23,37 @@ const ReportQuizResult = () => {
                     }
                 });
                 if (response.status === 200) {
-                    setResult(response.data);
+                    setResultThiThu(response.data);
                 }
             } catch (error) {
-                console.error('Error fetching quiz result:', error);
+                console.error('Error fetching Thi Thu result:', error);
             }
         };
-        fetchData();
+
+        const fetchCompetitionData = async () => {
+            try {
+                const response = await axios.get('https://api.trandai03.online/api/v1/result/competition/user', {
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                        'Content-Type': 'application/json',
+                        'Accept': '*/*'
+                    }
+                });
+                if (response.status === 200) {
+                    setResultCompetition(response.data);
+                }
+            } catch (error) {
+                console.error('Error fetching Competition result:', error);
+            }
+        };
+
+        fetchThiThuData();
+        fetchCompetitionData();
     }, []);
 
     useEffect(() => {
-        if (result) {
-            handleTabChange("1");
-        }
-    }, [result]);
-
-    if (!result) {
-        return <Loading />;
-    }
-    const handleTabChange = (key) => {
-        setCurrentTab(key);
-        if (key === "1") {
-            setTableData(result.map((res) => ({
+        if (currentTab === "1" && resultThiThu) {
+            setTableData(resultThiThu.map((res) => ({
                 idResult: res.id,
                 quizTitle: res.quizTitle,
                 score: res.score,
@@ -55,10 +64,41 @@ const ReportQuizResult = () => {
                 completedTime: res.submittedTime,
                 finishTime: new Date(res.completedAt).toLocaleString(),
             })));
+        } else if (currentTab === "2" && resultCompetition) {
+            setTableData(resultCompetition.map((res) => {
+                const timeStart = new Date(res.competitionResponse.startTime).getTime();
+                const duration = res.competitionResponse.time * 1000;
+                const timeEnd = timeStart + duration;
+                const checked = Date.now() - timeEnd;
+                console.log(checked);
+
+                if (checked >= 0) {
+                    return {
+                        idResult: res.id,
+                        quizTitle: res.quizTitle,
+                        score: res.score,
+                        rating: res.score >= 8 ? "Giỏi" : res.score >= 5 ? "Trung bình" : "Yếu",
+                        correctAnswers: res.totalCorrect || 0,
+                        incorrectAnswers: res.resultQuestionResponses.length - res.totalCorrect || 0,
+                        totalQuestions: res.resultQuestionResponses.length,
+                        completedTime: res.submittedTime,
+                        finishTime: new Date(res.completedAt).toLocaleString(),
+                    };
+                }
+                return null;
+            }).filter(item => item !== null));
         }
+    }, [currentTab, resultThiThu, resultCompetition]);
+
+    if (!resultThiThu || !resultCompetition) {
+        return <Loading />;
+    }
+
+    const handleTabChange = (key) => {
+        setCurrentTab(key);
     };
 
-    const columnsForThiThu = [
+    const columns = [
         {
             title: 'Đề thi',
             dataIndex: 'quizTitle',
@@ -119,9 +159,10 @@ const ReportQuizResult = () => {
             </h3>
             <Tabs defaultActiveKey="1" onChange={handleTabChange}>
                 <Tabs.TabPane tab="Thi thử" key="1">
-                    <Table columns={columnsForThiThu} dataSource={tableData} rowKey="idResult" />
+                    <Table columns={columns} dataSource={tableData} rowKey="idResult" />
                 </Tabs.TabPane>
                 <Tabs.TabPane tab="Cuộc thi" key="2">
+                    <Table columns={columns} dataSource={tableData} rowKey="idResult" />
                 </Tabs.TabPane>
             </Tabs>
         </div>

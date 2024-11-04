@@ -5,7 +5,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import Loading from '../../components/loading/loading';
 import moment from 'moment';
 
-const { Title, Text } = Typography;
+const { Text } = Typography;
 
 const JoinCompetition = () => {
     const [competitionData, setCompetitionData] = useState(null);
@@ -13,6 +13,7 @@ const JoinCompetition = () => {
     const [remainingTime, setRemainingTime] = useState(0);
     const token = localStorage.getItem("token");
     const { code } = useParams();
+    const [isSubmited, setSubmited] = useState(false);
     const [isStart, setIsStart] = useState(false);
     const navigate = useNavigate()
 
@@ -26,6 +27,7 @@ const JoinCompetition = () => {
                     },
                 });
                 setCompetitionData(response.data);
+                setSubmited(response.data.submited)
                 const startTime = new Date(response.data.startTime).getTime();
                 const duration = response.data.time * 1000;
                 const endTime = startTime + duration;
@@ -60,6 +62,10 @@ const JoinCompetition = () => {
         fetchCompetitionData();
     }, [token, code]);
     const handleJoin = () => {
+        if (isSubmited === true) {
+            message.error("Bài thi đã được hoàn thành");
+            return;
+        }
         if (remainingTime <= 0) {
             message.error("Đã hết thời gian làm bài.");
             return;
@@ -69,6 +75,8 @@ const JoinCompetition = () => {
             return;
         }
         if (code === competitionData?.code) {
+            const endTime = Date.now() + remainingTime * 1000;
+            localStorage.setItem('examEndTime', endTime);
             setIsModalVisible(true);
         } else {
             message.error("Incorrect code. Please try again.");
@@ -78,14 +86,13 @@ const JoinCompetition = () => {
         const startTime = new Date(competitionData.startTime).getTime();
         const endTime = startTime + competitionData.time * 1000;
         const remainingTime = (endTime - Date.now()) / 1000;
-        console.log(remainingTime);
-
         if (competitionData?.competitionQuizResponses?.length > 0) {
             const randomQuiz = competitionData.competitionQuizResponses[Math.floor(Math.random() * competitionData.competitionQuizResponses.length)];
             navigate(`/examcompetition/${randomQuiz?.quizResponses.id}`, {
                 state: {
                     quizData: randomQuiz.quizResponses,
-                    remainingTime: remainingTime
+                    remainingTime: remainingTime,
+                    idCompetition: competitionData.id
                 }
             });
         } else {
