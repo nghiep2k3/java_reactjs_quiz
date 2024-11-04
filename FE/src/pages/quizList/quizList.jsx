@@ -7,9 +7,9 @@ import Loading from '../../components/loading/loading';
 
 const QuizList = () => {
     const [quizzes, setQuizzes] = useState([]);
-    const [favoriteQuizzes, setFavoriteQuizzes] = useState(new Set());
     const navigate = useNavigate();
     const token = localStorage.getItem("token");
+    const [favorquizzes, setFavorQuizzes] = useState([]);
 
     useEffect(() => {
         const fetchQuizzes = async () => {
@@ -33,6 +33,36 @@ const QuizList = () => {
         };
         fetchQuizzes();
     }, []);
+
+
+    useEffect(() => {
+        const fetchFavorQuizzes = async () => {
+            try {
+                const response = await axios.get('https://api.trandai03.online/api/v1/users/me', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json',
+                        'Accept': '*/*'
+                    }
+                });
+                if (response.status === 200) {
+                    console.log(response.data);
+                    const newFavorQuizzes = response.data.data.favoriteQuizResponse.map((res) => res.quiz.id);
+                    const uniqueFavorQuizzes = [...new Set([...favorquizzes, ...newFavorQuizzes])];
+                    setFavorQuizzes(uniqueFavorQuizzes);
+                }
+            } catch (error) {
+                notification.error({
+                    message: 'Lỗi khi tải danh sách yêu thích',
+                    description: 'Không thể tải danh sách yêu thích, vui lòng thử lại sau.',
+                });
+            }
+        };
+        fetchFavorQuizzes();
+    }, []);
+
+    console.log("favor", favorquizzes);
+
 
     const handleEditQuiz = (quizId) => {
         navigate(`/edit/editquiz/${quizId}`);
@@ -64,28 +94,31 @@ const QuizList = () => {
     };
 
     const toggleFavorite = async (quizId) => {
-        const updatedFavorites = new Set(favoriteQuizzes);
         try {
-            if (updatedFavorites.has(quizId)) {
-                await axios.delete(`https://api.trandai03.online/api/v1/quizs/unfavorite/${quizId}`, {
+            if (favorquizzes.includes(quizId)) {
+                const res = await axios.delete(`https://api.trandai03.online/api/v1/quizs/unfavorite/${quizId}`, {
                     headers: {
                         'Authorization': `Bearer ${token}`,
                         'Content-Type': 'application/json',
                     }
                 });
-                message.success('Đã bỏ yêu thích!');
-                updatedFavorites.delete(quizId);
+                if (res === 200) {
+                    message.success('Đã bỏ yêu thích!');
+                    const updatedFavor = favorquizzes.filter((id) => id !== quizId);
+                    setFavorQuizzes(updatedFavor)
+                }
             } else {
-                await axios.post(`https://api.trandai03.online/api/v1/quizs/favorite/${quizId}`, {}, {
+                const res = await axios.post(`https://api.trandai03.online/api/v1/quizs/favorite/${quizId}`, {}, {
                     headers: {
                         'Authorization': `Bearer ${token}`,
                         'Content-Type': 'application/json',
                     }
                 });
-                message.success('Thêm vào mục yêu thích thành công!');
-                updatedFavorites.add(quizId);
+                if (res === 200) {
+                    setFavorQuizzes([...favorquizzes, quizId])
+                    message.success('Thêm vào mục yêu thích thành công!');
+                }
             }
-            setFavoriteQuizzes(updatedFavorites);
         } catch (error) {
             message.error('Lỗi khi cập nhật mục yêu thích, vui lòng thử lại.');
             console.log(error.message);
@@ -124,7 +157,7 @@ const QuizList = () => {
                                     <Button danger icon={<DeleteOutlined />} />
                                 </Popconfirm>,
                                 <Button
-                                    icon={favoriteQuizzes.has(quiz.id) ? <HeartFilled style={{ color: 'red' }} /> : <HeartOutlined />}
+                                    icon={favorquizzes.includes(quiz.id) ? <HeartFilled style={{ color: 'red' }} /> : <HeartOutlined />}
                                     onClick={() => toggleFavorite(quiz.id)}
                                 />
                             ]}

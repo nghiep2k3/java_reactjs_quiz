@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { Tabs, Table, Tag, Button } from 'antd';
-import { BarChartOutlined } from '@ant-design/icons';
+import { Card, Progress, Tabs, Table, Tag, Button } from 'antd';
+import { CheckCircleOutlined, CloseCircleOutlined, BarChartOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import Loading from '../../components/loading/loading';
 import axios from 'axios';

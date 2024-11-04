@@ -39,6 +39,9 @@ code {
 
 
 }
+.slick-track{
+  /* width: auto !important; */
+}
 
 a{
   text-decoration: none;

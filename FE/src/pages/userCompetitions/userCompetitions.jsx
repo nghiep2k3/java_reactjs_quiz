@@ -59,7 +59,7 @@ const UserCompetitions = () => {
                 renderItem={competition => (
                     <List.Item>
                         <Card
-                            title={<Text strong>{competition.name}</Text>}
+                            title={<Text style={{ color: "#fff" }}>{competition.name}</Text>}
                             extra={<Tag color="blue">Mã: {competition.code}</Tag>}
                             actions={[
                                 <Button

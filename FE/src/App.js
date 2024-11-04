@@ -55,12 +55,6 @@ const App = () => {
         },
         {
             key: "6",
-            icon: <SettingOutlined />,
-            label: "Kết quả thi của tôi",
-            path: "/resultcompetition",
-        },
-        {
-            key: "7",
             icon: <TabletOutlined />,
             label: "Cuộc thi",
             path: "/usercompetitions",
