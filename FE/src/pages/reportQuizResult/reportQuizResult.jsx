@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { Tabs, Table, Tag, Button } from 'antd';
-import { BarChartOutlined } from '@ant-design/icons';
+import { Card, Progress, Tabs, Table, Tag, Button } from 'antd';
+import { CheckCircleOutlined, CloseCircleOutlined, BarChartOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import Loading from '../../components/loading/loading';
 import axios from 'axios';
@@ -45,7 +45,7 @@ const ReportQuizResult = () => {
         setCurrentTab(key);
         if (key === "1") {
             setTableData(result.map((res) => ({
-                idResult: res.id,
+                idResult: res.id, // Thêm idResult để dùng cho điều hướng
                 quizTitle: res.quizTitle,
                 score: res.score,
                 rating: res.score >= 8 ? "Giỏi" : res.score >= 5 ? "Trung bình" : "Yếu",

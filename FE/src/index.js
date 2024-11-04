@@ -46,34 +46,21 @@ root.render(
       <Router future={{ v7_startTransition: true }}>
         <Routes>
           <Route path="/verify" element={<VerifyAccount />} />
-          <Route element={<PrivateRoute />}>
-            <Route path="/" element={<App />}>
-              <Route path="/joincompetition/:code" element={<JoinCompetition />} />
-              <Route path="/mylibrary" element={<MyLibrary />} />
-              <Route path="/ViewQuiz" element={<ViewQuiz />} />
-              <Route path="/" element={<Explore />} />
-              <Route path="/result/:idResult" element={<Result />} />
-              <Route path="/reportquizresult" element={<ReportQuizResult />} />
-              <Route path="/usercompetitions" element={<UserCompetitions />} />
-              <Route path="/createquiz" element={<CreateQuiz />}>
-                <Route path="inforquiz" element={<InforQuiz />} />
-                <Route path="createquestion" element={<CreateQuestion />} />
-              </Route>
-              <Route path="/createcompetition" element={<CreateCompetition />}>
-                <Route path="competition" element={<Competion />} />
-                <Route path="createquizcompetition/:competitionId" element={<CreateQuizCompetition />} />
-                <Route path="questioncompe/:competitionId" element={<QuestionCompe />} />
-                <Route path="showquizcompe/:competitionId" element={<ShowQuizCompe />} />
-              </Route>
-              <Route path="/update" element={<Update />}>
-                <Route path="updatecompetition/:competitionId" element={<UpdateCompetition />} />
-              </Route>
-              <Route path="/edit" element={<Edit />}>
-                <Route path="editquiz/:id" element={<EditQuiz />} />
-                <Route path="editquestion/:id" element={<EditQuestion />} />
-              </Route>
-              <Route path="/quizlist" element={<QuizList />} />
-              <Route path="/profile" element={<Profile />} />
+          <Route path="/" element={<App />}>
+            <Route path="/mylibrary" element={<MyLibrary />} />
+            <Route path="/ViewQuiz" element={<ViewQuiz />} />
+            <Route path="/" element={<Explore />} />
+            {/* <Route path="/explore" element={<Explore />} /> */}
+            <Route path="/result/:idResult" element={<Result />} />
+            <Route path="/reportquizresult" element={<ReportQuizResult />} />
+            <Route path="/competion" element={<Competion />} />
+            <Route path="/createquiz" element={<CreateQuiz />}>
+              <Route path="inforquiz" element={<InforQuiz />} />
+              <Route path="createquestion" element={<CreateQuestion />} />
+            </Route>
+            <Route path="/edit" element={<Edit />}>
+              <Route path="editquiz/:id" element={<EditQuiz />} />
+              <Route path="editquestion/:id" element={<EditQuestion />} />
             </Route>
             <Route path="/quizlist" element={<QuizList />} />
             <Route path="/profile" element={<Profile />} />

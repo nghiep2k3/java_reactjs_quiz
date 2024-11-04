@@ -21,6 +21,7 @@ const Result = () => {
         });
         if (response.status === 200) {
           setResult(response.data)
+          console.log("ketQua", result);
         }
       } catch (error) {
         console.error('Error fetching quiz result:', error);

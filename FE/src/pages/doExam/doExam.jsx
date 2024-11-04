@@ -123,6 +123,7 @@ const QuizExam = () => {
             questionResultDTOS: resultDetails,
             score,
             totalCorrect: numberOfCorrect,
+            totalCorrect: numberOfCorrect,
             // completedAt: new Date().toISOString(),
             submittedTime: timeSubmit,
         };
@@ -140,6 +141,7 @@ const QuizExam = () => {
                     message: "Nộp bài thành công",
                     description: "Bài thi đã được nộp thành công!"
                 });
+                setIdResult(response.data.id);
                 localStorage.removeItem("Time");
                 setIdResult(response.data.id);
                 setIsModalOpen(false);
