@@ -1,30 +1,15 @@
 import { Col, Layout, Row, Space, Tabs } from 'antd';
 import { Content } from 'antd/es/layout/layout';
 import React from 'react';
-import { Outlet, useLocation, useNavigate } from 'react-router-dom';
-const items = [
-    {
-        key: '1',
-        label: 'Thông tin cơ bản',
-        path: "/createquiz/inforquiz",
-    },
-    {
-        key: '2',
-        label: 'Soạn câu hỏi',
-        path: '/createquiz/createquestion',
-    },
-    {
-        key: '3',
-        label: 'Tạo cuộc thi',
-        path: '/createquiz/competition',
-    },
-    {
-        key: '4',
-        label: 'Thống kê',
-        path: '/statistical',
-    },
-];
-const CreateQuiz = () => {
+import { Outlet, useLocation, useNavigate, useParams } from 'react-router-dom';
+const Update = () => {
+    const { id } = useParams();
+    const items = [
+        {
+            key: '1',
+            label: 'Thông tin cơ bản',
+        },
+    ];
     const navigate = useNavigate();
     const location = useLocation();
     const onChange = (key) => {
@@ -46,7 +31,7 @@ const CreateQuiz = () => {
                             borderRadius: '8px'
                         }}>
                             <Space direction="vertical">
-                                <p style={{ fontSize: "22px", fontWeight: "bold" }}>Tạo một đề thi</p>
+                                <p style={{ fontSize: "22px", fontWeight: "bold" }}>Chỉnh sửa thông tin cuộc thi</p>
                             </Space>
                             <Tabs activeKey={[location.pathname]}
                                 items={items.map(item => ({
@@ -63,4 +48,4 @@ const CreateQuiz = () => {
     );
 }
 
-export default CreateQuiz;
+export default Update;

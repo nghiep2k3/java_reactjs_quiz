@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Card, Checkbox, Button, Menu, Affix, Col, Row, message, Modal, Image, notification } from 'antd';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
 import Loading from '../../components/loading/loading';
 
@@ -12,8 +12,9 @@ const shuffleArray = (array) => {
     return array;
 };
 
-const QuizExam = () => {
+const ExamCompetition = () => {
     const navigate = useNavigate();
+    const location = useLocation();
     const { id } = useParams();
     const [idResult, setIdResult] = useState(null);
     const [selectedAnswers, setSelectedAnswers] = useState({});
@@ -27,7 +28,7 @@ const QuizExam = () => {
     const selectedTime = JSON.parse(localStorage.getItem('Time')) || '30 phút';
     const timeInMinutes = parseInt(selectedTime.split(" ")[0], 10);
     let timeInSeconds = timeInMinutes * 60;
-
+    const { data } = location.state || {};
     useEffect(() => {
         setRemainingTime(timeInSeconds);
         const interval = setInterval(() => {
@@ -123,7 +124,6 @@ const QuizExam = () => {
             questionResultDTOS: resultDetails,
             score,
             totalCorrect: numberOfCorrect,
-            totalCorrect: numberOfCorrect,
             // completedAt: new Date().toISOString(),
             submittedTime: timeSubmit,
         };
@@ -141,7 +141,6 @@ const QuizExam = () => {
                     message: "Nộp bài thành công",
                     description: "Bài thi đã được nộp thành công!"
                 });
-                setIdResult(response.data.id);
                 localStorage.removeItem("Time");
                 setIdResult(response.data.id);
                 setIsModalOpen(false);
@@ -237,4 +236,4 @@ const QuizExam = () => {
     );
 };
 
-export default QuizExam;
+export default ExamCompetition;

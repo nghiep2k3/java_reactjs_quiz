@@ -21,15 +21,23 @@ import 'bootstrap/dist/js/bootstrap.bundle.min';
 import ReportQuizResult from "./pages/reportQuizResult/reportQuizResult";
 import ChangePassword from "./pages/changePassword/changePassword";
 import Profile from "./pages/profile/profile";
-import Test from "./pages/Test/Test.jsx";
 import EditQuiz from "./pages/editQuiz/editQuiz";
 import Edit from "./pages/editQuiz/edit";
 import EditQuestion from "./pages/editQuiz/editQuestion";
 import ForgotPassword from "./pages/forgetPassword/forgotPassword.jsx";
-
 import { FileProvider } from "./components/context/ContextFileImage.jsx";
 import VerifyAccount from "./pages/VerifyAccount/VerifyAccount.jsx";
 import Competion from "./pages/Competion/Competion.jsx";
+import JoinCompetition from "./pages/joinCompetition/joinCompetition.jsx";
+import PrivateRoute from "./components/privateRouter/privateRouter.jsx";
+import CreateCompetition from "./pages/createCompetition/createCompetition.jsx";
+import CreateQuizCompetition from "./pages/createQuizCompetition/createQuizCompetition.jsx";
+import ShowQuizCompe from "./components/showQuizCompe/showQuizCompe.jsx";
+import QuestionCompe from "./components/questionCompe/questionCompe.jsx";
+import UserCompetitions from "./pages/userCompetitions/userCompetitions.jsx";
+import Update from "./pages/updateCompetition/update.jsx";
+import UpdateCompetition from "./pages/updateCompetition/updateCompetiton.jsx";
+import ExamCompetition from "./pages/examCompetition/examCompetition.jsx";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
@@ -37,7 +45,6 @@ root.render(
     <FileProvider>
       <Router future={{ v7_startTransition: true }}>
         <Routes>
-          <Route path="/test" element={<Test />} />
           <Route path="/verify" element={<VerifyAccount />} />
           <Route path="/" element={<App />}>
             <Route path="/mylibrary" element={<MyLibrary />} />
@@ -58,18 +65,21 @@ root.render(
             <Route path="/quizlist" element={<QuizList />} />
             <Route path="/profile" element={<Profile />} />
           </Route>
-          <Route path="/quizlist" element={<QuizList />} />
-          <Route path="/profile" element={<Profile />} />
         </Routes>
 
         <Routes>
-          <Route path="/quizdetail" element={<QuizDetail />} >
-            <Route path="examcontent/:id" element={<ExamContent />} />
+          <Route element={<PrivateRoute />}>
+            <Route path="/quizdetail" element={<QuizDetail />} >
+              <Route path="examcontent/:id" element={<ExamContent />} />
+            </Route>
+            <Route path="/changepass" element={<ChangePassword />} />
+            <Route path="/doexam/:id" element={<DoExam />} />
+            <Route path="/examcompetition/:id" element={<ExamCompetition />} />
           </Route>
-          <Route path="/doexam/:id" element={<DoExam />} />
+        </Routes>
+        <Routes>
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
-          <Route path="/changepass" element={<ChangePassword />} />
           <Route path="/forgotpass" element={<ForgotPassword />} />
         </Routes>
       </Router>

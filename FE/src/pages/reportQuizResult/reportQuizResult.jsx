@@ -41,7 +41,6 @@ const ReportQuizResult = () => {
     if (!result) {
         return <Loading />;
     }
-
     const handleTabChange = (key) => {
         setCurrentTab(key);
         if (key === "1") {

@@ -32,7 +32,6 @@ const Result = () => {
   if (!result) {
     return <Loading></Loading>
   }
-
   const questionLength = result.resultQuestionResponses.length;
   const correctAnswers = result.resultQuestionResponses.filter(opt => opt.isCorrect)
   const calculateScorePercent = () => {
@@ -96,7 +95,7 @@ const Result = () => {
               <div className={styles.optionsContainer}>
 
                 {questionResponse.question.questionChoice.map((option, idx) => {
-                  const selectedIds = questionResponse.selectedChoice.map(selected => selected.choice.id);
+                  const selectedIds = questionResponse.selectedChoice.map(selected => selected.choiceId);
                   const isUserAnswer = selectedIds.includes(option.id);
                   const isCorrectAnswer = option.isCorrect;
 

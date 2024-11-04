@@ -39,6 +39,9 @@ code {
 
 
 }
+.slick-track{
+  /* width: auto !important; */
+}
 
 a{
   text-decoration: none;
@@ -49,6 +52,10 @@ a{
 .ant-input-outlined {
   height: 40px;
 }
-.ant-input-search-button {
+.ant-input-search .ant-input-search-button {
   height: 40px;
+}
+
+.slick-prev, .slick-next {
+  display: none !important;
 }

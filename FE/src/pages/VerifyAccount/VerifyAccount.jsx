@@ -7,11 +7,9 @@ const VerifyAccount = () => {
   const [loading, setLoading] = useState(false);
   const [resending, setResending] = useState(false);
   const [code, setCode] = useState(Array(6).fill(""));
-  const [isModalVisible, setIsModalVisible] = useState(false); // State for modal visibility
-  const [email, setEmail] = useState('21012510@st.phenikaa-uni.edu.vn'); // Email state
+  const email = localStorage.getItem("email");
   const inputRefs = useRef([]);
 
-  // Handle input changes for verification code
   const handleChange = (e, index) => {
     const newCode = [...code];
     const value = e.target.value;
@@ -44,6 +42,7 @@ const VerifyAccount = () => {
         email: email,  // Email as a string
         verificationCode: verificationCode // Verification code from the form
       };
+      console.log("verify", dataCode);
 
       const res = await axios.post('https://api.trandai03.online/api/v1/users/verify', dataCode);
 
@@ -72,11 +71,6 @@ const VerifyAccount = () => {
     }
   };
 
-  // Show modal when "Resend Code" is clicked
-  const showModal = () => {
-    setIsModalVisible(true);
-  };
-
   // Handle sending code after entering email in the modal
   const handleResendCode = async () => {
     try {
@@ -102,13 +96,7 @@ const VerifyAccount = () => {
       });
     } finally {
       setResending(false);
-      setIsModalVisible(false); // Close modal after sending
     }
-  };
-
-  // Handle modal cancel
-  const handleCancel = () => {
-    setIsModalVisible(false);
   };
 
   return (
@@ -141,33 +129,13 @@ const VerifyAccount = () => {
         <div style={{ textAlign: 'center', marginTop: '20px' }}>
           <Button
             type="link"
-            onClick={showModal}
+            onClick={handleResendCode}
             loading={resending}
             disabled={resending} // Disable the button while sending the request
           >
             Gửi lại mã
           </Button>
         </div>
-
-        {/* Modal for resending code */}
-        <Modal
-          title="Nhập email để gửi lại mã"
-          open={isModalVisible}
-          onOk={handleResendCode}
-          onCancel={handleCancel}
-          okText="Gửi"
-          cancelText="Hủy"
-          confirmLoading={resending} // Show loading on the "Gửi" button while resending
-        >
-          <Form>
-            <Form.Item label="Email">
-              <Input
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-              />
-            </Form.Item>
-          </Form>
-        </Modal>
       </Card>
     </div>
   );

@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { List, Card, notification, Popconfirm, Button, Image } from 'antd';
+import { List, Card, notification, Popconfirm, Button, Image, Dropdown } from 'antd';
 import { Link, useNavigate, useParams } from 'react-router-dom';
-import { ClockCircleOutlined, DeleteOutlined, EditOutlined } from '@ant-design/icons';
+import { ClockCircleOutlined, DeleteOutlined, EditOutlined, DownCircleOutlined } from '@ant-design/icons';
 import axios from 'axios';
+import Loading from '../../components/loading/loading';
 
 const { Meta } = Card;
 const QuizList = () => {
@@ -23,7 +24,6 @@ const QuizList = () => {
                     }
                 });
                 if (response.status === 200) {
-                    console.log(response.data);
 
                     setQuizzes(response.data);
                 }
@@ -67,12 +67,16 @@ const QuizList = () => {
             });
         }
     };
+    if (!quizzes) {
+        return <Loading />
+    }
     return (
         <div>
             <h1>Danh sách các đề thi</h1>
             <List
                 grid={{ gutter: 16, column: 4 }}
                 dataSource={quizzes}
+                locale={{ emptyText: <Loading /> }}
                 renderItem={quiz => (
                     <List.Item>
                         <Card
@@ -110,7 +114,7 @@ const QuizList = () => {
                                         }}
                                     />
                                 </div>
-                                
+
                                 <p style={{
                                     fontSize: '18px',
                                     fontWeight: 'bold',

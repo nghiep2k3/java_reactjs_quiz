@@ -7,8 +7,6 @@ import Loading from '../loading/loading';
 const ExamContent = () => {
     const [quiz, setQuiz] = useState(null);
     const { id } = useParams();
-    console.log(id);
-
     useEffect(() => {
         const fetchQuizData = async () => {
             try {
@@ -31,9 +29,8 @@ const ExamContent = () => {
     }, [id]);
 
     if (!quiz) {
-        return Loading;
+        return <Loading />;
     }
-
     return (
         <div className="exam-container">
             <h3>Các câu hỏi</h3>
@@ -41,7 +38,7 @@ const ExamContent = () => {
                 {quiz.questions && quiz.questions.map((q, index) => (
                     <li key={index} className="question-item">
                         <strong className="question-title">
-                            Câu {index + 1}: {q.questionText || q.question}
+                            Câu {index + 1}: {q.question}
                         </strong>
                         <div className="options-grid">
                             {q.questionChoice && q.questionChoice.map((option, idx) => (

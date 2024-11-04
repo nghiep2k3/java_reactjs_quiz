@@ -1,20 +1,55 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Form, Input, Button, DatePicker, Select, InputNumber, message, Modal } from 'antd';
 import axios from 'axios';
 import { useParams, useNavigate } from 'react-router-dom';
+import moment from 'moment';
 
-const Competion = () => {
+const UpdateCompetition = () => {
+    const { competitionId } = useParams();
     const [form] = Form.useForm();
     const token = localStorage.getItem("token");
     const [timeInMinutes, setTimeInMinutes] = useState(0);
     const [isModalOpen2, setIsModalOpen2] = useState(false);
-    const [competition, setCompetition] = useState(null);
-    const navigate = useNavigate();
     const [codeCompetition, setCodeCompetition] = useState(null);
+    const navigate = useNavigate();
+
+    // Hàm chuyển thời gian thành UTC
     const convertToUTC = (dateString) => {
         const date = new Date(dateString);
         return date.toISOString();
     };
+
+    // Lấy dữ liệu competition và điền vào form
+    useEffect(() => {
+        const fetchCompetitionData = async () => {
+            try {
+                const res = await axios.get(`https://api.trandai03.online/api/v1/competitions/getById/${competitionId}`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json',
+                    }
+                });
+
+                if (res.status === 200) {
+                    const compeData = res.data;
+                    setCodeCompetition(compeData.code);
+                    setTimeInMinutes(compeData.time / 60);
+
+                    form.setFieldsValue({
+                        name: compeData.name,
+                        description: compeData.description,
+                        startTime: moment(compeData.startTime),
+                        time: compeData.time,
+                    });
+                }
+            } catch (error) {
+                message.error("Lỗi khi lấy dữ liệu cuộc thi.");
+            }
+        };
+        fetchCompetitionData();
+    }, [competitionId, token, form]);
+
+    // Gọi API cập nhật competition khi người dùng submit form
     const onFinish = async (values) => {
         const timeInSeconds = timeInMinutes > 0 ? timeInMinutes * 60 : values.time;
         const payload = {
@@ -25,22 +60,18 @@ const Competion = () => {
         };
 
         try {
-            const response = await axios.post('https://api.trandai03.online/api/v1/competitions/create', payload, {
+            const response = await axios.put(`https://api.trandai03.online/api/v1/competitions/update/${competitionId}`, payload, {
                 headers: {
                     'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json',
-                    'Accept': '*/*',
                 },
             });
             if (response.status === 200) {
-                message.success('Tạo bài thi thành công!');
-                navigate(`/createcompetition/showquizcompe/${response.data.id}`)
+                message.success('Chỉnh sửa cuộc thi thành công!');
+                navigate(`/usercompetitions`);
             }
-            setCodeCompetition(response.data.code);
-            setIsModalOpen2(true);
         } catch (error) {
-            message.error('Failed to create competition');
-            console.error(error);
+            message.error('Không thể cập nhật cuộc thi.');
         }
     };
 
@@ -50,35 +81,34 @@ const Competion = () => {
                 <Form.Item
                     label="Tên cuộc thi"
                     name="name"
-                    rules={[{ required: true, message: 'Please enter the competition name' }]}
+                    rules={[{ required: true, message: 'Vui lòng nhập tên cuộc thi' }]}
                 >
-                    <Input placeholder="Enter competition name" />
+                    <Input placeholder="Tên cuộc thi" />
                 </Form.Item>
 
                 <Form.Item
                     label="Mô tả"
                     name="description"
-                    rules={[{ required: true, message: 'Please enter a description' }]}
+                    rules={[{ required: true, message: 'Vui lòng nhập mô tả' }]}
                 >
-                    <Input.TextArea placeholder="Enter description" />
+                    <Input.TextArea placeholder="Mô tả cuộc thi" />
                 </Form.Item>
-                <Form.Item label="Ngày bắt đầu cuộc thi" name="startTime" rules={[{ required: true, message: 'Please select start time' }]}>
+                <Form.Item label="Ngày bắt đầu cuộc thi" name="startTime" rules={[{ required: true, message: 'Vui lòng chọn ngày bắt đầu' }]}>
                     <DatePicker
                         showTime
                         format="YYYY-MM-DD HH:mm:ss"
                         style={{ width: '100%' }}
-                        placeholder="Select date and time"
+                        placeholder="Chọn ngày và giờ bắt đầu"
                     />
                 </Form.Item>
 
                 <Form.Item label="Thời gian làm bài">
                     <Input.Group compact>
-                        <Form.Item name="time" style={{ width: '60%' }} rules={[{ required: timeInMinutes === 0, message: 'Please enter a time limit in seconds' }]}>
-                            <InputNumber type={'number'} min={0} placeholder="Enter time in seconds" style={{ width: '100%' }} disabled={timeInMinutes > 0} />
+                        <Form.Item name="time" style={{ width: '60%' }} rules={[{ required: timeInMinutes === 0, message: 'Vui lòng nhập thời gian làm bài' }]}>
+                            <InputNumber type={'number'} min={0} placeholder="Nhập thời gian làm bài (giây)" style={{ width: '100%' }} disabled={timeInMinutes > 0} />
                         </Form.Item>
-
                         <Select
-                            defaultValue={0}
+                            value={timeInMinutes}
                             onChange={(value) => setTimeInMinutes(value)}
                             style={{ width: '40%' }}
                             options={[
@@ -96,19 +126,21 @@ const Competion = () => {
 
                 <Form.Item>
                     <Button type="primary" htmlType="submit">
-                        Create Competition
+                        Cập nhật cuộc thi
                     </Button>
                 </Form.Item>
             </Form>
-            {codeCompetition ? (
+
+            {codeCompetition && (
                 <Form.Item>
                     <Button type="primary" onClick={() => setIsModalOpen2(true)}>
-                        Mã code
+                        Xem mã code
                     </Button>
                 </Form.Item>
-            ) : (null)}
+            )}
+
             <Modal
-                title="Mã của đề thi"
+                title="Mã của cuộc thi"
                 open={isModalOpen2}
                 onOk={() => setIsModalOpen2(false)}
                 onCancel={() => setIsModalOpen2(false)}
@@ -124,4 +156,4 @@ const Competion = () => {
     );
 };
 
-export default Competion;
+export default UpdateCompetition;

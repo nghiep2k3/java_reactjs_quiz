@@ -1,10 +1,12 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Input, List, Card, notification } from 'antd';
+import { Input, List, notification } from 'antd';
 import axios from 'axios';
 import debounce from 'lodash/debounce';
 import './searchQuiz.module.css';
+import { useNavigate } from 'react-router-dom';
 
 const SearchQuiz = () => {
+    const navigate = useNavigate()
     const [searchResults, setSearchResults] = useState([]);
     const [searchTerm, setSearchTerm] = useState('');
     const token = localStorage.getItem("token");
@@ -12,7 +14,7 @@ const SearchQuiz = () => {
     const debounceSearch = debounce(async (value) => {
         try {
             const response = await axios.get(
-                `https://api.trandai03.online/api/v1/quizs/search?page=0&size=5&sort=title&filter=${encodeURIComponent(value)}&onlyValid=false`,
+                `https://api.trandai03.online/api/v1/quizs/search?page=0&size=1&sort=title&filter=${encodeURIComponent(value)}&onlyValid=false`,
                 {
                     headers: {
                         'Authorization': `Bearer ${token}`,
@@ -63,9 +65,11 @@ const SearchQuiz = () => {
                 enterButton="Tìm kiếm"
                 size="middle"
                 style={{ width: "100%", height: "40px" }}
+                inputStyle={{ marginLeft: "20px", fontSize: "20px" }}
             />
             {searchResults.length > 0 && (
                 <div style={{
+                    margin: "10px 0",
                     position: "absolute",
                     zIndex: '999',
                     top: "30px",
@@ -77,12 +81,8 @@ const SearchQuiz = () => {
                         itemLayout="vertical"
                         dataSource={searchResults}
                         renderItem={quiz => (
-                            <List.Item key={quiz.id}>
-                                <Card hoverable>
-                                    <p><strong>{quiz.title}</strong></p>
-                                    <p>Mô tả: {quiz.description}</p>
-                                    <p>Ngày tạo: {new Date(quiz.createdAt).toLocaleDateString()}</p>
-                                </Card>
+                            <List.Item style={{ cursor: "pointer" }} onClick={() => navigate(`/quizdetail/examcontent/${quiz.id}`)} key={quiz.id}>
+                                <p style={{ fontSize: "20px", margin: "0 20px", }}>{quiz.title}</p>
                             </List.Item>
                         )}
                     />

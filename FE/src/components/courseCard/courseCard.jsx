@@ -7,7 +7,6 @@ import styles from './courseCard.module.css';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
 import { ClockCircleOutlined } from '@ant-design/icons';
-import Loading from '../loading/loading';
 
 const { Title, Text } = Typography;
 const CourseCard = () => {
@@ -15,12 +14,7 @@ const CourseCard = () => {
     useEffect(() => {
         const fetchAllQuizs = async () => {
             try {
-                const response = await axios.get('https://api.trandai03.online/api/v1/quizs/getAllQuiz', {
-                    headers: {
-                        'Authorization': `Bearer ${localStorage.getItem('token')}`,
-                        'Content-Type': 'application/json',
-                    }
-                });
+                const response = await axios.get('https://api.trandai03.online/api/v1/quizs/getAllQuiz');
                 if (response.status === 200) {
                     setQuizzes(response.data);
                 }
@@ -51,7 +45,8 @@ const CourseCard = () => {
     };
     return (
         <div>
-            <Slider {...settings} style={{ margin: '40px 0' }}>
+
+            {/* <Slider {...settings} style={{ margin: '40px 0' }}>
                 {displayedData.map((course) => {
                     return (
                         <div className={`${styles.item} animate__animated animate__fadeInDownBig`} key={course.id} style={{ padding: '0 10px' }}>
@@ -102,11 +97,11 @@ const CourseCard = () => {
                         </div>
                     )
                 })}
-            </Slider>
+            </Slider> */}
 
 
 
-            <List
+            {/* <List
                 grid={{ gutter: 16, column: 4 }}
                 dataSource={quizzes}
                 renderItem={quiz => (
@@ -180,7 +175,7 @@ const CourseCard = () => {
                         </Card>
                     </List.Item>
                 )}
-            />
+            /> */}
 
         </div>
     );

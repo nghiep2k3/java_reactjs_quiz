@@ -1,15 +1,11 @@
-import React, { useContext, useState } from 'react';
+import React, { useState } from 'react';
 import { Button, Input, Form, Card, Row, Col, Anchor, notification, Checkbox, message } from 'antd';
 import { PlusOutlined, DeleteOutlined } from '@ant-design/icons';
-import { useNavigate } from 'react-router-dom';
-
-import { ContextFileImage } from '../../components/context/ContextFileImage'
+import { useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
-const CreateQuestion = () => {
-    var quizId = 0;
-    const { fileImgae } = useContext(ContextFileImage);
+const QuestionCompe = () => {
     const navigate = useNavigate();
-    const [quiz, setQuiz] = useState(null);
+    const { competitionId } = useParams();
     const token = localStorage.getItem("token");
     const [questions, setQuestions] = useState(() => {
         const storedQuestions = localStorage.getItem('quizQuestions');
@@ -29,7 +25,7 @@ const CreateQuestion = () => {
     const [setCurrentQuestionIndex] = useState(0);
 
     const saveToLocalStorage = (updatedQuestions) => {
-        localStorage.setItem('quizQuestions', JSON.stringify(updatedQuestions));
+        localStorage.setItem('quizQuestionsCompe', JSON.stringify(updatedQuestions));
     };
 
     const addNewQuestion = () => {
@@ -88,7 +84,7 @@ const CreateQuestion = () => {
         saveToLocalStorage(newQuestions);
     };
     const handleSubmit = async () => {
-        const storedQuiz = JSON.parse(localStorage.getItem('quizInfo')) || {};
+        const storedQuiz = JSON.parse(localStorage.getItem('quizCompe')) || {};
         const currentDate = new Date().toISOString();
         const formattedQuestions = questions.map((question) => {
             return {
@@ -103,35 +99,30 @@ const CreateQuestion = () => {
         });
 
         const newQuiz = {
-            title: storedQuiz.title || '',
-            description: storedQuiz.description || '',
+            title: storedQuiz.title || ' ',
+            description: storedQuiz.description || ' ',
             category_id: storedQuiz.category_id || 2,
             questions: formattedQuestions,
-            isPublished: storedQuiz.isPublished || false,
-            // userCreate: storedQuiz.userCreate || 'JohnDoe',
-            // timestamp: currentDate,
+            isPublished: storedQuiz.isPublished || true,
         };
         console.log(newQuiz);
 
         try {
-            const response = await axios.post('https://api.trandai03.online/api/v1/quizs/create', newQuiz, {
+            const response = await axios.post(`https://api.trandai03.online/api/v1/competitions/quiz/create/${competitionId}`, newQuiz, {
                 headers: {
                     'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json',
                     'Accept': '*/*',
                 },
             });
-            if (response.status === 201) {
-                setQuiz(response.data);
-                quizId = response.data.id
-
+            if (response.status === 200) {
                 notification.success({
                     message: 'Thành công',
                     description: 'Quiz đã được tạo thành công.',
                 });
-                localStorage.removeItem("quizInfo")
-                localStorage.removeItem("quizQuestions")
-                // navigate('/quizlist')
+                localStorage.removeItem("quizCompe")
+                localStorage.removeItem("quizQuestionsCompe")
+                navigate(`/createcompetition/showquizcompe/${competitionId}`)
             }
         } catch (error) {
             notification.error({
@@ -140,31 +131,6 @@ const CreateQuestion = () => {
             });
             console.log(error.response);
         }
-
-        const loadingMessage = message.loading('Đang tải lên...', 10);
-        const formData = new FormData();
-        formData.append("file", fileImgae);
-        try {
-            const response = await axios.post(
-                `https://api.trandai03.online/api/v1/quizs/image/${quizId}`,
-                formData,
-                {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                        "Content-Type": "multipart/form-data",
-                        Accept: "*/*",
-                    },
-                }
-            );
-            message.success("Upload thành công!");
-            navigate(`/`);
-        } catch (error) {
-            message.error("Upload thất bại!");
-            console.error("Error:", error);
-        } finally {
-            loadingMessage();
-        }
-
     };
 
     const handleAnchorClick = (qIndex) => {
@@ -271,4 +237,4 @@ const CreateQuestion = () => {
     );
 };
 
-export default CreateQuestion;
+export default QuestionCompe;

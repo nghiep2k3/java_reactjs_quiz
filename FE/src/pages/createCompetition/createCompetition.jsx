@@ -5,26 +5,16 @@ import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 const items = [
     {
         key: '1',
-        label: 'Thông tin cơ bản',
-        path: "/createquiz/inforquiz",
+        label: 'Thông tin cuộc thi',
+        path: "/createcompetition/competition",
     },
     {
         key: '2',
         label: 'Soạn câu hỏi',
         path: '/createquiz/createquestion',
     },
-    {
-        key: '3',
-        label: 'Tạo cuộc thi',
-        path: '/createquiz/competition',
-    },
-    {
-        key: '4',
-        label: 'Thống kê',
-        path: '/statistical',
-    },
 ];
-const CreateQuiz = () => {
+const CreateCompetition = () => {
     const navigate = useNavigate();
     const location = useLocation();
     const onChange = (key) => {
@@ -63,4 +53,4 @@ const CreateQuiz = () => {
     );
 }
 
-export default CreateQuiz;
+export default CreateCompetition;
