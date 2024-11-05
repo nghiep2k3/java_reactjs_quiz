@@ -1,43 +1,47 @@
 import React, { useEffect, useState } from 'react';
 import Slider from 'react-slick';
-import { Card, Typography, Badge, Button } from 'antd';
+import { Card, Typography, Badge, Button, Skeleton } from 'antd';
 import { StarFilled, LeftOutlined, RightOutlined } from '@ant-design/icons';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
 import axios from 'axios';
-import './SliderItems.css'; // Import your CSS file
+// import styles from './SliderItems.module.css';
+import './SliderItems.css';
+import { Link } from 'react-router-dom';
 
 const { Text, Title } = Typography;
 
 const QuizCard = ({ quiz }) => (
 	<Card
-        hoverable
-        className="quiz-card"
-        cover={
-            <div style={{}} className="quiz-card-cover">
-                {quiz.image ? (
-                    <img src={quiz.image} alt={quiz.title} className="quiz-image" />
-                ) : (
-                    <div className="placeholder-cover d-flex justify-content-center align-items-center h-100">🔔</div>
-                )}
-            </div>
-        }
-    >
-        <Title level={4} className="quiz-title">
-            {quiz.title}
-        </Title>
-        <Text type="secondary" className="quiz-description">
-            {quiz.description ? quiz.description : "No description available."}
-        </Text>
-        <div className="quiz-badge">
-            <Badge count="QUIZ" style={{ backgroundColor: '#6b238e' }} />
-        </div>
-        <div className="quiz-footer">
-            <Text>
-                {quiz.questions.length} Questions • {quiz.plays ? quiz.plays : 'No plays yet'}
-            </Text>
-        </div>
-    </Card>
+		hoverable
+		className="quiz-card"
+		cover={
+			<div style={{}} className="quiz-card-cover">
+				{quiz.image ? (
+					<img src={quiz.image} alt={quiz.title} className="quiz-image" />
+				) : (
+					<div className="placeholder-cover d-flex justify-content-center align-items-center h-100">🔔</div>
+				)}
+			</div>
+		}
+	>
+		<Link to={`/quizdetail/examcontent/${quiz.id}`}>
+			<Title level={4} className="quiz-title">
+				{quiz.title} - {quiz.id}
+			</Title>
+			<Text type="secondary" className="quiz-description">
+				{quiz.description ? quiz.description : "No description available."}
+			</Text>
+			<div className="quiz-badge">
+				<Badge count="QUIZ" style={{ backgroundColor: '#6b238e' }} />
+			</div>
+			<div className="quiz-footer">
+				<Text>
+					{quiz.questions.length} Questions • {quiz.plays ? quiz.plays : 'No plays yet'}
+				</Text>
+			</div>
+		</Link>
+	</Card>
 );
 
 const ListItemQuiz = ({ item }) => {
@@ -100,14 +104,56 @@ const ListItemQuiz = ({ item }) => {
 };
 
 const SliderItems = () => {
+	const [categories, setCategories] = useState([]);
+	const [selectedCategory, setSelectedCategory] = useState('');
 	const [data, setData] = useState([]);
+	const token = localStorage.getItem("token");
+	const handleCategorySelect = async (categoryId) => {
+		console.log("categoryId", categoryId);
+		setSelectedCategory(categoryId);
+		try {
+			const response = await axios.get(`https://api.trandai03.online/api/v1/quizs/category/${categoryId}`, {
+				headers: {
+					'Authorization': `Bearer ${localStorage.getItem("token")}`,
+					'Content-Type': 'application/json',
+					'Accept': '*/*'
+				}
+			});
+
+			console.log("data theo cate", response.data);
+
+		} catch (error) {
+			console.error('Error fetching quizzes:', error);
+		}
+	};
+	useEffect(() => {
+		const fetchCategories = async () => {
+			try {
+				const response = await axios.get(
+					'https://api.trandai03.online/api/v1/category/getAll',
+					{
+						headers: {
+							'Authorization': `Bearer ${token}`,
+							'Content-Type': 'application/json',
+							'Accept': '*/*',
+						},
+					}
+				);
+				setCategories(response.data);
+			} catch (error) {
+				console.error('Error fetching categories:', error);
+			}
+		};
+
+		fetchCategories();
+	}, []);
 
 	useEffect(() => {
 		const fetchAllQuizs = async () => {
 			try {
 				const response = await axios.get(`https://api.trandai03.online/api/v1/quizs/getAllQuizByCategory`, {
 					headers: {
-						'Authorization': `Bearer ${localStorage.getItem("token")}`,
+						'Authorization': `Bearer ${token}`,
 						'Content-Type': 'application/json',
 						'Accept': '*/*'
 					}
@@ -123,13 +169,34 @@ const SliderItems = () => {
 	}, []);
 
 	if (!data.length) {
-		return <div>Loading...</div>;
+		return <div><Skeleton /><Skeleton /><Skeleton /></div>;
 	}
 
 	return (
-		data.map((quiz) => (
-			<ListItemQuiz key={quiz.id} item={quiz} />
-		))
+		<div>
+			<div className="container">
+				<b className="label">Filter: </b>
+				<select
+					id="category-select"
+					value={selectedCategory}
+					onChange={(e) => handleCategorySelect(e.target.value)}
+					className="select"
+				>
+					<option value="">--Chọn chủ đề--</option>
+					{categories.map((category) => (
+						<option key={category.id} value={category.id}>
+							{category.id} - {category.name}
+						</option>
+					))}
+				</select>
+			</div>
+			<div className='mt-2'>
+				{data.map((quiz) => (
+					<ListItemQuiz key={quiz.id} item={quiz} />
+				))}
+			</div>
+		</div>
+		
 	);
 };
 
