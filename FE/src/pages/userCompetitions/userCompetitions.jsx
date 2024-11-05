@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { List, Card, Button, Typography, message, Tag, Modal } from 'antd';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import { EyeOutlined, DeleteOutlined } from '@ant-design/icons';
+import { EyeOutlined, DeleteOutlined, UnorderedListOutlined } from '@ant-design/icons';
 
 const { Title, Text } = Typography;
 
@@ -66,7 +66,12 @@ const UserCompetitions = () => {
                                     type="link"
                                     icon={<EyeOutlined />}
                                     onClick={() => navigate(`/createcompetition/showquizcompe/${competition.id}`)}>
-                                    Xem Chi Tiết
+                                    Chi Tiết
+                                </Button>,
+                                <Button
+                                    icon={<UnorderedListOutlined />}
+                                    onClick={() => navigate(`/reportcompetition/${competition.id}`)}>
+                                    Xem kết quả
                                 </Button>,
                                 <Button
                                     danger

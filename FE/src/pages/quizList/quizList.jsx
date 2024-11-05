@@ -102,10 +102,10 @@ const QuizList = () => {
                         'Content-Type': 'application/json',
                     }
                 });
-                if (res === 200) {
-                    message.success('Đã bỏ yêu thích!');
+                if (res.status === 200) {
                     const updatedFavor = favorquizzes.filter((id) => id !== quizId);
                     setFavorQuizzes(updatedFavor)
+                    message.success('Đã bỏ yêu thích!');
                 }
             } else {
                 const res = await axios.post(`https://api.trandai03.online/api/v1/quizs/favorite/${quizId}`, {}, {
@@ -114,7 +114,7 @@ const QuizList = () => {
                         'Content-Type': 'application/json',
                     }
                 });
-                if (res === 200) {
+                if (res.status === 200) {
                     setFavorQuizzes([...favorquizzes, quizId])
                     message.success('Thêm vào mục yêu thích thành công!');
                 }

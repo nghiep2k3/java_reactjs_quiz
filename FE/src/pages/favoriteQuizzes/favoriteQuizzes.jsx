@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { Card, List, Typography, message } from 'antd';
+import Loading from '../../components/loading/loading';
 
 const { Title, Paragraph } = Typography;
 
@@ -28,11 +29,14 @@ const FavoriteQuizzes = () => {
 
         fetchFavoriteQuizzes();
     }, []);
-
+    if (!favoriteQuizzes) {
+        return <Loading />
+    }
     return (
         <div style={{ padding: '20px' }}>
             <Title level={2} style={{ textAlign: 'center' }}>Danh sách đề thi yêu thích</Title>
             <List
+                locale={{ emptyText: <Loading /> }}
                 grid={{
                     gutter: 16,
                     xs: 1,
