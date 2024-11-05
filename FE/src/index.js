@@ -38,6 +38,7 @@ import UserCompetitions from "./pages/userCompetitions/userCompetitions.jsx";
 import Update from "./pages/updateCompetition/update.jsx";
 import UpdateCompetition from "./pages/updateCompetition/updateCompetiton.jsx";
 import ExamCompetition from "./pages/examCompetition/examCompetition.jsx";
+import Test from "./pages/Test/Test.jsx";
 import FavoriteQuizzes from "./pages/favoriteQuizzes/favoriteQuizzes.jsx";
 import ReportCompetition from "./pages/reportCompetition/reportCompetition.jsx";
 
@@ -48,6 +49,7 @@ root.render(
       <Router future={{ v7_startTransition: true }}>
         <Routes>
           <Route path="/verify" element={<VerifyAccount />} />
+          <Route path="/test" element={<Test />} />
           <Route element={<PrivateRoute />}>
             <Route path="/" element={<App />}>
               <Route path="/joincompetition/:code" element={<JoinCompetition />} />
