@@ -107,25 +107,52 @@ const SliderItems = () => {
 	const [categories, setCategories] = useState([]);
 	const [selectedCategory, setSelectedCategory] = useState('');
 	const [data, setData] = useState([]);
+	const [dataCardQuery, setDataCardQuery] = useState([]);
 	const token = localStorage.getItem("token");
 	const handleCategorySelect = async (categoryId) => {
-		console.log("categoryId", categoryId);
 		setSelectedCategory(categoryId);
+
+		console.log("categoryId", categoryId);
+
+		if (categoryId === "") {
+			await fetchAllQuizs();
+		} else {
+			try {
+				const response = await axios.get(`https://api.trandai03.online/api/v1/quizs/category/${categoryId}`, {
+					headers: {
+						'Authorization': `Bearer ${localStorage.getItem("token")}`,
+						'Content-Type': 'application/json',
+						'Accept': '*/*'
+					}
+				});
+
+				console.log("data theo cate", response.data);
+				setData([response.data]);
+				// console.log("data theo cate",response.data[0].category.name);
+
+			} catch (error) {
+				console.error('Error fetching quizzes:', error);
+			}
+		}
+
+	};
+	const fetchAllQuizs = async () => {
 		try {
-			const response = await axios.get(`https://api.trandai03.online/api/v1/quizs/category/${categoryId}`, {
+			const response = await axios.get(`https://api.trandai03.online/api/v1/quizs/getAllQuizByCategory`, {
 				headers: {
-					'Authorization': `Bearer ${localStorage.getItem("token")}`,
+					'Authorization': `Bearer ${token}`,
 					'Content-Type': 'application/json',
 					'Accept': '*/*'
 				}
 			});
-
-			console.log("data theo cate", response.data);
+			setData(response.data);
+			console.log("data", response.data);
 
 		} catch (error) {
-			console.error('Error fetching quizzes:', error);
+			console.error('Error fetching quiz data:', error);
 		}
 	};
+
 	useEffect(() => {
 		const fetchCategories = async () => {
 			try {
@@ -146,35 +173,12 @@ const SliderItems = () => {
 		};
 
 		fetchCategories();
-	}, []);
-
-	useEffect(() => {
-		const fetchAllQuizs = async () => {
-			try {
-				const response = await axios.get(`https://api.trandai03.online/api/v1/quizs/getAllQuizByCategory`, {
-					headers: {
-						'Authorization': `Bearer ${token}`,
-						'Content-Type': 'application/json',
-						'Accept': '*/*'
-					}
-				});
-				setData(response.data);
-				console.log("data", response.data);
-
-			} catch (error) {
-				console.error('Error fetching quiz data:', error);
-			}
-		};
 		fetchAllQuizs();
 	}, []);
 
 	if (!data.length) {
-		return <div><Skeleton /><Skeleton /><Skeleton /></div>;
-	}
-
-	return (
-		<div>
-			<div className="container">
+		return <div>
+			{/* <div className="container">
 				<b className="label">Filter: </b>
 				<select
 					id="category-select"
@@ -190,13 +194,39 @@ const SliderItems = () => {
 					))}
 				</select>
 			</div>
+			<h1>Không có câu hỏi</h1>
+			 */}
+			<Skeleton />
+		</div>;
+	}
+
+	return (
+		<div>
+			<div className="container">
+				<div className='container_position'>
+					<b className="label">Filter: </b>
+					<select
+						id="category-select"
+						value={selectedCategory}
+						onChange={(e) => handleCategorySelect(e.target.value)}
+						className="select"
+					>
+						<option value="">Tất cả</option>
+						{categories.map((category) => (
+							<option key={category.id} value={category.id}>
+								{category.id} - {category.name}
+							</option>
+						))}
+					</select>
+				</div>
+			</div>
 			<div className='mt-2'>
 				{data.map((quiz) => (
 					<ListItemQuiz key={quiz.id} item={quiz} />
 				))}
 			</div>
 		</div>
-		
+
 	);
 };
 

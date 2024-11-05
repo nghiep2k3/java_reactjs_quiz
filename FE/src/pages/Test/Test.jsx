@@ -43,38 +43,6 @@ const QuizCard = ({ quiz }) => (
         </Link>
     </Card>
 );
-const QuizCardByCate = ({ quiz }) => (
-    <Card
-        hoverable
-        className="quiz-card"
-        cover={
-            <div style={{}} className="quiz-card-cover">
-                {quiz.image ? (
-                    <img src={quiz.image} alt={quiz.title} className="quiz-image" />
-                ) : (
-                    <div className="placeholder-cover d-flex justify-content-center align-items-center h-100">🔔</div>
-                )}
-            </div>
-        }
-    >
-        <Link to={`/quizdetail/examcontent/${quiz.id}`}>
-            <Title level={4} className="quiz-title">
-                {quiz.title} - {quiz.id}
-            </Title>
-            <Text type="secondary" className="quiz-description">
-                {quiz.description ? quiz.description : "No description available."}
-            </Text>
-            <div className="quiz-badge">
-                <Badge count="QUIZ" style={{ backgroundColor: '#6b238e' }} />
-            </div>
-            <div className="quiz-footer">
-                <Text>
-                    {quiz.questions.length} Questions • {quiz.plays ? quiz.plays : 'No plays yet'}
-                </Text>
-            </div>
-        </Link>
-    </Card>
-);
 
 const ListItemQuiz = ({ item }) => {
     const [currentSlide, setCurrentSlide] = useState(0);
@@ -149,7 +117,6 @@ const Test = () => {
         if (categoryId === "") {
             await fetchAllQuizs();
         } else {
-            setData([]);
             try {
             	const response = await axios.get(`https://api.trandai03.online/api/v1/quizs/category/${categoryId}`, {
             		headers: {
@@ -160,6 +127,7 @@ const Test = () => {
             	});
     
             	console.log("data theo cate",response.data);
+                setData([response.data]);
             	// console.log("data theo cate",response.data[0].category.name);
     
             } catch (error) {

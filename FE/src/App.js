@@ -55,21 +55,9 @@ const App = () => {
         },
         {
             key: "6",
-            icon: <SettingOutlined />,
-            label: "Cài đặt",
-            path: "/settings",
-        },
-        {
-            key: "7",
             icon: <TabletOutlined />,
             label: "Cuộc thi",
             path: "/usercompetitions",
-        },
-        {
-            key: "8",
-            icon: <LogoutOutlined />,
-            label: "Môi trường test",
-            path: "/test",
         },
     ];
     const location = useLocation();

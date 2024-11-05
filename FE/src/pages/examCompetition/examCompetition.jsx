@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Card, Checkbox, Button, Menu, Affix, Col, Row, message, Modal, Image, notification } from 'antd';
-import { useLocation, useNavigate, useParams } from 'react-router-dom';
-import axios from 'axios';
+import { useLocation, useNavigate } from 'react-router-dom';
 import Loading from '../../components/loading/loading';
+import axios from 'axios';
 
 const shuffleArray = (array) => {
     for (let i = array.length - 1; i > 0; i--) {
@@ -15,90 +15,84 @@ const shuffleArray = (array) => {
 const ExamCompetition = () => {
     const navigate = useNavigate();
     const location = useLocation();
-    const { id } = useParams();
-    const [idResult, setIdResult] = useState(null);
-    const [selectedAnswers, setSelectedAnswers] = useState({});
-    const [remainingTime, setRemainingTime] = useState(0);
+    const { quizData, remainingTime: initialRemainingTime, idCompetition } = location.state || {};
+    const calculateRemainingTime = () => {
+        const examEndTime = localStorage.getItem('examEndTime');
+        if (examEndTime) {
+            const timeRemaining = Math.floor((examEndTime - Date.now()) / 1000);
+            return timeRemaining > 0 ? timeRemaining : 0;
+        }
+        return initialRemainingTime || 0;
+    };
+    const [selectedAnswers, setSelectedAnswers] = useState(() => {
+        const savedAnswers = localStorage.getItem('selectedAnswers');
+        return savedAnswers ? JSON.parse(savedAnswers) : {};
+    });
+    const [remainingTime, setRemainingTime] = useState(calculateRemainingTime || 0);
+    const remainingTimeRef = useRef(remainingTime);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isModalOpen2, setIsModalOpen2] = useState(false);
     const [scoreExam, setScoreExam] = useState(0);
-    const [storedQuiz, setQuiz] = useState(null);
     const [submittedTime, setSubmittedTime] = useState(null);
-    const [questions, setQuestions] = useState([]);
-    const selectedTime = JSON.parse(localStorage.getItem('Time')) || '30 phút';
-    const timeInMinutes = parseInt(selectedTime.split(" ")[0], 10);
-    let timeInSeconds = timeInMinutes * 60;
-    const { data } = location.state || {};
+    const [questions, setQuestions] = useState(quizData?.questions || []);
     useEffect(() => {
-        setRemainingTime(timeInSeconds);
-        const interval = setInterval(() => {
-            setRemainingTime((prevTime) => {
-                if (prevTime > 0) {
-                    return prevTime - 1;
-                } else {
-                    clearInterval(interval);
-                    message.info('Hết thời gian!');
-                    return 0;
-                }
+        if (quizData) {
+            const shuffledQuestions = shuffleArray(quizData.questions);
+            shuffledQuestions.forEach((question) => {
+                question.questionChoice = shuffleArray(question.questionChoice);
             });
+            setQuestions(shuffledQuestions);
+        }
+    }, [quizData]);
+
+    useEffect(() => {
+        remainingTimeRef.current = remainingTime;
+    }, [remainingTime]);
+
+    useEffect(() => {
+        const examEndTime = localStorage.getItem('examEndTime');
+        if (examEndTime) {
+            const timeRemaining = Math.floor((examEndTime - Date.now()) / 1000);
+            setRemainingTime(timeRemaining > 0 ? timeRemaining : 0);
+        }
+        const interval = setInterval(() => {
+            if (remainingTimeRef.current > 0) {
+                setRemainingTime((prevTime) => prevTime - 1);
+            } else {
+                clearInterval(interval);
+                message.info('Hết thời gian!');
+                navigate(`/joincompetition/${idCompetition}`)
+            }
         }, 1000);
 
         return () => clearInterval(interval);
-    }, [timeInSeconds]);
-
+    }, []);
     const formatTime = (seconds) => {
         const minutes = Math.floor(seconds / 60);
         const remainingSeconds = seconds % 60;
         return `${minutes}:${remainingSeconds < 10 ? '0' : ''}${remainingSeconds}`;
     };
 
-    useEffect(() => {
-        const fetchQuizData = async () => {
-            try {
-                const response = await axios.get(`https://api.trandai03.online/api/v1/quizs/${id}`, {
-                    headers: {
-                        'Authorization': `Bearer ${localStorage.getItem('token')}`,
-                        'Content-Type': 'application/json',
-                    }
-                });
-                if (response.status === 200) {
-                    const quizData = response.data;
-                    quizData.questions = shuffleArray(quizData.questions);
-                    quizData.questions.forEach((question) => {
-                        question.questionChoice = shuffleArray(question.questionChoice);
-                    });
-                    setQuestions(quizData.questions);
-                    setQuiz(quizData);
-                }
-            } catch (error) {
-                console.error("Lỗi khi lấy dữ liệu quiz:", error);
-            }
-        };
-
-        fetchQuizData();
-    }, []);
-    if (!questions || questions.length === 0) {
-        return <Loading />;
-    }
-
     const handleAnswerChange = (questionId, selectedChoices) => {
-        setSelectedAnswers((prevAnswers) => ({
-            ...prevAnswers,
-            [questionId]: selectedChoices
-        }));
+        const updatedAnswers = {
+            ...selectedAnswers,
+            [questionId]: selectedChoices,
+        };
+        setSelectedAnswers(updatedAnswers);
+        localStorage.setItem('selectedAnswers', JSON.stringify(updatedAnswers));
     };
 
     const handleSubmit = async () => {
-        const token = localStorage.getItem('token');
         let score = 0;
         let numberOfCorrect = 0;
-        const scoreOfsens = (10 / questions.length).toFixed(2);
-        const remaintimeInMinutes = Math.floor(timeInMinutes - (remainingTime / 60));
-        const timeInSeconds = (60 - remainingTime % 60);
+        const remaintimeInMinutes = Math.floor(initialRemainingTime / 60 - (remainingTime / 60));
+        const timeInSeconds = ((initialRemainingTime - remainingTime) % 60);
+        console.log(timeInSeconds);
         const calculatedTime = remaintimeInMinutes < 1
-            ? `0 phút ${timeInSeconds} giây`
-            : `${remaintimeInMinutes} phút ${timeInSeconds} giây`;
-        const timeSubmit = remaintimeInMinutes * 60 + timeInSeconds;
+            ? `0 phút ${Math.floor(timeInSeconds)} giây`
+            : `${remaintimeInMinutes} phút ${Math.floor(timeInSeconds)} giây`;
+
+        const timeSubmit = Math.floor(remaintimeInMinutes * 60 + timeInSeconds);
         setSubmittedTime(calculatedTime);
         const resultDetails = questions.map((question) => {
             const selectedChoices = selectedAnswers[question.id] || [];
@@ -113,26 +107,25 @@ const ExamCompetition = () => {
                 questionId: question.id,
                 selectedChoiceIds: selectedChoices,
             };
-
         });
+
         setScoreExam(numberOfCorrect);
         setIsModalOpen(false);
         setIsModalOpen2(true);
 
         const quizResult = {
-            quizId: storedQuiz.id,
+            quizId: quizData.id,
             questionResultDTOS: resultDetails,
             score,
             totalCorrect: numberOfCorrect,
-            // completedAt: new Date().toISOString(),
             submittedTime: timeSubmit,
+            competitionId: idCompetition
         };
-        console.log("result", quizResult);
 
         try {
             const response = await axios.post('https://api.trandai03.online/api/v1/quizs/submit', quizResult, {
                 headers: {
-                    'Authorization': `Bearer ${token}`,
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`,
                     'Content-Type': 'application/json',
                 }
             });
@@ -141,8 +134,7 @@ const ExamCompetition = () => {
                     message: "Nộp bài thành công",
                     description: "Bài thi đã được nộp thành công!"
                 });
-                localStorage.removeItem("Time");
-                setIdResult(response.data.id);
+                localStorage.removeItem("selectedAnswers");
                 setIsModalOpen(false);
                 setIsModalOpen2(true);
             }
@@ -162,14 +154,18 @@ const ExamCompetition = () => {
         }
     };
 
+    if (!questions || questions.length === 0) {
+        return <Loading />;
+    }
+
     return (
         <div className="quiz-exam container mt-5" style={{ maxWidth: "100%" }}>
             <Row style={{ display: "flex", justifyContent: "space-around" }}>
                 <Col span={5}>
-                    <Card title={storedQuiz?.title} bordered={false} style={{ width: 300 }}>
-                        <p>Chế độ: {storedQuiz?.level}</p>
+                    <Card title={quizData?.title} bordered={false} style={{ width: 300 }}>
+                        <p>Chế độ: Cuộc thi</p>
                         <p>Thời gian còn lại: </p>
-                        <p style={{ fontSize: "18px", fontWeight: "bold", color: "#3E65FE" }}>{formatTime(remainingTime)}</p>
+                        <p style={{ fontSize: "18px", fontWeight: "bold", color: "#3E65FE" }}>{formatTime(Math.floor(remainingTime))}</p>
                         <Button type="primary" onClick={() => setIsModalOpen(true)}>
                             Nộp bài thi
                         </Button>
@@ -178,9 +174,8 @@ const ExamCompetition = () => {
                             style={{ textAlign: "center" }}
                             title="Hoàn thành"
                             open={isModalOpen2}
-                            onCancel={() => { navigate(`/quizdetail/examcontent/${storedQuiz.id}`); }}
-                            onOk={() => navigate(`/result/${idResult}`)}
-                            okText="Xem kết quả"
+                            onCancel={() => { navigate('/'); }}
+                            onOk={() => navigate(`/`)}
                             cancelText="Trở về"
                         >
                             <div style={{ maxWidth: "300px", marginLeft: "auto", marginRight: "auto" }}>
@@ -188,7 +183,6 @@ const ExamCompetition = () => {
                             </div>
                             <p>Bạn đã hoàn thành bài thi</p>
                             <h3>{(scoreExam * (10 / questions.length)).toFixed(2)} điểm</h3>
-
                             <div>
                                 <p>Số câu đúng: {scoreExam}/{questions.length}</p>
                                 <p>Thời gian: {submittedTime}</p>
