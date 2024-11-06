@@ -177,12 +177,27 @@ const CreateQuestion = () => {
                 <Col span={2}>
                     <Anchor
                         replace
-                        items={questions.map((_, qIndex) => ({
-                            key: `part-${qIndex + 1}`,
-                            href: `#part-${qIndex + 1}`,
-                            title: `Câu ${qIndex + 1}`,
-                            onClick: () => handleAnchorClick(qIndex),
-                        }))}
+                        items={[
+                            ...questions.slice(0, 3).map((_, qIndex) => ({
+                                key: `part-${qIndex + 1}`,
+                                href: `#part-${qIndex + 1}`,
+                                title: `Câu ${qIndex + 1}`,
+                                onClick: () => handleAnchorClick(qIndex),
+                            })),
+                            ...(questions.length > 6 ? [{
+                                key: 'ellipsis',
+                                title: '...',
+                            }] : []),
+                            ...questions.slice(-3).map((_, qIndex) => {
+                                const actualIndex = questions.length - 3 + qIndex;
+                                return {
+                                    key: `part-${actualIndex + 1}`,
+                                    href: `#part-${actualIndex + 1}`,
+                                    title: `Câu ${actualIndex + 1}`,
+                                    onClick: () => handleAnchorClick(actualIndex),
+                                };
+                            })
+                        ]}
                     />
                 </Col>
                 <Col span={20}>

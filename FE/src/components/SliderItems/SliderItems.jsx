@@ -82,7 +82,6 @@ const ListItemQuiz = ({ item }) => {
 					style={{ position: 'absolute', top: '60%', left: 0, zIndex: 10, transform: 'translateY(-50%)' }}
 				/>
 			)}
-			{console.log(222, item.quizResponses.length)}
 			<Slider ref={sliderRef} {...settings} className={item.quizResponses.length <= 4 ? 'auto-width' : 'fixed-width'}>
 				{item.quizResponses.map((quiz) => (
 					<div key={quiz.id}>
@@ -112,7 +111,6 @@ const SliderItems = () => {
 	const handleCategorySelect = async (categoryId) => {
 		setSelectedCategory(categoryId);
 
-		console.log("categoryId", categoryId);
 
 		if (categoryId === "") {
 			await fetchAllQuizs();
@@ -126,7 +124,6 @@ const SliderItems = () => {
 					}
 				});
 
-				console.log("data theo cate", response.data);
 				setData([response.data]);
 				// console.log("data theo cate",response.data[0].category.name);
 
@@ -204,7 +201,6 @@ const SliderItems = () => {
 		<div>
 			<div className="container">
 				<div className='container_position'>
-					<b className="label">Filter: </b>
 					<select
 						id="category-select"
 						value={selectedCategory}
@@ -214,7 +210,7 @@ const SliderItems = () => {
 						<option value="">Tất cả</option>
 						{categories.map((category) => (
 							<option key={category.id} value={category.id}>
-								{category.id} - {category.name}
+								{category.name}
 							</option>
 						))}
 					</select>

@@ -40,6 +40,7 @@ import UpdateCompetition from "./pages/updateCompetition/updateCompetiton.jsx";
 import ExamCompetition from "./pages/examCompetition/examCompetition.jsx";
 import Test from "./pages/Test/Test.jsx";
 import FavoriteQuizzes from "./pages/favoriteQuizzes/favoriteQuizzes.jsx";
+import ReportCompetition from "./pages/reportCompetition/reportCompetition.jsx";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
@@ -58,6 +59,7 @@ root.render(
               <Route path="/result/:idResult" element={<Result />} />
               <Route path="/reportquizresult" element={<ReportQuizResult />} />
               <Route path="/usercompetitions" element={<UserCompetitions />} />
+              <Route path="/reportcompetition/:competitionId" element={<ReportCompetition />} />
               <Route path="/favorexam" element={<FavoriteQuizzes />} />
               <Route path="/createquiz" element={<CreateQuiz />}>
                 <Route path="inforquiz" element={<InforQuiz />} />
