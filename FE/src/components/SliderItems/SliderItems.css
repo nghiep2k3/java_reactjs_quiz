@@ -79,6 +79,7 @@
     margin: 20px;
     font-family: Arial, sans-serif;
     z-index: 999;
+    max-width: 1550px;
 }
 
 .container_position{

@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { List, Card, notification, Popconfirm, Button, Image, message } from 'antd';
+import { List, Card, notification, Popconfirm, Button, Image, message, Typography } from 'antd';
 import { Link, useNavigate } from 'react-router-dom';
 import { ClockCircleOutlined, DeleteOutlined, EditOutlined, HeartFilled, HeartOutlined } from '@ant-design/icons';
 import axios from 'axios';
 import Loading from '../../components/loading/loading';
+const { Title } = Typography;
 
 const QuizList = () => {
     const [quizzes, setQuizzes] = useState([]);
@@ -60,9 +61,6 @@ const QuizList = () => {
         };
         fetchFavorQuizzes();
     }, []);
-
-    console.log("favor", favorquizzes);
-
 
     const handleEditQuiz = (quizId) => {
         navigate(`/edit/editquiz/${quizId}`);
@@ -137,7 +135,7 @@ const QuizList = () => {
 
     return (
         <div>
-            <h1>Danh sách các đề thi</h1>
+            <Title level={2} style={{ textAlign: 'center', color: '#000' }}> Đề thi của tôi</Title>
             <List
                 grid={{ gutter: 16, column: 4 }}
                 dataSource={quizzes}
