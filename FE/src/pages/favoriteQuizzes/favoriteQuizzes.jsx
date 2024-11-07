@@ -1,8 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { Card, List, Typography, message } from 'antd';
+import { Typography, message } from 'antd';
+import Loading from '../../components/loading/loading';
+import './favoriteQuizzes.css';
+import { ClockCircleOutlined, HeartFilled } from '@ant-design/icons';
+import { Link } from 'react-router-dom';
 
-const { Title, Paragraph } = Typography;
+const { Title } = Typography;
 
 const FavoriteQuizzes = () => {
     const [favoriteQuizzes, setFavoriteQuizzes] = useState([]);
@@ -29,34 +33,33 @@ const FavoriteQuizzes = () => {
         fetchFavoriteQuizzes();
     }, []);
 
+    if (!favoriteQuizzes) {
+        return <Loading />;
+    }
+    console.log(favoriteQuizzes);
+
     return (
-        <div style={{ padding: '20px' }}>
-            <Title level={2} style={{ textAlign: 'center' }}>Danh sách đề thi yêu thích</Title>
-            <List
-                grid={{
-                    gutter: 16,
-                    xs: 1,
-                    sm: 2,
-                    md: 3,
-                    lg: 4,
-                    xl: 4,
-                    xxl: 4,
-                }}
-                dataSource={favoriteQuizzes}
-                renderItem={(quiz) => (
-                    <List.Item>
-                        <Card
-                            title={quiz.title}
-                            bordered={true}
-                            hoverable
-                            style={{ borderRadius: '10px' }}
-                        >
-                            <Paragraph>{quiz.description || 'Không có mô tả'}</Paragraph>
-                            {/* Thêm nút, thông tin khác nếu cần */}
-                        </Card>
-                    </List.Item>
-                )}
-            />
+        <div style={{ width: "100%" }}>
+            <Title level={2} style={{ textAlign: 'center', color: '#000' }}><HeartFilled style={{ color: 'red' }} /> Danh sách đề thi yêu thích</Title>
+            <div className="card-grid" >
+                {favoriteQuizzes.map((quiz) => (
+                    <Link style={{ color: "#fff" }} to={`/quizdetail/examcontent/${quiz.id}`}>
+                        <div className="card" key={quiz.id}>
+                            <img
+                                src="https://images.unsplash.com/photo-1656618020911-1c7a937175fd?crop=entropy&cs=tinysrgb&fm=jpg&ixid=MnwzMjM4NDZ8MHwxfHJhbmRvbXx8fHx8fHx8fDE2NTc1MzQyNTE&ixlib=rb-1.2.1&q=80"
+                                alt="Quiz Banner"
+                            />
+                            <div className="card-content">
+                                <h2>{quiz.title}</h2>
+                                <p>{quiz.description || 'Không có mô tả'}</p>
+                                <p>Người tạo: {quiz.usernameCreated}</p>
+                                <p><ClockCircleOutlined /> {quiz.createdAt}</p>
+                                <p>Câu hỏi: {quiz.questions.length}</p>
+                            </div>
+                        </div>
+                    </Link>
+                ))}
+            </div>
         </div>
     );
 };

@@ -1,8 +1,8 @@
-import { Col, Layout, Row, Space, Modal, Image, Button, Tabs, Radio, Select, Popover, QRCode } from 'antd';
+import { Col, Layout, Row, Space, Modal, Image, Button, Tabs, Radio, Select, Popover, QRCode, message, notification } from 'antd';
 import React, { useEffect, useState } from 'react';
 import {
     QuestionCircleOutlined, CheckOutlined, SettingOutlined,
-    LikeOutlined, HeartOutlined, DownloadOutlined, FacebookOutlined, TwitterOutlined, TwitchOutlined
+    LikeOutlined, HeartOutlined, DownloadOutlined, FacebookOutlined, TwitterOutlined, TwitchOutlined, HeartFilled
 } from '@ant-design/icons';
 import { Outlet, useLocation, useNavigate, useParams } from 'react-router-dom';
 import Headers from '../../components/headers/headers';
@@ -11,14 +11,13 @@ import Loading from '../../components/loading/loading';
 const { Content } = Layout;
 const QuizDetail = () => {
     const { id } = useParams();
+    const token = localStorage.getItem("token");
     const items = [
         {
             key: '1',
             label: 'Nội dung đề thi',
             path: `/quizdetail/examcontent/${id}`,
         },
-
-
     ];
     const options = [
         {
@@ -46,6 +45,7 @@ const QuizDetail = () => {
             label: '120 phút',
         },
     ];
+    const [favorquizzes, setFavorQuizzes] = useState([]);
     const [selectedTime, setSelectedTime] = useState('30 phút');
     const [isModalOpen, setIsModalOpen] = useState(false);
     const showModal = () => {
@@ -89,7 +89,31 @@ const QuizDetail = () => {
 
         fetchQuizData();
     }, [id]);
-
+    useEffect(() => {
+        const fetchFavorQuizzes = async () => {
+            try {
+                const response = await axios.get('https://api.trandai03.online/api/v1/users/me', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json',
+                        'Accept': '*/*'
+                    }
+                });
+                if (response.status === 200) {
+                    console.log(response.data);
+                    const newFavorQuizzes = response.data.data.favoriteQuizResponse.map((res) => res.quiz.id);
+                    const uniqueFavorQuizzes = [...new Set([...favorquizzes, ...newFavorQuizzes])];
+                    setFavorQuizzes(uniqueFavorQuizzes);
+                }
+            } catch (error) {
+                notification.error({
+                    message: 'Lỗi khi tải danh sách yêu thích',
+                    description: 'Không thể tải danh sách yêu thích, vui lòng thử lại sau.',
+                });
+            }
+        };
+        fetchFavorQuizzes();
+    }, []);
     if (!quiz) {
         return <Loading />;
     }
@@ -103,6 +127,38 @@ const QuizDetail = () => {
         setSelectedTime(value);
         localStorage.setItem('Time', JSON.stringify(value));
     }
+    const toggleFavorite = async (quizId) => {
+        try {
+            if (favorquizzes.includes(quizId)) {
+                const res = await axios.delete(`https://api.trandai03.online/api/v1/quizs/unfavorite/${quizId}`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json',
+                    }
+                });
+                if (res.status === 200) {
+                    const updatedFavor = favorquizzes.filter((id) => id !== quizId);
+                    setFavorQuizzes(updatedFavor)
+                    message.success('Đã bỏ yêu thích!');
+                }
+            } else {
+                const res = await axios.post(`https://api.trandai03.online/api/v1/quizs/favorite/${quizId}`, {}, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json',
+                    }
+                });
+                if (res.status === 200) {
+                    setFavorQuizzes([...favorquizzes, quizId])
+                    message.success('Thêm vào mục yêu thích thành công!');
+                }
+            }
+        } catch (error) {
+            message.error('Lỗi khi cập nhật mục yêu thích, vui lòng thử lại.');
+            console.log(error.message);
+
+        }
+    };
     return (
 
         <div style={{ background: "#F1F3F5" }}>
@@ -137,7 +193,11 @@ const QuizDetail = () => {
                                         </div>
                                         <div style={{ display: 'flex', marginTop: '20px', alignItems: "center", gap: '1.2rem' }}>
                                             <LikeOutlined style={{ fontSize: '23px' }} />
-                                            <HeartOutlined style={{ fontSize: '23px' }} />
+                                            <Button
+                                                icon={favorquizzes.includes(quiz.id) ? <HeartFilled style={{ color: 'red' }} /> : <HeartOutlined />}
+                                                onClick={() => toggleFavorite(quiz.id)}
+                                            />
+                                            {/* <HeartOutlined style={{ fontSize: '23px' }} /> */}
                                         </div>
                                     </Col>
                                     <Col span={7}>
