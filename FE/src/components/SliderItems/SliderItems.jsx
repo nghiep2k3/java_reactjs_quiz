@@ -37,7 +37,7 @@ const QuizCard = ({ quiz }) => (
 			</div>
 			<div className="quiz-footer">
 				<Text>
-					{quiz.questions.length} Questions • {quiz.plays ? quiz.plays : 'No plays yet'}
+					{quiz.totalQuestions} Questions • {quiz.plays ? quiz.plays : 'No plays yet'}
 				</Text>
 			</div>
 		</Link>
