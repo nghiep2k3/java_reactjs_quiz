@@ -178,7 +178,7 @@ const CreateQuestion = () => {
                     <Anchor
                         replace
                         items={[
-                            ...questions.slice(0, 3).map((_, qIndex) => ({
+                            ...questions.map((_, qIndex) => ({
                                 key: `part-${qIndex + 1}`,
                                 href: `#part-${qIndex + 1}`,
                                 title: `Câu ${qIndex + 1}`,
@@ -186,17 +186,17 @@ const CreateQuestion = () => {
                             })),
                             ...(questions.length > 6 ? [{
                                 key: 'ellipsis',
-                                title: '...',
+                                // title: '...',
                             }] : []),
-                            ...questions.slice(-3).map((_, qIndex) => {
-                                const actualIndex = questions.length - 3 + qIndex;
-                                return {
-                                    key: `part-${actualIndex + 1}`,
-                                    href: `#part-${actualIndex + 1}`,
-                                    title: `Câu ${actualIndex + 1}`,
-                                    onClick: () => handleAnchorClick(actualIndex),
-                                };
-                            })
+                            // ...questions.slice(-3).map((_, qIndex) => {
+                            //     const actualIndex = questions.length - 3 + qIndex;
+                            //     return {
+                            //         key: `part-${actualIndex + 1}`,
+                            //         href: `#part-${actualIndex + 1}`,
+                            //         title: `Câu ${actualIndex + 1}`,
+                            //         onClick: () => handleAnchorClick(actualIndex),
+                            //     };
+                            // })
                         ]}
                     />
                 </Col>
