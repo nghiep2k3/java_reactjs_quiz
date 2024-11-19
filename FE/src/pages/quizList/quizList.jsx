@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { List, Card, notification, Popconfirm, Button, Image, message, Typography } from 'antd';
+import { List, Card, notification, Popconfirm, Button, Image, message, Typography, Tooltip } from 'antd';
 import { Link, useNavigate } from 'react-router-dom';
 import { ClockCircleOutlined, DeleteOutlined, EditOutlined, HeartFilled, HeartOutlined } from '@ant-design/icons';
 import axios from 'axios';
 import Loading from '../../components/loading/loading';
+
 const { Title } = Typography;
 
 const QuizList = () => {
@@ -35,7 +36,6 @@ const QuizList = () => {
         fetchQuizzes();
     }, []);
 
-
     useEffect(() => {
         const fetchFavorQuizzes = async () => {
             try {
@@ -47,7 +47,6 @@ const QuizList = () => {
                     }
                 });
                 if (response.status === 200) {
-                    console.log(response.data);
                     const newFavorQuizzes = response.data.data.favoriteQuizResponse.map((res) => res.quiz.id);
                     const uniqueFavorQuizzes = [...new Set([...favorquizzes, ...newFavorQuizzes])];
                     setFavorQuizzes(uniqueFavorQuizzes);
@@ -135,7 +134,7 @@ const QuizList = () => {
 
     return (
         <div>
-            <Title level={2} style={{ textAlign: 'center', color: '#000' }}> Đề thi của tôi</Title>
+            <Title level={2} style={{ textAlign: 'center', color: '#2A2A2A', marginBottom: '20px' }}> Đề thi của tôi</Title>
             <List
                 grid={{ gutter: 16, column: 4 }}
                 dataSource={quizzes}
@@ -145,25 +144,33 @@ const QuizList = () => {
                         <Card
                             hoverable
                             actions={[
-                                <Button onClick={() => handleEditQuiz(quiz.id)} icon={<EditOutlined />} />,
-                                <Popconfirm
-                                    title="Bạn có chắc chắn muốn xóa đề thi này?"
-                                    onConfirm={() => handleDeleteQuiz(quiz.id)}
-                                    okText="Có"
-                                    cancelText="Không"
-                                >
-                                    <Button danger icon={<DeleteOutlined />} />
-                                </Popconfirm>,
-                                <Button
-                                    icon={favorquizzes.includes(quiz.id) ? <HeartFilled style={{ color: 'red' }} /> : <HeartOutlined />}
-                                    onClick={() => toggleFavorite(quiz.id)}
-                                />
+                                <Tooltip title="Chỉnh sửa">
+                                    <Button onClick={() => handleEditQuiz(quiz.id)} icon={<EditOutlined />} />
+                                </Tooltip>,
+                                <Tooltip title="Xóa">
+                                    <Popconfirm
+                                        title="Bạn có chắc chắn muốn xóa đề thi này?"
+                                        onConfirm={() => handleDeleteQuiz(quiz.id)}
+                                        okText="Có"
+                                        cancelText="Không"
+                                    >
+                                        <Button danger icon={<DeleteOutlined />} />
+                                    </Popconfirm>
+                                </Tooltip>,
+                                <Tooltip title={favorquizzes.includes(quiz.id) ? "Bỏ yêu thích" : "Thêm vào yêu thích"}>
+                                    <Button
+                                        icon={favorquizzes.includes(quiz.id) ? <HeartFilled style={{ color: 'red' }} /> : <HeartOutlined />}
+                                        onClick={() => toggleFavorite(quiz.id)}
+                                    />
+                                </Tooltip>
                             ]}
                             style={{
                                 width: 280,
                                 borderRadius: '10px',
                                 overflow: 'hidden',
-                                boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)'
+                                boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
+                                transition: 'transform 0.3s',
+                                ':hover': { transform: 'scale(1.05)' }
                             }}
                         >
                             <Link to={`/quizdetail/examcontent/${quiz.id}`}>
@@ -191,9 +198,6 @@ const QuizList = () => {
                                     textOverflow: 'ellipsis'
                                 }}>
                                     {quiz.title}
-                                </p>
-                                <p style={{ fontSize: '14px', color: '#888', marginBottom: '5px' }}>
-                                    <strong>Id:</strong> {quiz.id}
                                 </p>
                                 <p style={{ fontSize: '14px', color: '#888', marginBottom: '5px' }}>
                                     <ClockCircleOutlined style={{ marginRight: '5px' }} />

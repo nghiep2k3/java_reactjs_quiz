@@ -41,6 +41,8 @@ import ExamCompetition from "./pages/examCompetition/examCompetition.jsx";
 import Test from "./pages/Test/Test.jsx";
 import FavoriteQuizzes from "./pages/favoriteQuizzes/favoriteQuizzes.jsx";
 import ReportCompetition from "./pages/reportCompetition/reportCompetition.jsx";
+import CreateQuizAI from "./pages/createQuizAI/createQuizAI.jsx";
+import CompeWithFile from "./components/questionCompe/CompeWithFile.jsx";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
@@ -57,11 +59,13 @@ root.render(
               <Route path="/ViewQuiz" element={<ViewQuiz />} />
               <Route path="/" element={<Explore />} />
               <Route path="/result/:idResult" element={<Result />} />
+              <Route path="/resultdetail/:idResult" element={<Result />} />
               <Route path="/reportquizresult" element={<ReportQuizResult />} />
               <Route path="/usercompetitions" element={<UserCompetitions />} />
               <Route path="/reportcompetition/:competitionId" element={<ReportCompetition />} />
               <Route path="/favorexam" element={<FavoriteQuizzes />} />
               <Route path="/createquiz" element={<CreateQuiz />}>
+                <Route path="createquizAI" element={<CreateQuizAI />} />
                 <Route path="inforquiz" element={<InforQuiz />} />
                 <Route path="createquestion" element={<CreateQuestion />} />
               </Route>
@@ -69,6 +73,7 @@ root.render(
                 <Route path="competition" element={<Competion />} />
                 <Route path="createquizcompetition/:competitionId" element={<CreateQuizCompetition />} />
                 <Route path="questioncompe/:competitionId" element={<QuestionCompe />} />
+                <Route path="withfile/:competitionId" element={<CompeWithFile />} />
                 <Route path="showquizcompe/:competitionId" element={<ShowQuizCompe />} />
               </Route>
               <Route path="/update" element={<Update />}>

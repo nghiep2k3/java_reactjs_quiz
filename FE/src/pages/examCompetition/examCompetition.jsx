@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Card, Checkbox, Button, Menu, Affix, Col, Row, message, Modal, Image, notification } from 'antd';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { Card, Checkbox, Button, Menu, Col, Row, message, Modal, Image, notification } from 'antd';
+import { CheckCircleOutlined, CheckCircleFilled } from '@ant-design/icons';
+import { replace, useLocation, useNavigate } from 'react-router-dom';
 import Loading from '../../components/loading/loading';
 import axios from 'axios';
 
@@ -15,6 +16,7 @@ const shuffleArray = (array) => {
 const ExamCompetition = () => {
     const navigate = useNavigate();
     const location = useLocation();
+    const [answeredQuestions, setAnsweredQuestions] = useState([]);
     const { quizData, remainingTime: initialRemainingTime, idCompetition } = location.state || {};
     const calculateRemainingTime = () => {
         const examEndTime = localStorage.getItem('examEndTime');
@@ -74,13 +76,18 @@ const ExamCompetition = () => {
     };
 
     const handleAnswerChange = (questionId, selectedChoices) => {
-        const updatedAnswers = {
-            ...selectedAnswers,
-            [questionId]: selectedChoices,
-        };
-        setSelectedAnswers(updatedAnswers);
-        localStorage.setItem('selectedAnswers', JSON.stringify(updatedAnswers));
+        setSelectedAnswers((prevAnswers) => {
+            const newAnswers = { ...prevAnswers, [questionId]: selectedChoices };
+
+            if (selectedChoices.length > 0) {
+                setAnsweredQuestions((prevAnswered) => [...new Set([...prevAnswered, questionId])]);
+            } else {
+                setAnsweredQuestions((prevAnswered) => prevAnswered.filter(id => id !== questionId));
+            }
+            return newAnswers;
+        });
     };
+
 
     const handleSubmit = async () => {
         let score = 0;
@@ -159,10 +166,14 @@ const ExamCompetition = () => {
     }
 
     return (
-        <div className="quiz-exam container mt-5" style={{ maxWidth: "100%" }}>
+        <div className="quiz-exam mt-5" style={{
+            maxWidth: "100%", position: "relative",
+            margin: "20px auto", zIndex: "999", padding: "20px",
+            backgroundColor: "#f9f9f9", borderRadius: "10px",
+        }}>
             <Row style={{ display: "flex", justifyContent: "space-around" }}>
                 <Col span={5}>
-                    <Card title={quizData?.title} bordered={false} style={{ width: 300 }}>
+                    <Card title={quizData?.title} bordered={false} style={{ width: 300, boxShadow: "0px 4px 12px rgba(0, 0, 0, 0.1)", borderRadius: "8px" }}>
                         <p>Chế độ: Cuộc thi</p>
                         <p>Thời gian còn lại: </p>
                         <p style={{ fontSize: "18px", fontWeight: "bold", color: "#3E65FE" }}>{formatTime(Math.floor(remainingTime))}</p>
@@ -174,8 +185,8 @@ const ExamCompetition = () => {
                             style={{ textAlign: "center" }}
                             title="Hoàn thành"
                             open={isModalOpen2}
-                            onCancel={() => { navigate('/'); }}
-                            onOk={() => navigate(`/`)}
+                            onCancel={() => { navigate('/', { replace: true }); }}
+                            onOk={() => { navigate(`/`, { replace: true }) }}
                             cancelText="Trở về"
                         >
                             <div style={{ maxWidth: "300px", marginLeft: "auto", marginRight: "auto" }}>
@@ -194,6 +205,11 @@ const ExamCompetition = () => {
                 <Col span={13}>
                     {questions.map((question, index) => (
                         <Card
+                            style={{
+                                marginBottom: "20px",
+                                boxShadow: "0px 4px 12px rgba(0, 0, 0, 0.1)",
+                                borderRadius: "8px",
+                            }}
                             className="mb-4"
                             key={index}
                             id={`question-${index}`}
@@ -214,16 +230,24 @@ const ExamCompetition = () => {
                     ))}
                 </Col>
 
-                <Col span={6} style={{ display: "flex", justifyContent: "center" }}>
-                    <Affix offsetTop={20}>
-                        <Menu mode="vertical" style={{ width: 256 }} defaultSelectedKeys={['0']}>
-                            {questions.map((question, index) => (
-                                <Menu.Item key={index} onClick={() => scrollToQuestion(index)}>
-                                    Câu {index + 1}
-                                </Menu.Item>
-                            ))}
-                        </Menu>
-                    </Affix>
+                <Col span={4} style={{ maxHeight: "500px", overflowY: "auto" }}>
+                    <Menu mode="inline" style={{ height: "100%", overflowY: "auto", boxShadow: "0px 4px 12px rgba(0, 0, 0, 0.1)", borderRadius: "8px" }}>
+                        {questions.map((question, index) => (
+                            <Menu.Item
+                                key={question.id}
+                                onClick={() => scrollToQuestion(index)}
+                                icon={
+                                    answeredQuestions.includes(question.id) ? (
+                                        <CheckCircleFilled style={{ color: "green" }} />
+                                    ) : (
+                                        <CheckCircleOutlined />
+                                    )
+                                }
+                            >
+                                Câu {index + 1}
+                            </Menu.Item>
+                        ))}
+                    </Menu>
                 </Col>
             </Row>
         </div>

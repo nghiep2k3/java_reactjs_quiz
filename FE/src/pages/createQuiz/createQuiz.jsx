@@ -37,9 +37,8 @@ const CreateQuiz = () => {
         <Layout style={{ minHeight: '100vh', justifyContent: 'center' }}>
             <Content>
                 <Row justify="center">
-                    <Col>
+                    <Col span={20}>
                         <div style={{
-                            width: '1300px',
                             padding: '24px',
                             backgroundColor: '#fff',
                             boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',

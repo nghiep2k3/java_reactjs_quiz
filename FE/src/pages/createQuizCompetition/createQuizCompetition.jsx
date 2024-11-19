@@ -50,7 +50,20 @@ const CreateQuizCompetition = () => {
         localStorage.setItem('quizCompe', JSON.stringify(quizData));
         navigate(`/createcompetition/questioncompe/${competitionId}`);
     };
-
+    const handleSaveWithFile = async () => {
+        const values = form.getFieldsValue();
+        const userCreate = localStorage.getItem("username");
+        const quizData = {
+            title: values.title,
+            description: ' ',
+            category_id: values.category_id,
+            questions: [],
+            isPublished: true,
+            userCreate: userCreate,
+        };
+        localStorage.setItem('quizCompe', JSON.stringify(quizData));
+        navigate(`/createcompetition/withfile/${competitionId}`);
+    }
     return (
         <Form
             layout="vertical"
@@ -91,6 +104,13 @@ const CreateQuizCompetition = () => {
                 <Button type="primary" htmlType="submit" style={{ width: '150px' }}
                     onClick={handleSave}>
                     Tạo câu hỏi
+                </Button>
+                <Button
+                    type="default"
+                    style={{ width: '200px', marginLeft: '10px' }}
+                    onClick={handleSaveWithFile}
+                >
+                    Tạo đề thi với file
                 </Button>
             </Form.Item>
         </Form>

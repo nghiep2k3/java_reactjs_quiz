@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Card, List, Tag, Typography, Button } from 'antd';
+import { Card, List, Tag, Typography, Button, Row, Col, Space, Divider } from 'antd';
 import axios from 'axios';
 import { useNavigate, useParams } from 'react-router-dom';
 import moment from 'moment';
@@ -7,11 +7,13 @@ import { PlusOutlined } from "@ant-design/icons";
 import Loading from '../loading/loading';
 
 const { Title, Text } = Typography;
+
 const ShowQuizCompe = () => {
     const [competition, setCompetition] = useState(null);
     const { competitionId } = useParams();
     const token = localStorage.getItem("token");
     const navigate = useNavigate();
+
     useEffect(() => {
         const fetchCompetition = async () => {
             try {
@@ -32,39 +34,76 @@ const ShowQuizCompe = () => {
     }, [competitionId, token]);
 
     if (!competition) return <Loading />;
-    console.log(competition);
 
     return (
         <div style={{ padding: '20px' }}>
-            <Card style={{ marginBottom: '20px', textAlign: 'start', lineHeight: "30px" }}>
-                <Title style={{ textAlign: "center" }} level={3}>{competition.name}</Title>
-                <Text strong>Mã Tham Gia: </Text><Tag color="blue">{competition.code}</Tag><br />
-                <Text strong>Người Tổ Chức: </Text>{competition.organizedBy}<br />
-                <Text strong>Mô Tả: </Text>{competition.description}<br />
-                <Text strong>Thời Gian Làm Bài: </Text>{competition.time / 60} phút<br />
-                <Text strong>Bắt Đầu Vào Lúc: </Text>{moment(competition.startTime).format('DD/MM/YYYY HH:mm:ss')} <br />
-                <Button type="primary" icon={<PlusOutlined />} onClick={() => navigate(`/update/updatecompetition/${competitionId}`)}>
-                    Chỉnh sửa
-                </Button>
+            <Card
+                style={{ marginBottom: '20px', backgroundColor: '#f9f9f9', borderRadius: '8px', padding: '20px' }}
+                bordered={false}
+            >
+                <Title style={{ textAlign: "center", color: '#1890ff' }} level={3}>{competition.name}</Title>
+                <Divider />
+                <Space direction="vertical" size="middle" style={{ width: '100%' }}>
+                    <Row gutter={[0, 12]}>
+                        <Col span={8}><Text strong>Mã Tham Gia:</Text></Col>
+                        <Col span={16}><Tag color="blue">{competition.code}</Tag></Col>
+
+                        <Col span={8}><Text strong>Người Tổ Chức:</Text></Col>
+                        <Col span={16}><Text>{competition.organizedBy}</Text></Col>
+
+                        <Col span={8}><Text strong>Mô Tả:</Text></Col>
+                        <Col span={16}><Text>{competition.description}</Text></Col>
+
+                        <Col span={8}><Text strong>Thời Gian Làm Bài:</Text></Col>
+                        <Col span={16}><Text>{competition.time / 60} phút</Text></Col>
+
+                        <Col span={8}><Text strong>Bắt Đầu Vào Lúc:</Text></Col>
+                        <Col span={16}><Text>{moment(competition.startTime).format('DD/MM/YYYY HH:mm:ss')}</Text></Col>
+                    </Row>
+
+                    <Button
+                        type="primary"
+                        icon={<PlusOutlined />}
+                        onClick={() => navigate(`/update/updatecompetition/${competitionId}`)}
+                        style={{ alignSelf: 'center' }}
+                    >
+                        Chỉnh sửa
+                    </Button>
+                </Space>
             </Card>
 
-            <Title level={4}>Danh Sách Đề Thi</Title>
+            <Title level={4} style={{ marginTop: '20px', color: '#595959' }}>Danh Sách Đề Thi</Title>
             <List
                 grid={{ gutter: 16, column: 2 }}
                 dataSource={competition.competitionQuizResponses}
                 renderItem={(quizItem) => (
                     <List.Item key={quizItem.id}>
-                        <Card title={quizItem.quizResponses.title}>
-                            <Text strong>Mô Tả: </Text>{quizItem.quizResponses.description}<br />
-                            <Text strong>Người Tạo: </Text>{quizItem.quizResponses.usernameCreated}<br />
-                            <Text strong>Ngày Tạo: </Text>{moment(quizItem.quizResponses.createdAt).format('DD/MM/YYYY')}<br />
-                            <Text strong>Số Câu Hỏi: </Text>{quizItem.quizResponses.questions.length}<br />
-                            <Button onClick={() => navigate(`/edit/editquiz/${quizItem?.quizResponses?.id}`)} type="primary" style={{ marginTop: '10px' }}>Xem Chi Tiết</Button>
+                        <Card
+                            title={<Text style={{ color: "#fff" }}>{quizItem.quizResponses.title}</Text>}
+                            style={{ backgroundColor: '#fafafa', borderRadius: '8px' }}
+                            actions={[
+                                <Button onClick={() => navigate(`/edit/editquiz/${quizItem?.quizResponses?.id}`)} type="primary">
+                                    Xem Chi Tiết
+                                </Button>
+                            ]}
+                        >
+                            <Space direction="vertical" size="small">
+                                <Text strong>Mô Tả:</Text><Text>{quizItem.quizResponses.description}</Text>
+                                <Text strong>Người Tạo:</Text><Text>{quizItem.quizResponses.usernameCreated}</Text>
+                                <Text strong>Ngày Tạo:</Text><Text>{moment(quizItem.quizResponses.createdAt).format('DD/MM/YYYY')}</Text>
+                                <Text strong>Số Câu Hỏi:</Text><Text>{quizItem.quizResponses.totalQuestions}</Text>
+                            </Space>
                         </Card>
                     </List.Item>
                 )}
             />
-            <Button type="primary" icon={<PlusOutlined />} onClick={() => navigate(`/createcompetition/createquizcompetition/${competitionId}`)}>
+            <Button
+                type="primary"
+                icon={<PlusOutlined />}
+                onClick={() => navigate(`/createcompetition/createquizcompetition/${competitionId}`)}
+                style={{ marginTop: '20px' }}
+                block
+            >
                 Thêm Đề Thi
             </Button>
         </div>

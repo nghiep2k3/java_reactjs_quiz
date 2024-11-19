@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { Card, Progress, Tabs, Table, Tag, Button } from 'antd';
-import { CheckCircleOutlined, CloseCircleOutlined, BarChartOutlined } from '@ant-design/icons';
+import { Tabs, Table, Tag, Button } from 'antd';
+import { BarChartOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import Loading from '../../components/loading/loading';
 import axios from 'axios';
@@ -70,8 +70,12 @@ const ReportQuizResult = () => {
                 const duration = res.competitionResponse.time * 1000;
                 const timeEnd = timeStart + duration;
                 const checked = Date.now() - timeEnd;
-                console.log(checked);
 
+                const submitedTimeMinutes = Math.floor(res.submittedTime / 60);
+                const submitedTimeSeconds = res.submittedTime % 60;
+                const calculatedTime = submitedTimeMinutes < 1
+                    ? `${submitedTimeSeconds} giây`
+                    : `${submitedTimeMinutes} phút ${submitedTimeSeconds} giây`;
                 if (checked >= 0) {
                     return {
                         idResult: res.id,
@@ -81,7 +85,7 @@ const ReportQuizResult = () => {
                         correctAnswers: res.totalCorrect || 0,
                         incorrectAnswers: res.resultQuestionResponses.length - res.totalCorrect || 0,
                         totalQuestions: res.resultQuestionResponses.length,
-                        completedTime: res.submittedTime,
+                        completedTime: calculatedTime,
                         finishTime: new Date(res.completedAt).toLocaleString(),
                     };
                 }

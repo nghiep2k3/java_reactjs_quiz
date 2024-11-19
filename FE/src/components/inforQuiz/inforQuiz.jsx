@@ -88,13 +88,25 @@ const InforQuiz = () => {
             category_id: values.category_id,
             questions: [],
             isPublished: isPublished,
-            // images: imageFiles,
             userCreate: userCreate,
         };
         localStorage.setItem('quizInfo', JSON.stringify(quizData));
         navigate('/createquiz/createquestion');
     };
-
+    const handleSaveWithFile = async () => {
+        const values = form.getFieldsValue();
+        const userCreate = localStorage.getItem("username");
+        const quizData = {
+            title: values.title,
+            description: values.description,
+            category_id: values.category_id,
+            questions: [],
+            isPublished: isPublished,
+            userCreate: userCreate,
+        };
+        localStorage.setItem('quizInfo', JSON.stringify(quizData));
+        navigate('/createquiz/createquizAI');
+    };
     return (
         <Form
             layout="vertical"
@@ -182,6 +194,13 @@ const InforQuiz = () => {
                 <Button type="primary" htmlType="submit" style={{ width: '150px' }}
                     onClick={handleSave}>
                     Tạo đề thi
+                </Button>
+                <Button
+                    type="default"
+                    style={{ width: '200px', marginLeft: '10px' }}
+                    onClick={handleSaveWithFile}
+                >
+                    Tạo đề thi với file
                 </Button>
             </Form.Item>
         </Form>

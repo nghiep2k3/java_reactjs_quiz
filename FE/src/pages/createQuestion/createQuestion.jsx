@@ -89,7 +89,6 @@ const CreateQuestion = () => {
     };
     const handleSubmit = async () => {
         const storedQuiz = JSON.parse(localStorage.getItem('quizInfo')) || {};
-        const currentDate = new Date().toISOString();
         const formattedQuestions = questions.map((question) => {
             return {
                 question: question.question,
@@ -108,8 +107,6 @@ const CreateQuestion = () => {
             category_id: storedQuiz.category_id || 2,
             questions: formattedQuestions,
             isPublished: storedQuiz.isPublished || false,
-            // userCreate: storedQuiz.userCreate || 'JohnDoe',
-            // timestamp: currentDate,
         };
         console.log(newQuiz);
 
@@ -173,32 +170,20 @@ const CreateQuestion = () => {
 
     return (
         <div>
-            <div style={{ display: 'flex' }}>
+            <div style={{ display: 'flex', justifyContent: "space-between" }}>
                 <Col span={2}>
-                    <Anchor
-                        replace
-                        items={[
-                            ...questions.slice(0, 3).map((_, qIndex) => ({
+                    <div style={{ height: "400px", overflowY: 'auto', whiteSpace: 'nowrap', paddingBottom: '10px' }}>
+                        <Anchor style={{ display: 'block', maxHeight: "100%", overflowY: 'auto' }}
+                            replace
+                            affix={false}
+                            items={questions.map((_, qIndex) => ({
                                 key: `part-${qIndex + 1}`,
                                 href: `#part-${qIndex + 1}`,
                                 title: `Câu ${qIndex + 1}`,
                                 onClick: () => handleAnchorClick(qIndex),
-                            })),
-                            ...(questions.length > 6 ? [{
-                                key: 'ellipsis',
-                                title: '...',
-                            }] : []),
-                            ...questions.slice(-3).map((_, qIndex) => {
-                                const actualIndex = questions.length - 3 + qIndex;
-                                return {
-                                    key: `part-${actualIndex + 1}`,
-                                    href: `#part-${actualIndex + 1}`,
-                                    title: `Câu ${actualIndex + 1}`,
-                                    onClick: () => handleAnchorClick(actualIndex),
-                                };
-                            })
-                        ]}
-                    />
+                            }))}
+                        />
+                    </div>
                 </Col>
                 <Col span={20}>
                     {questions.map((question, qIndex) => (

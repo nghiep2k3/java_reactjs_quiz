@@ -1,6 +1,7 @@
 // File: FileContext.js
 import React, { createContext, useState } from 'react';
 
+
 export const ContextFileImage = createContext();
 
 export const FileProvider = ({ children }) => {

@@ -167,7 +167,7 @@ const App = () => {
         <div>
             <Layout>
                 <Sider
-                    width={250}
+                    width={220}
                     collapsible
                     collapsed={collapsed}
                     onCollapse={setCollapsed}
@@ -340,7 +340,6 @@ const App = () => {
                         style={{
                             minHeight: "100vh",
                             padding: "24px",
-                            backgroundColor: "#f9f9f9",
                         }}
                     >
                         <Outlet />

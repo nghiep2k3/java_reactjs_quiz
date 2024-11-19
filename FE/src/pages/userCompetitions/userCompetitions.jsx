@@ -3,6 +3,8 @@ import { List, Card, Button, Typography, message, Tag, Modal } from 'antd';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { EyeOutlined, DeleteOutlined, UnorderedListOutlined } from '@ant-design/icons';
+import Loading from '../../components/loading/loading';
+import './userCompetitions.css';
 
 const { Title, Text } = Typography;
 
@@ -51,32 +53,40 @@ const UserCompetitions = () => {
     };
 
     return (
-        <div style={{ padding: '20px' }}>
-            <Title level={3}>Các Cuộc Thi của Bạn</Title>
+        <div className="user-competitions-container">
+            <Title level={3} className="user-competitions-title">Các Cuộc Thi của Bạn</Title>
             <List
+                locale={{ emptyText: <Loading /> }}
                 grid={{ gutter: 16, column: 3 }}
                 dataSource={competitions}
                 renderItem={competition => (
                     <List.Item>
                         <Card
-                            title={<Text style={{ color: "#fff" }}>{competition.name}</Text>}
+                            className="competition-card"
+                            title={<Text className="competition-title">{competition.name}</Text>}
                             extra={<Tag color="blue">Mã: {competition.code}</Tag>}
                             actions={[
                                 <Button
                                     type="link"
                                     icon={<EyeOutlined />}
-                                    onClick={() => navigate(`/createcompetition/showquizcompe/${competition.id}`)}>
+                                    onClick={() => navigate(`/createcompetition/showquizcompe/${competition.id}`)}
+                                    className="view-details-button"
+                                >
                                     Chi Tiết
                                 </Button>,
                                 <Button
                                     icon={<UnorderedListOutlined />}
-                                    onClick={() => navigate(`/reportcompetition/${competition.id}`)}>
+                                    onClick={() => navigate(`/reportcompetition/${competition.id}`)}
+                                    className="view-results-button"
+                                >
                                     Xem kết quả
                                 </Button>,
                                 <Button
                                     danger
                                     icon={<DeleteOutlined />}
-                                    onClick={() => showDeleteConfirm(competition.id)}>
+                                    onClick={() => showDeleteConfirm(competition.id)}
+                                    className="delete-button"
+                                >
                                     Xóa
                                 </Button>
                             ]}
@@ -93,6 +103,10 @@ const UserCompetitions = () => {
                 open={isModalOpen}
                 onOk={handleDeleteCompetition}
                 onCancel={() => setIsModalOpen(false)}
+                okText="Xóa"
+                cancelText="Hủy"
+                okButtonProps={{ danger: true }}
+                className="delete-modal"
             />
         </div>
     );
