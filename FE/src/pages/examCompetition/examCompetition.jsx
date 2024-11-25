@@ -13,6 +13,7 @@ const shuffleArray = (array) => {
     return array;
 };
 
+
 const ExamCompetition = () => {
     const navigate = useNavigate();
     const location = useLocation();
@@ -28,6 +29,7 @@ const ExamCompetition = () => {
     };
     const [selectedAnswers, setSelectedAnswers] = useState(() => {
         const savedAnswers = localStorage.getItem('selectedAnswers');
+        console.log("savedAnswers", savedAnswers);
         return savedAnswers ? JSON.parse(savedAnswers) : {};
     });
     const [remainingTime, setRemainingTime] = useState(calculateRemainingTime || 0);
@@ -46,6 +48,21 @@ const ExamCompetition = () => {
             setQuestions(shuffledQuestions);
         }
     }, [quizData]);
+
+    useEffect(() => {
+        const handleVisibilityChange = () => {
+            if (document.hidden) {
+                handleSubmit();
+            }
+        };
+
+        document.addEventListener('visibilitychange', handleVisibilityChange);
+
+        // Dọn dẹp sự kiện khi component unmount
+        return () => {
+            document.removeEventListener('visibilitychange', handleVisibilityChange);
+        };
+    }, []);
 
     useEffect(() => {
         remainingTimeRef.current = remainingTime;
@@ -84,6 +101,9 @@ const ExamCompetition = () => {
             } else {
                 setAnsweredQuestions((prevAnswered) => prevAnswered.filter(id => id !== questionId));
             }
+
+            console.log("handleAnswerChange", newAnswers);
+
             return newAnswers;
         });
     };
@@ -105,6 +125,7 @@ const ExamCompetition = () => {
             const selectedChoices = selectedAnswers[question.id] || [];
             const correctChoices = question.questionChoice.filter(opt => opt.isCorrect).map(opt => opt.id);
             const isCorrect = selectedChoices.sort().toString() === correctChoices.sort().toString();
+            console.log(4824682, selectedChoices[question.id], question.id);
 
             if (isCorrect) {
                 numberOfCorrect++;
@@ -128,6 +149,9 @@ const ExamCompetition = () => {
             submittedTime: timeSubmit,
             competitionId: idCompetition
         };
+
+        console.log(3629846, quizResult);
+
 
         try {
             const response = await axios.post('https://api.trandai03.online/api/v1/quizs/submit', quizResult, {
@@ -171,6 +195,8 @@ const ExamCompetition = () => {
             margin: "20px auto", zIndex: "999", padding: "20px",
             backgroundColor: "#f9f9f9", borderRadius: "10px",
         }}>
+
+            {console.log("selectedAnswers", selectedAnswers[478])}
             <Row style={{ display: "flex", justifyContent: "space-around" }}>
                 <Col span={5}>
                     <Card title={quizData?.title} bordered={false} style={{ width: 300, boxShadow: "0px 4px 12px rgba(0, 0, 0, 0.1)", borderRadius: "8px" }}>
