@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { Card, Checkbox, Button, Menu, Col, Row, message, Modal, Image, notification } from 'antd';
 import { useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
@@ -30,6 +30,110 @@ const QuizExam = () => {
     const selectedTime = JSON.parse(localStorage.getItem('Time')) || '30 phút';
     const timeInMinutes = parseInt(selectedTime.split(" ")[0], 10);
     let timeInSeconds = timeInMinutes * 60;
+    let changeTab = 0;
+    
+
+
+    const handleSubmit = async () => {
+        if (!storedQuiz || !storedQuiz.id || questions.length === 0) {
+            console.warn('Dữ liệu chưa sẵn sàng để submit');
+            alert(2222222222);
+            return;
+        }
+
+        const token = localStorage.getItem('token');
+        let score = 0;
+        let numberOfCorrect = 0;
+        const remaintimeInMinutes = Math.floor(timeInMinutes - (remainingTime / 60));
+        const timeInSeconds = (60 - remainingTime % 60);
+        const calculatedTime = remaintimeInMinutes < 1
+            ? `0 phút ${timeInSeconds} giây`
+            : `${remaintimeInMinutes} phút ${timeInSeconds} giây`;
+        const timeSubmit = remaintimeInMinutes * 60 + timeInSeconds;
+        setSubmittedTime(calculatedTime);
+
+        const resultDetails = questions.map((question) => {
+            const selectedChoices = selectedAnswers[question.id] || [];
+            const correctChoices = question.questionChoice.filter(opt => opt.isCorrect).map(opt => opt.id);
+            const isCorrect = selectedChoices.sort().toString() === correctChoices.sort().toString();
+
+            console.log(736578263, selectedChoices);
+            
+            if (isCorrect) {
+                numberOfCorrect++;
+            }
+            score = (numberOfCorrect / questions.length * 10).toFixed(2);
+            return {
+                questionId: question.id,
+                selectedChoiceIds: selectedChoices,
+            };
+        });
+
+        setScoreExam(numberOfCorrect);
+        setIsModalOpen(false);
+        setIsModalOpen2(true);
+
+        const quizResult = {
+            quizId: storedQuiz.id,
+            questionResultDTOS: resultDetails,
+            score,
+            totalCorrect: numberOfCorrect,
+            submittedTime: timeSubmit,
+        };
+
+
+        console.log(5555, quizResult);
+
+
+        try {
+            const response = await axios.post('https://api.trandai03.online/api/v1/quizs/submit', quizResult, {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                }
+            });
+            if (response.status === 200) {
+                notification.success({
+                    message: "Nộp bài thành công",
+                    description: "Bài thi đã được nộp thành công!"
+                });
+                setIdResult(response.data.id);
+                localStorage.removeItem("Time");
+                setIsModalOpen(false);
+                setIsModalOpen2(true);
+            }
+        } catch (error) {
+            console.error("Lỗi submit:", error.response);
+            notification.error({
+                message: "Nộp bài không thành công",
+                description: "Có lỗi xảy ra khi nộp bài, vui lòng thử lại."
+            });
+        }
+    };
+
+    // useEffect(() => {
+    //     const handleVisibilityChange = () => {
+    //         if (document.hidden) {
+    //             changeTab++;
+    //             if (changeTab >= 2 && storedQuiz && storedQuiz.id && questions.length > 0) {
+    //                 // handleSubmit();
+    //                 // return;
+    //                 console.log("đã nộp bài");
+                    
+    //             }
+    //             console.log(7777, changeTab);
+    //             alert("bịp vkl");
+    //         }
+    //     };
+
+    //     document.addEventListener('visibilitychange', handleVisibilityChange);
+
+    //     return () => {
+    //         document.removeEventListener('visibilitychange', handleVisibilityChange);
+    //     };
+    // }, [storedQuiz, questions]);
+
+
 
     useEffect(() => {
         setRemainingTime(timeInSeconds);
@@ -98,71 +202,9 @@ const QuizExam = () => {
         });
     };
 
-    const handleSubmit = async () => {
-        const token = localStorage.getItem('token');
-        let score = 0;
-        let numberOfCorrect = 0;
-        const remaintimeInMinutes = Math.floor(timeInMinutes - (remainingTime / 60));
-        const timeInSeconds = (60 - remainingTime % 60);
-        const calculatedTime = remaintimeInMinutes < 1
-            ? `0 phút ${timeInSeconds} giây`
-            : `${remaintimeInMinutes} phút ${timeInSeconds} giây`;
-        const timeSubmit = remaintimeInMinutes * 60 + timeInSeconds;
-        setSubmittedTime(calculatedTime);
-        const resultDetails = questions.map((question) => {
-            const selectedChoices = selectedAnswers[question.id] || [];
-            const correctChoices = question.questionChoice.filter(opt => opt.isCorrect).map(opt => opt.id);
-            const isCorrect = selectedChoices.sort().toString() === correctChoices.sort().toString();
 
-            if (isCorrect) {
-                numberOfCorrect++;
-            }
-            score = (numberOfCorrect / questions.length * 10).toFixed(2);
-            return {
-                questionId: question.id,
-                selectedChoiceIds: selectedChoices,
-            };
 
-        });
-        setScoreExam(numberOfCorrect);
-        setIsModalOpen(false);
-        setIsModalOpen2(true);
 
-        const quizResult = {
-            quizId: storedQuiz.id,
-            questionResultDTOS: resultDetails,
-            score,
-            totalCorrect: numberOfCorrect,
-            submittedTime: timeSubmit,
-        };
-        console.log("result", quizResult);
-
-        try {
-            const response = await axios.post('https://api.trandai03.online/api/v1/quizs/submit', quizResult, {
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json',
-                }
-            });
-            if (response.status === 200) {
-                notification.success({
-                    message: "Nộp bài thành công",
-                    description: "Bài thi đã được nộp thành công!"
-                });
-                setIdResult(response.data.id);
-                localStorage.removeItem("Time");
-                setIdResult(response.data.id);
-                setIsModalOpen(false);
-                setIsModalOpen2(true);
-            }
-        } catch (error) {
-            console.error("Lỗi submit:", error.response);
-            notification.error({
-                message: "Nộp bài không thành công",
-                description: "Có lỗi xảy ra khi nộp bài, vui lòng thử lại."
-            });
-        }
-    };
 
     const scrollToQuestion = (index) => {
         const element = document.getElementById(`question-${index}`);

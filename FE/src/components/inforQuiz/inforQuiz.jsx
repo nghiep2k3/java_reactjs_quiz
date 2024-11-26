@@ -80,6 +80,7 @@ const InforQuiz = () => {
         setFile(null);
     };
     const handleSave = async () => {
+        handleUpload()
         const values = form.getFieldsValue();
         const userCreate = localStorage.getItem("username");
         const quizData = {
@@ -178,10 +179,6 @@ const InforQuiz = () => {
                             style={{ maxWidth: "200px", marginBottom: 20 }}
                         />
                         <div>
-                            {/* Nút Tải lên */}
-                            <Button type="primary" onClick={handleUpload} style={{ marginRight: 10 }}>
-                                Tải lên
-                            </Button>
                             {/* Nút Xóa ảnh */}
                             <Button type="default" onClick={handleRemove} icon={<DeleteOutlined />}>
                                 Xóa ảnh
