@@ -39,6 +39,11 @@ const ExamCompetition = () => {
     const [scoreExam, setScoreExam] = useState(0);
     const [submittedTime, setSubmittedTime] = useState(null);
     const [questions, setQuestions] = useState(quizData?.questions || []);
+
+    const [tabChangeCount, setTabChangeCount] = useState(() => {
+        return parseInt(localStorage.getItem("tabChangeCount")) || 0;
+    });
+    const [isModalVisible, setIsModalVisible] = useState(false);
     useEffect(() => {
         if (quizData) {
             const shuffledQuestions = shuffleArray(quizData.questions);
@@ -49,20 +54,27 @@ const ExamCompetition = () => {
         }
     }, [quizData]);
 
+    const handleVisibilityChange = () => {
+        if (document.hidden) {
+            setTabChangeCount((prevCount) => prevCount + 1);
+        }
+    };
+
     useEffect(() => {
-        const handleVisibilityChange = () => {
-            if (document.hidden) {
-                handleSubmit();
-            }
-        };
-
-        document.addEventListener('visibilitychange', handleVisibilityChange);
-
-        // Dọn dẹp sự kiện khi component unmount
+        document.addEventListener("visibilitychange", handleVisibilityChange);
         return () => {
-            document.removeEventListener('visibilitychange', handleVisibilityChange);
+            document.removeEventListener("visibilitychange", handleVisibilityChange);
         };
     }, []);
+
+    useEffect(() => {
+        localStorage.setItem("tabChangeCount", tabChangeCount);
+        if (tabChangeCount === 1) {
+            setIsModalVisible(true);
+        } else if (tabChangeCount >= 2) {
+            handleSubmit();
+        }
+    }, [tabChangeCount]);
 
     useEffect(() => {
         remainingTimeRef.current = remainingTime;
@@ -102,12 +114,10 @@ const ExamCompetition = () => {
                 setAnsweredQuestions((prevAnswered) => prevAnswered.filter(id => id !== questionId));
             }
 
-            console.log("handleAnswerChange", newAnswers);
 
             return newAnswers;
         });
     };
-    console.log(selectedAnswers);
 
 
     const handleSubmit = async () => {
@@ -115,7 +125,6 @@ const ExamCompetition = () => {
         let numberOfCorrect = 0;
         const remaintimeInMinutes = Math.floor(initialRemainingTime / 60 - (remainingTime / 60));
         const timeInSeconds = ((initialRemainingTime - remainingTime) % 60);
-        console.log(timeInSeconds);
         const calculatedTime = remaintimeInMinutes < 1
             ? `0 phút ${Math.floor(timeInSeconds)} giây`
             : `${remaintimeInMinutes} phút ${Math.floor(timeInSeconds)} giây`;
@@ -126,7 +135,6 @@ const ExamCompetition = () => {
             const selectedChoices = selectedAnswers[question.id] || [];
             const correctChoices = question.questionChoice.filter(opt => opt.isCorrect).map(opt => opt.id);
             const isCorrect = selectedChoices.sort().toString() === correctChoices.sort().toString();
-            console.log(4824682, selectedChoices[question.id], question.id);
 
             if (isCorrect) {
                 numberOfCorrect++;
@@ -150,10 +158,6 @@ const ExamCompetition = () => {
             submittedTime: timeSubmit,
             competitionId: idCompetition
         };
-
-        console.log(3629846, quizResult);
-
-
         try {
             const response = await axios.post('https://api.trandai03.online/api/v1/quizs/submit', quizResult, {
                 headers: {
@@ -167,6 +171,7 @@ const ExamCompetition = () => {
                     description: "Bài thi đã được nộp thành công!"
                 });
                 localStorage.removeItem("selectedAnswers");
+                localStorage.removeItem("tabChangeCount");
                 setIsModalOpen(false);
                 setIsModalOpen2(true);
             }
@@ -227,6 +232,10 @@ const ExamCompetition = () => {
                             </div>
                         </Modal>
                     </Card>
+                    <p style={{
+                        fontStyle: "italic",
+                        color: "red"
+                    }}>Lưu ý: Luôn giữ tab trong suốt quá trình làm bài (vi phạm sẽ 0 điểm)</p>
                 </Col>
 
                 <Col span={13}>
@@ -253,6 +262,14 @@ const ExamCompetition = () => {
                                     </Checkbox>
                                 ))}
                             </Checkbox.Group>
+                            <Modal
+                                title="Cảnh báo"
+                                visible={isModalVisible}
+                                onOk={() => setIsModalVisible(false)}
+                                onCancel={() => setIsModalVisible(false)}
+                            >
+                                <p>Bạn vừa chuyển tab. Nếu tiếp tục, bài thi sẽ được nộp tự động.</p>
+                            </Modal>
                         </Card>
                     ))}
                 </Col>
