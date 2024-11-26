@@ -63,7 +63,7 @@ const ExamCompetition = () => {
             } else {
                 clearInterval(interval);
                 message.info('Hết thời gian!');
-                navigate(`/joincompetition/${idCompetition}`)
+                handleSubmit();
             }
         }, 1000);
 
@@ -87,6 +87,7 @@ const ExamCompetition = () => {
             return newAnswers;
         });
     };
+    console.log(selectedAnswers);
 
 
     const handleSubmit = async () => {

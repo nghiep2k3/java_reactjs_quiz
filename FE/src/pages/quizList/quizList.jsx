@@ -12,6 +12,7 @@ const QuizList = () => {
     const navigate = useNavigate();
     const token = localStorage.getItem("token");
     const [favorquizzes, setFavorQuizzes] = useState([]);
+    const [publishedQuizzes, setPublishedQuizzes] = useState([]);
 
     useEffect(() => {
         const fetchQuizzes = async () => {
@@ -24,7 +25,10 @@ const QuizList = () => {
                     }
                 });
                 if (response.status === 200) {
-                    setQuizzes(response.data);
+                    const allQuizzes = response.data;
+                    setQuizzes(allQuizzes);
+                    const newPublishedQuizzes = allQuizzes.filter((quiz) => quiz.isPublished === true).map((quiz) => quiz.id);
+                    setPublishedQuizzes(newPublishedQuizzes);
                 }
             } catch (error) {
                 notification.error({
@@ -122,6 +126,38 @@ const QuizList = () => {
 
         }
     };
+    console.log(publishedQuizzes);
+
+    const togglePublish = async (quizId) => {
+        try {
+            const url = publishedQuizzes.includes(quizId)
+                ? `https://api.trandai03.online/api/v1/quizs/unpublish/${quizId}`
+                : `https://api.trandai03.online/api/v1/quizs/publish/${quizId}`;
+
+            const res = await axios.post(url, {}, {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                }
+            });
+
+            if (res.status === 200) {
+                if (publishedQuizzes.includes(quizId)) {
+                    setPublishedQuizzes(publishedQuizzes.filter((id) => id !== quizId));
+                    message.success('Đề thi đã chuyển sang trạng thái không công khai!');
+                } else {
+                    setPublishedQuizzes([...publishedQuizzes, quizId]);
+                    message.success('Đề thi đã công khai thành công!');
+                }
+            } else {
+                console.error(`API trả về mã lỗi: ${res.status}`);
+                message.error('Lỗi khi thay đổi trạng thái công khai!');
+            }
+        } catch (error) {
+            message.error('Lỗi khi thay đổi trạng thái public, vui lòng thử lại.');
+            console.log(error.message);
+        }
+    };
 
     const formatDate = (dateString) => {
         const date = new Date(dateString);
@@ -161,6 +197,12 @@ const QuizList = () => {
                                     <Button
                                         icon={favorquizzes.includes(quiz.id) ? <HeartFilled style={{ color: 'red' }} /> : <HeartOutlined />}
                                         onClick={() => toggleFavorite(quiz.id)}
+                                    />
+                                </Tooltip>,
+                                <Tooltip title={publishedQuizzes.includes(quiz.id) ? "Hủy công khai" : "Công khai"}>
+                                    <Button
+                                        icon={publishedQuizzes.includes(quiz.id) ? <ClockCircleOutlined style={{ color: 'green' }} /> : <ClockCircleOutlined />}
+                                        onClick={() => togglePublish(quiz.id)}
                                     />
                                 </Tooltip>
                             ]}

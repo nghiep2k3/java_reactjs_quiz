@@ -92,6 +92,8 @@ const QuizExam = () => {
             } else {
                 setAnsweredQuestions((prevAnswered) => prevAnswered.filter(id => id !== questionId));
             }
+            console.log(newAnswers);
+
             return newAnswers;
         });
     };

@@ -34,8 +34,6 @@ const CreateQuizAI = () => {
 
         setQuestions(parsedQuestions);
     };
-    console.log(questions);
-
     const handlePDF = async (file) => {
         const arrayBuffer = await file.arrayBuffer();
         const pdfDoc = await PDFDocument.load(arrayBuffer);
@@ -74,7 +72,6 @@ const CreateQuizAI = () => {
             questions: questions,
             isPublished: storedQuiz.isPublished || false,
         };
-        console.log(newQuiz);
         try {
             const response = await axios.post('https://api.trandai03.online/api/v1/quizs/create', newQuiz, {
                 headers: {
@@ -106,7 +103,6 @@ const CreateQuizAI = () => {
         const formData = new FormData();
 
         formData.append("file", fileImgae);
-        console.log(formData);
         try {
             const response = await axios.post(
                 `https://api.trandai03.online/api/v1/quizs/image/${quizId}`,
@@ -132,6 +128,12 @@ const CreateQuizAI = () => {
     return (
         <div>
             <input type="file" onChange={handleFileUpload} />
+            {questions.length === 0 ? (
+                <p style={{
+                    fontStyle: "italic",
+                    color: "red"
+                }}>Lưu ý: đề thi upload bắt đầu câu bằng chữ "Câu " và đánh dấu * ở đầu hoặc cuối đáp án đúng</p>
+            ) : (null)}
 
             {questions.length > 0 && (
                 <div>

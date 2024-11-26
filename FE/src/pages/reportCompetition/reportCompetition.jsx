@@ -107,7 +107,7 @@ const ReportCompetition = () => {
                 rowKey={(record) => record.id}
                 pagination={{ pageSize: 5 }}
             />
-            <div style={{ marginTop: '40px' }}>
+            <div style={{ marginTop: '20px' }}>
                 <Title level={2} style={{ textAlign: 'center', color: '#2A2A2A', marginBottom: '20px' }}> Thống kê điểm số</Title>
 
                 <Bar
