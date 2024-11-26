@@ -6,15 +6,16 @@ import './searchQuiz.module.css';
 import { useNavigate } from 'react-router-dom';
 
 const SearchQuiz = () => {
-    const navigate = useNavigate()
+    const navigate = useNavigate();
     const [searchResults, setSearchResults] = useState([]);
     const [searchTerm, setSearchTerm] = useState('');
     const token = localStorage.getItem("token");
     const searchRef = useRef(null);
+
     const debounceSearch = debounce(async (value) => {
         try {
             const response = await axios.get(
-                `https://api.trandai03.online/api/v1/quizs/search?page=0&size=1&sort=title&filter=${encodeURIComponent(value)}&onlyValid=false`,
+                `https://api.trandai03.online/api/v1/quizs/search?page=0&size=5&sort=title&filter=${encodeURIComponent(value)}&onlyValid=false`,
                 {
                     headers: {
                         'Authorization': `Bearer ${token}`,
@@ -34,6 +35,7 @@ const SearchQuiz = () => {
             });
         }
     }, 300);
+
     const handleSearchChange = (e) => {
         const value = e.target.value;
         setSearchTerm(value);
@@ -44,6 +46,7 @@ const SearchQuiz = () => {
             debounceSearch(value);
         }
     };
+
     useEffect(() => {
         const handleClickOutside = (event) => {
             if (searchRef.current && !searchRef.current.contains(event.target)) {
@@ -56,6 +59,7 @@ const SearchQuiz = () => {
             document.removeEventListener('mousedown', handleClickOutside);
         };
     }, []);
+
     return (
         <div style={{ position: "relative", width: "100%" }} ref={searchRef}>
             <Input.Search
@@ -72,17 +76,53 @@ const SearchQuiz = () => {
                     margin: "10px 0",
                     position: "absolute",
                     zIndex: '999',
-                    top: "30px",
+                    top: "45px",
                     width: '100%',
                     backgroundColor: '#fff',
                     boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
+                    borderRadius: '8px',
                 }}>
                     <List
                         itemLayout="vertical"
                         dataSource={searchResults}
                         renderItem={quiz => (
-                            <List.Item style={{ cursor: "pointer" }} onClick={() => navigate(`/quizdetail/examcontent/${quiz.id}`)} key={quiz.id}>
-                                <p style={{ fontSize: "20px", margin: "0 20px", }}>{quiz.title}</p>
+                            <List.Item
+                                style={{
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'flex-start',
+                                    padding: '10px 20px',
+                                    borderBottom: '1px solid #f0f0f0',
+                                    cursor: "pointer",
+                                    borderRadius: '8px',
+                                }}
+                                onClick={() => navigate(`/quizdetail/examcontent/${quiz.id}`)}
+                                key={quiz.id}
+                            >
+                                <img 
+                                    src={quiz.image} 
+                                    alt={quiz.title} 
+                                    style={{
+                                        width: '60px',
+                                        height: '60px',
+                                        objectFit: 'cover',
+                                        borderRadius: '8px',
+                                        marginRight: '15px',
+                                    }}
+                                />
+                                <div>
+                                    <p style={{
+                                        fontSize: "16px",
+                                        fontWeight: "bold",
+                                        margin: "0",
+                                        color: '#333'
+                                    }}>{quiz.title}</p>
+                                    <p style={{
+                                        fontSize: "14px",
+                                        color: "#888",
+                                        margin: "5px 0 0"
+                                    }}>Số câu hỏi: {quiz.totalQuestions}</p>
+                                </div>
                             </List.Item>
                         )}
                     />

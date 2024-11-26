@@ -159,15 +159,18 @@ const EditQuestion = () => {
         <div>
             <div style={{ display: 'flex' }}>
                 <Col span={2}>
-                    <Anchor
-                        replace
-                        items={questions.map((_, qIndex) => ({
-                            key: `part-${qIndex + 1}`,
-                            href: `#part-${qIndex + 1}`,
-                            title: `Câu ${qIndex + 1}`,
-                            onClick: () => handleAnchorClick(qIndex),
-                        }))}
-                    />
+                    <div style={{ height: "400px", overflowY: 'auto', whiteSpace: 'nowrap', paddingBottom: '10px' }}>
+                        <Anchor style={{ display: 'block', maxHeight: "100%", overflowY: 'auto' }}
+                            replace
+                            affix={false}
+                            items={questions.map((_, qIndex) => ({
+                                key: `part-${qIndex + 1}`,
+                                href: `#part-${qIndex + 1}`,
+                                title: `Câu ${qIndex + 1}`,
+                                onClick: () => handleAnchorClick(qIndex),
+                            }))}
+                        />
+                    </div>
                 </Col>
                 <Col span={20}>
                     {questions.map((question, qIndex) => (

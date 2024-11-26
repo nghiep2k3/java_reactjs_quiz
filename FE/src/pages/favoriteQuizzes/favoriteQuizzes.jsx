@@ -54,7 +54,7 @@ const FavoriteQuizzes = () => {
                                 <p>{quiz.description || 'Không có mô tả'}</p>
                                 <p>Người tạo: {quiz.usernameCreated}</p>
                                 <p><ClockCircleOutlined /> {quiz.createdAt}</p>
-                                <p>Câu hỏi: {quiz.questions.length}</p>
+                                <p>Câu hỏi: {quiz.totalQuestions}</p>
                             </div>
                         </div>
                     </Link>

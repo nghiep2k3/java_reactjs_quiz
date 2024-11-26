@@ -58,6 +58,11 @@
 }
 
 .quiz-description {
+    display: -webkit-box;          /* Sử dụng flexbox */  
+    -webkit-box-orient: vertical; /* Định hướng theo chiều dọc */  
+    -webkit-line-clamp: 1;        /* Giới hạn số dòng hiển thị là 1 */  
+    overflow: hidden;              /* Ẩn phần văn bản vượt quá chiều cao */  
+    text-overflow: ellipsis;  
     margin: 5px 0;
     color: rgba(0, 0, 0, 0.65); /* Softer text color */
 }

@@ -125,7 +125,6 @@ const SliderItems = () => {
 				});
 
 				setData([response.data]);
-				// console.log("data theo cate",response.data[0].category.name);
 
 			} catch (error) {
 				console.error('Error fetching quizzes:', error);
@@ -143,7 +142,6 @@ const SliderItems = () => {
 				}
 			});
 			setData(response.data);
-			console.log("data", response.data);
 
 		} catch (error) {
 			console.error('Error fetching quiz data:', error);
@@ -172,7 +170,6 @@ const SliderItems = () => {
 		fetchCategories();
 		fetchAllQuizs();
 	}, []);
-
 	if (!data.length) {
 		return <div>
 			{/* <div className="container">
@@ -218,6 +215,7 @@ const SliderItems = () => {
 			</div>
 			<div className='mt-2'>
 				{data.map((quiz) => (
+
 					<ListItemQuiz key={quiz.id} item={quiz} />
 				))}
 			</div>

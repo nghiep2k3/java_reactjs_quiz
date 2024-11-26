@@ -127,6 +127,8 @@ const QuizDetail = () => {
         setSelectedTime(value);
         localStorage.setItem('Time', JSON.stringify(value));
     }
+    console.log(quiz);
+
     const toggleFavorite = async (quizId) => {
         try {
             if (favorquizzes.includes(quizId)) {
@@ -159,6 +161,18 @@ const QuizDetail = () => {
 
         }
     };
+
+    const handleCopy = () => {
+        const valueToCopy = `http://localhost:3000/quizdetail/examcontent/${id}`;
+        navigator.clipboard.writeText(valueToCopy)
+            .then(() => {
+                console.log('Copied to clipboard:', valueToCopy);
+            })
+            .catch((err) => {
+                // Xử lý lỗi nếu có
+                console.error('Failed to copy:', err);
+            });
+    };
     return (
 
         <div style={{ background: "#F1F3F5" }}>
@@ -185,7 +199,7 @@ const QuizDetail = () => {
                                     <Col span={8} style={{ gap: '.75rem' }}>
                                         <div className='d-flex align-items-baseline'><b style={{ fontSize: 24 }}>Người tạo đề thi: </b><p className='fs-5 ps-2'>{quiz.usernameCreated}</p></div>
                                         <div className='d-flex align-items-baseline'><b style={{ fontSize: 24 }}>Tên bài thi: </b><p className='fs-5 ps-2'>{quiz.title}</p></div>
-                                        <div className='d-flex align-items-baseline'><b style={{ fontSize: 24 }}>Chủ đề: </b><p className='fs-5 ps-2'>{quiz.category.name}</p></div>
+                                        <div className='d-flex align-items-baseline'><b style={{ fontSize: 24 }}>Chủ đề: </b><p className='fs-5 ps-2'>{quiz.categoryResponse.name}</p></div>
                                         <div style={{ display: 'flex', alignItems: "center", gap: '.5rem' }}>
                                             <QuestionCircleOutlined /> {quiz.questions?.length}
                                             <LikeOutlined />
@@ -208,9 +222,8 @@ const QuizDetail = () => {
                                             <TwitchOutlined />
                                         </div>
                                         <div style={{ marginTop: '20px' }}>
-                                            <Button type="primary" htmlType="submit" style={{ width: '100px' }}>Sao chép</Button>
-                                            <Popover content={<QRCode value="https://ant.design" bordered={false} />}>
-
+                                            <Button type="primary" onClick={handleCopy} style={{ width: '100px' }}>Sao chép</Button>
+                                            <Popover content={<QRCode value={`http://localhost:3000/quizdetail/examcontent/${id}`} bordered={false} />}>
                                                 <Button type="primary" htmlType="submit" style={{ width: '200px', marginLeft: '20px' }}>Quét mã QRcode</Button>
                                             </Popover>
                                         </div>

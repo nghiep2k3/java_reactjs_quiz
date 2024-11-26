@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Card, Checkbox, Button, Menu, Affix, Col, Row, message, Modal, Image, notification } from 'antd';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { Card, Checkbox, Button, Menu, Col, Row, message, Modal, Image, notification } from 'antd';
+import { CheckCircleOutlined, CheckCircleFilled } from '@ant-design/icons';
+import { replace, useLocation, useNavigate } from 'react-router-dom';
 import Loading from '../../components/loading/loading';
 import axios from 'axios';
 
@@ -12,9 +13,11 @@ const shuffleArray = (array) => {
     return array;
 };
 
+
 const ExamCompetition = () => {
     const navigate = useNavigate();
     const location = useLocation();
+    const [answeredQuestions, setAnsweredQuestions] = useState([]);
     const { quizData, remainingTime: initialRemainingTime, idCompetition } = location.state || {};
     const calculateRemainingTime = () => {
         const examEndTime = localStorage.getItem('examEndTime');
@@ -26,6 +29,7 @@ const ExamCompetition = () => {
     };
     const [selectedAnswers, setSelectedAnswers] = useState(() => {
         const savedAnswers = localStorage.getItem('selectedAnswers');
+        console.log("savedAnswers", savedAnswers);
         return savedAnswers ? JSON.parse(savedAnswers) : {};
     });
     const [remainingTime, setRemainingTime] = useState(calculateRemainingTime || 0);
@@ -46,6 +50,21 @@ const ExamCompetition = () => {
     }, [quizData]);
 
     useEffect(() => {
+        const handleVisibilityChange = () => {
+            if (document.hidden) {
+                handleSubmit();
+            }
+        };
+
+        document.addEventListener('visibilitychange', handleVisibilityChange);
+
+        // Dọn dẹp sự kiện khi component unmount
+        return () => {
+            document.removeEventListener('visibilitychange', handleVisibilityChange);
+        };
+    }, []);
+
+    useEffect(() => {
         remainingTimeRef.current = remainingTime;
     }, [remainingTime]);
 
@@ -61,7 +80,7 @@ const ExamCompetition = () => {
             } else {
                 clearInterval(interval);
                 message.info('Hết thời gian!');
-                navigate(`/joincompetition/${idCompetition}`)
+                handleSubmit();
             }
         }, 1000);
 
@@ -74,13 +93,22 @@ const ExamCompetition = () => {
     };
 
     const handleAnswerChange = (questionId, selectedChoices) => {
-        const updatedAnswers = {
-            ...selectedAnswers,
-            [questionId]: selectedChoices,
-        };
-        setSelectedAnswers(updatedAnswers);
-        localStorage.setItem('selectedAnswers', JSON.stringify(updatedAnswers));
+        setSelectedAnswers((prevAnswers) => {
+            const newAnswers = { ...prevAnswers, [questionId]: selectedChoices };
+
+            if (selectedChoices.length > 0) {
+                setAnsweredQuestions((prevAnswered) => [...new Set([...prevAnswered, questionId])]);
+            } else {
+                setAnsweredQuestions((prevAnswered) => prevAnswered.filter(id => id !== questionId));
+            }
+
+            console.log("handleAnswerChange", newAnswers);
+
+            return newAnswers;
+        });
     };
+    console.log(selectedAnswers);
+
 
     const handleSubmit = async () => {
         let score = 0;
@@ -98,6 +126,7 @@ const ExamCompetition = () => {
             const selectedChoices = selectedAnswers[question.id] || [];
             const correctChoices = question.questionChoice.filter(opt => opt.isCorrect).map(opt => opt.id);
             const isCorrect = selectedChoices.sort().toString() === correctChoices.sort().toString();
+            console.log(4824682, selectedChoices[question.id], question.id);
 
             if (isCorrect) {
                 numberOfCorrect++;
@@ -121,6 +150,9 @@ const ExamCompetition = () => {
             submittedTime: timeSubmit,
             competitionId: idCompetition
         };
+
+        console.log(3629846, quizResult);
+
 
         try {
             const response = await axios.post('https://api.trandai03.online/api/v1/quizs/submit', quizResult, {
@@ -159,10 +191,16 @@ const ExamCompetition = () => {
     }
 
     return (
-        <div className="quiz-exam container mt-5" style={{ maxWidth: "100%" }}>
+        <div className="quiz-exam mt-5" style={{
+            maxWidth: "100%", position: "relative",
+            margin: "20px auto", zIndex: "999", padding: "20px",
+            backgroundColor: "#f9f9f9", borderRadius: "10px",
+        }}>
+
+            {console.log("selectedAnswers", selectedAnswers[478])}
             <Row style={{ display: "flex", justifyContent: "space-around" }}>
                 <Col span={5}>
-                    <Card title={quizData?.title} bordered={false} style={{ width: 300 }}>
+                    <Card title={quizData?.title} bordered={false} style={{ width: 300, boxShadow: "0px 4px 12px rgba(0, 0, 0, 0.1)", borderRadius: "8px" }}>
                         <p>Chế độ: Cuộc thi</p>
                         <p>Thời gian còn lại: </p>
                         <p style={{ fontSize: "18px", fontWeight: "bold", color: "#3E65FE" }}>{formatTime(Math.floor(remainingTime))}</p>
@@ -174,8 +212,8 @@ const ExamCompetition = () => {
                             style={{ textAlign: "center" }}
                             title="Hoàn thành"
                             open={isModalOpen2}
-                            onCancel={() => { navigate('/'); }}
-                            onOk={() => navigate(`/`)}
+                            onCancel={() => { navigate('/', { replace: true }); }}
+                            onOk={() => { navigate(`/`, { replace: true }) }}
                             cancelText="Trở về"
                         >
                             <div style={{ maxWidth: "300px", marginLeft: "auto", marginRight: "auto" }}>
@@ -194,6 +232,11 @@ const ExamCompetition = () => {
                 <Col span={13}>
                     {questions.map((question, index) => (
                         <Card
+                            style={{
+                                marginBottom: "20px",
+                                boxShadow: "0px 4px 12px rgba(0, 0, 0, 0.1)",
+                                borderRadius: "8px",
+                            }}
                             className="mb-4"
                             key={index}
                             id={`question-${index}`}
@@ -214,16 +257,24 @@ const ExamCompetition = () => {
                     ))}
                 </Col>
 
-                <Col span={6} style={{ display: "flex", justifyContent: "center" }}>
-                    <Affix offsetTop={20}>
-                        <Menu mode="vertical" style={{ width: 256 }} defaultSelectedKeys={['0']}>
-                            {questions.map((question, index) => (
-                                <Menu.Item key={index} onClick={() => scrollToQuestion(index)}>
-                                    Câu {index + 1}
-                                </Menu.Item>
-                            ))}
-                        </Menu>
-                    </Affix>
+                <Col span={4} style={{ maxHeight: "500px", overflowY: "auto" }}>
+                    <Menu mode="inline" style={{ height: "100%", overflowY: "auto", boxShadow: "0px 4px 12px rgba(0, 0, 0, 0.1)", borderRadius: "8px" }}>
+                        {questions.map((question, index) => (
+                            <Menu.Item
+                                key={question.id}
+                                onClick={() => scrollToQuestion(index)}
+                                icon={
+                                    answeredQuestions.includes(question.id) ? (
+                                        <CheckCircleFilled style={{ color: "green" }} />
+                                    ) : (
+                                        <CheckCircleOutlined />
+                                    )
+                                }
+                            >
+                                Câu {index + 1}
+                            </Menu.Item>
+                        ))}
+                    </Menu>
                 </Col>
             </Row>
         </div>

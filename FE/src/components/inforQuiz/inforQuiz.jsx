@@ -80,6 +80,7 @@ const InforQuiz = () => {
         setFile(null);
     };
     const handleSave = async () => {
+        handleUpload()
         const values = form.getFieldsValue();
         const userCreate = localStorage.getItem("username");
         const quizData = {
@@ -88,13 +89,25 @@ const InforQuiz = () => {
             category_id: values.category_id,
             questions: [],
             isPublished: isPublished,
-            // images: imageFiles,
             userCreate: userCreate,
         };
         localStorage.setItem('quizInfo', JSON.stringify(quizData));
         navigate('/createquiz/createquestion');
     };
-
+    const handleSaveWithFile = async () => {
+        const values = form.getFieldsValue();
+        const userCreate = localStorage.getItem("username");
+        const quizData = {
+            title: values.title,
+            description: values.description,
+            category_id: values.category_id,
+            questions: [],
+            isPublished: isPublished,
+            userCreate: userCreate,
+        };
+        localStorage.setItem('quizInfo', JSON.stringify(quizData));
+        navigate('/createquiz/createquizAI');
+    };
     return (
         <Form
             layout="vertical"
@@ -166,10 +179,6 @@ const InforQuiz = () => {
                             style={{ maxWidth: "200px", marginBottom: 20 }}
                         />
                         <div>
-                            {/* Nút Tải lên */}
-                            <Button type="primary" onClick={handleUpload} style={{ marginRight: 10 }}>
-                                Tải lên
-                            </Button>
                             {/* Nút Xóa ảnh */}
                             <Button type="default" onClick={handleRemove} icon={<DeleteOutlined />}>
                                 Xóa ảnh
@@ -182,6 +191,13 @@ const InforQuiz = () => {
                 <Button type="primary" htmlType="submit" style={{ width: '150px' }}
                     onClick={handleSave}>
                     Tạo đề thi
+                </Button>
+                <Button
+                    type="default"
+                    style={{ width: '200px', marginLeft: '10px' }}
+                    onClick={handleSaveWithFile}
+                >
+                    Tạo đề thi với file
                 </Button>
             </Form.Item>
         </Form>

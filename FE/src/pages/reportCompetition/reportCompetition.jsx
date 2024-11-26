@@ -1,7 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { Table, Button, Tag, message } from 'antd';
+import { Table, Button, Tag, message, Typography } from 'antd';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { Bar } from 'react-chartjs-2';
+import { Chart as ChartJS, BarElement, CategoryScale, LinearScale, Tooltip, Legend } from 'chart.js';
+
+ChartJS.register(BarElement, CategoryScale, LinearScale, Tooltip, Legend);
+const { Title } = Typography;
 
 const ReportCompetition = () => {
     const { competitionId } = useParams();
@@ -19,8 +24,6 @@ const ReportCompetition = () => {
                     },
                 });
                 setResults(response.data);
-                console.log(results);
-
             } catch (error) {
                 message.error("Không thể tải kết quả cuộc thi. Vui lòng thử lại sau.");
             }
@@ -29,7 +32,7 @@ const ReportCompetition = () => {
     }, [competitionId, token]);
 
     const handleViewDetails = (resultId) => {
-        navigate(`/resultDetail/${resultId}`);
+        navigate(`/resultdetail/${resultId}`);
     };
 
     const classifyScore = (score) => {
@@ -75,6 +78,26 @@ const ReportCompetition = () => {
         },
     ];
 
+    // Phân loại điểm số thành các khoảng [0-1), [1-2), ..., [9-10]
+    const scores = results.map(result => result.score);
+    const scoreRanges = Array(10).fill(0);
+
+    scores.forEach(score => {
+        const index = Math.min(Math.floor(score), 9); // Xác định khoảng điểm
+        scoreRanges[index]++;
+    });
+
+    const chartData = {
+        labels: ['[0-1)', '[1-2)', '[2-3)', '[3-4)', '[4-5)', '[5-6)', '[6-7)', '[7-8)', '[8-9)', '[9-10]'],
+        datasets: [
+            {
+                label: 'Số lượng thí sinh',
+                data: scoreRanges,
+                backgroundColor: '#1890ff'
+            },
+        ],
+    };
+
     return (
         <div style={{ padding: '20px' }}>
             <h2>Kết quả cuộc thi</h2>
@@ -84,6 +107,28 @@ const ReportCompetition = () => {
                 rowKey={(record) => record.id}
                 pagination={{ pageSize: 5 }}
             />
+            <div style={{ marginTop: '20px' }}>
+                <Title level={2} style={{ textAlign: 'center', color: '#2A2A2A', marginBottom: '20px' }}> Thống kê điểm số</Title>
+
+                <Bar
+                    data={chartData}
+                    width={1000}
+                    height={500}
+                    options={{
+                        responsive: false,
+                        maintainAspectRatio: false,
+                        plugins: { legend: { position: 'top' } },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                ticks: {
+                                    stepSize: 1 // Hiển thị từng bước là 1 trên trục y
+                                }
+                            }
+                        }
+                    }}
+                />
+            </div>
         </div>
     );
 };
