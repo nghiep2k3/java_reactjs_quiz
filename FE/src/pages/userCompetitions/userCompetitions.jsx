@@ -37,7 +37,10 @@ const UserCompetitions = () => {
     const handleDeleteCompetition = async () => {
         try {
             await axios.delete(`https://api.trandai03.online/api/v1/competitions/delete/${selectedCompetitionId}`, {
-                headers: { 'Authorization': `Bearer ${token}` }
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                },
             });
             setCompetitions(competitions.filter(competition => competition.id !== selectedCompetitionId));
             message.success("Xóa cuộc thi thành công.");

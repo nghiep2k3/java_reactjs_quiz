@@ -20,7 +20,7 @@ const CreateQuizAI = () => {
             const lines = part.trim().split('\n').filter(line => line);
             const questionText = `${lines[0]}`;
             const options = lines.slice(1).map((line) => {
-                const isCorrect = line.endsWith('*');
+                const isCorrect = line.endsWith('*') || line.startsWith('*');
                 const cleanedLine = line.replace(/^\*?\s*[A-Z]\.\s*/, '').replace(/\*$/, '').trim();
 
                 return {
@@ -40,7 +40,7 @@ const CreateQuizAI = () => {
         let text = '';
         for (let i = 0; i < pdfDoc.getPageCount(); i++) {
             const page = pdfDoc.getPage(i);
-            const pageText = await page.getTextContent(); // Hàm này có thể không hoạt động trực tiếp với pdf-lib, bạn có thể sử dụng pdf.js nếu cần
+            const pageText = await page.getTextContent();
             text += pageText.items.map(item => item.str).join(' ');
         }
         parseQuestions(text);
@@ -132,7 +132,7 @@ const CreateQuizAI = () => {
                 <p style={{
                     fontStyle: "italic",
                     color: "red"
-                }}>Lưu ý: đề thi upload bắt đầu câu bằng chữ "Câu " và đánh dấu * ở đầu hoặc cuối đáp án đúng</p>
+                }}>Lưu ý: đề thi upload bắt đầu câu bằng chữ "Câu (số):", có dấu • ở mỗi đáp án và đánh dấu * ở đầu hoặc cuối đáp án đúng</p>
             ) : (null)}
 
             {questions.length > 0 && (

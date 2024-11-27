@@ -13,16 +13,6 @@ const items = [
         label: 'Soạn câu hỏi',
         path: '/createquiz/createquestion',
     },
-    {
-        key: '3',
-        label: 'Tạo cuộc thi',
-        path: '/createquiz/competition',
-    },
-    {
-        key: '4',
-        label: 'Thống kê',
-        path: '/statistical',
-    },
 ];
 const CreateQuiz = () => {
     const navigate = useNavigate();

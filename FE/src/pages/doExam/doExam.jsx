@@ -30,17 +30,7 @@ const QuizExam = () => {
     const selectedTime = JSON.parse(localStorage.getItem('Time')) || '30 phút';
     const timeInMinutes = parseInt(selectedTime.split(" ")[0], 10);
     let timeInSeconds = timeInMinutes * 60;
-    let changeTab = 0;
-    
-
-
     const handleSubmit = async () => {
-        if (!storedQuiz || !storedQuiz.id || questions.length === 0) {
-            console.warn('Dữ liệu chưa sẵn sàng để submit');
-            alert(2222222222);
-            return;
-        }
-
         const token = localStorage.getItem('token');
         let score = 0;
         let numberOfCorrect = 0;
@@ -57,8 +47,6 @@ const QuizExam = () => {
             const correctChoices = question.questionChoice.filter(opt => opt.isCorrect).map(opt => opt.id);
             const isCorrect = selectedChoices.sort().toString() === correctChoices.sort().toString();
 
-            console.log(736578263, selectedChoices);
-            
             if (isCorrect) {
                 numberOfCorrect++;
             }
@@ -80,11 +68,6 @@ const QuizExam = () => {
             totalCorrect: numberOfCorrect,
             submittedTime: timeSubmit,
         };
-
-
-        console.log(5555, quizResult);
-
-
         try {
             const response = await axios.post('https://api.trandai03.online/api/v1/quizs/submit', quizResult, {
                 headers: {
@@ -110,31 +93,6 @@ const QuizExam = () => {
             });
         }
     };
-
-    // useEffect(() => {
-    //     const handleVisibilityChange = () => {
-    //         if (document.hidden) {
-    //             changeTab++;
-    //             if (changeTab >= 2 && storedQuiz && storedQuiz.id && questions.length > 0) {
-    //                 // handleSubmit();
-    //                 // return;
-    //                 console.log("đã nộp bài");
-                    
-    //             }
-    //             console.log(7777, changeTab);
-    //             alert("bịp vkl");
-    //         }
-    //     };
-
-    //     document.addEventListener('visibilitychange', handleVisibilityChange);
-
-    //     return () => {
-    //         document.removeEventListener('visibilitychange', handleVisibilityChange);
-    //     };
-    // }, [storedQuiz, questions]);
-
-
-
     useEffect(() => {
         setRemainingTime(timeInSeconds);
         const interval = setInterval(() => {

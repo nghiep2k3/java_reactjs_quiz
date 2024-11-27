@@ -101,7 +101,12 @@ const CompeWithFile = () => {
     return (
         <div>
             <input type="file" onChange={handleFileUpload} />
-
+            {questions.length === 0 ? (
+                <p style={{
+                    fontStyle: "italic",
+                    color: "red"
+                }}>Lưu ý: đề thi upload bắt đầu câu bằng chữ "Câu (số):", có dấu • ở mỗi đáp án và đánh dấu * ở đầu hoặc cuối đáp án đúng</p>
+            ) : (null)}
             {questions.length > 0 && (
                 <div>
                     {questions.map((q, index) => (
