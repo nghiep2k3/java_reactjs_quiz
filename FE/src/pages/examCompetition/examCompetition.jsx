@@ -43,6 +43,8 @@ const ExamCompetition = () => {
     const [tabChangeCount, setTabChangeCount] = useState(() => {
         return parseInt(localStorage.getItem("tabChangeCount")) || 0;
     });
+
+
     const [isModalVisible, setIsModalVisible] = useState(false);
     useEffect(() => {
         if (quizData) {
@@ -62,9 +64,8 @@ const ExamCompetition = () => {
 
     useEffect(() => {
         document.addEventListener("visibilitychange", handleVisibilityChange);
-        return () => {
-            document.removeEventListener("visibilitychange", handleVisibilityChange);
-        };
+        console.log("đã đi vào");
+        
     }, []);
 
     useEffect(() => {
