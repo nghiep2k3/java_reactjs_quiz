@@ -61,19 +61,27 @@ const JoinCompetition = () => {
 
         fetchCompetitionData();
     }, [token, code]);
+    console.log(competitionData);
+
     const handleJoin = () => {
         if (isSubmited === true) {
             message.error("Bài thi đã được hoàn thành");
             return;
         }
         if (remainingTime <= 0) {
-            message.error("Đã hết thời gian làm bài.");
-            return;
+            if (!isStart) {
+                message.error("Chưa đến thời gian làm bài");
+                return;
+            }
+            else {
+                message.error("Đã hết thời gian làm bài.");
+                return;
+            }
         }
-        if (!isStart) {
-            message.error("Chưa đến thời gian làm bài");
-            return;
-        }
+        // if (!isStart) {
+        //     message.error("Chưa đến thời gian làm bài");
+        //     return;
+        // }
         if (code === competitionData?.code) {
             const endTime = Date.now() + remainingTime * 1000;
             localStorage.setItem('examEndTime', endTime);

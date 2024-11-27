@@ -126,7 +126,6 @@ const QuizList = () => {
 
         }
     };
-    console.log(publishedQuizzes);
 
     const togglePublish = async (quizId) => {
         try {
@@ -158,6 +157,7 @@ const QuizList = () => {
             console.log(error.message);
         }
     };
+    console.log(quizzes);
 
     const formatDate = (dateString) => {
         const date = new Date(dateString);
@@ -249,10 +249,10 @@ const QuizList = () => {
                                     <strong>Người tạo:</strong> {quiz.usernameCreated}
                                 </p>
                                 <p style={{ fontSize: '14px', color: '#888', marginBottom: '5px' }}>
-                                    <strong>Số câu hỏi:</strong> {quiz.questions?.length}
+                                    <strong>Số câu hỏi:</strong> {quiz.totalQuestions}
                                 </p>
                                 <p style={{ fontSize: '14px', color: '#888', marginBottom: '5px' }}>
-                                    <strong>Môn học:</strong> {quiz?.category?.name || "Không có"}
+                                    <strong>Môn học:</strong> {quiz?.categoryResponse?.name || "Không có"}
                                 </p>
                                 <p style={{
                                     fontSize: '14px',

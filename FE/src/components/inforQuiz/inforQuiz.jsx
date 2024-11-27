@@ -70,8 +70,6 @@ const InforQuiz = () => {
             return;
         }
         setFileImage(file)
-        // Log toàn bộ đối tượng file
-        console.log('Thông tin đầy đủ của file:', file);
     };
 
 
