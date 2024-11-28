@@ -29,7 +29,6 @@ const ExamCompetition = () => {
     };
     const [selectedAnswers, setSelectedAnswers] = useState(() => {
         const savedAnswers = localStorage.getItem('selectedAnswers');
-        console.log("savedAnswers", savedAnswers);
         return savedAnswers ? JSON.parse(savedAnswers) : {};
     });
     const [remainingTime, setRemainingTime] = useState(calculateRemainingTime || 0);

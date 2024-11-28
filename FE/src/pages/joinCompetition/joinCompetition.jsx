@@ -61,8 +61,6 @@ const JoinCompetition = () => {
 
         fetchCompetitionData();
     }, [token, code]);
-    console.log(competitionData);
-
     const handleJoin = () => {
         if (isSubmited === true) {
             message.error("Bài thi đã được hoàn thành");
