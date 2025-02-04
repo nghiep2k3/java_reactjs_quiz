@@ -19,6 +19,8 @@ const ExamContent = () => {
 
                 if (response.status === 200) {
                     setQuiz(response.data);
+                    console.log(quiz);
+
                 }
             } catch (error) {
                 console.error("Lỗi khi lấy dữ liệu quiz:", error);
@@ -35,7 +37,7 @@ const ExamContent = () => {
         <div className="exam-container">
             <h3>Các câu hỏi</h3>
             <ul className="questions-list">
-                {quiz.questions && quiz.questions.map((q, index) => (
+                {quiz.questions && quiz.type === "MULTIPLE_CHOICE" && quiz.questions.map((q, index) => (
                     <li key={index} className="question-item">
                         <strong className="question-title">
                             Câu {index + 1}: {q.question}
@@ -49,6 +51,20 @@ const ExamContent = () => {
                         </div>
                     </li>
                 ))}
+                {quiz.essayQuestions && quiz.type === "ESSAY" && quiz.essayQuestions.map((q, index) => (
+                    <li key={index} className="question-item">
+                        <strong className="question-title">
+                            Câu {index + 1}: {q.question}
+                        </strong>
+                        <div className="essay-details">
+                            <p><strong>Đáp án mẫu:</strong> {q.modelAnswer}</p>
+                            <p><strong>Tiêu chí chấm điểm:</strong> {q.scoringCriteria}</p>
+                            <p><strong>Tự động chấm điểm:</strong> {q.isAutoScored ? 'Có' : 'Không'}</p>
+                            <p><strong>Điểm tối đa:</strong> {q.maxScore}</p>
+                        </div>
+                    </li>
+                ))}
+
             </ul>
         </div>
     );

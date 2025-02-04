@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Card, Checkbox, Button, Menu, Col, Row, message, Modal, Image, notification } from 'antd';
 import { CheckCircleOutlined, CheckCircleFilled } from '@ant-design/icons';
-import { replace, useLocation, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import Loading from '../../components/loading/loading';
 import axios from 'axios';
 
@@ -64,7 +64,7 @@ const ExamCompetition = () => {
     useEffect(() => {
         document.addEventListener("visibilitychange", handleVisibilityChange);
         console.log("đã đi vào");
-        
+
     }, []);
 
     useEffect(() => {

@@ -31,30 +31,24 @@ const App = () => {
         },
         {
             key: "2",
-            icon: <AccountBookOutlined />,
-            label: "Thư viện của tôi",
-            path: "/mylibrary",
-        },
-        {
-            key: "3",
             icon: <FormOutlined />,
             label: "Kết quả thi của tôi",
             path: "/reportquizresult",
         },
         {
-            key: "4",
+            key: "3",
             icon: <UserOutlined />,
             label: "Đề thi yêu thích",
             path: "/favorexam",
         },
         {
-            key: "5",
+            key: "4",
             icon: <FileOutlined />,
             label: "Quản lý đề thi",
             path: "/quizlist",
         },
         {
-            key: "6",
+            key: "5",
             icon: <TabletOutlined />,
             label: "Cuộc thi",
             path: "/usercompetitions",

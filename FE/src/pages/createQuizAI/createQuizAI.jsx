@@ -130,6 +130,7 @@ const CreateQuizAI = () => {
             <input type="file" onChange={handleFileUpload} />
             {questions.length === 0 ? (
                 <p style={{
+
                     fontStyle: "italic",
                     color: "red"
                 }}>Lưu ý: đề thi upload bắt đầu câu bằng chữ "Câu (số):", có dấu • ở mỗi đáp án và đánh dấu * ở đầu hoặc cuối đáp án đúng <br />

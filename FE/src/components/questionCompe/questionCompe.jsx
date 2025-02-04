@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Button, Input, Form, Card, Row, Col, Anchor, notification, Checkbox, message } from 'antd';
+import { Button, Input, Form, Card, Row, Col, Anchor, notification, Checkbox } from 'antd';
 import { PlusOutlined, DeleteOutlined } from '@ant-design/icons';
 import { useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
@@ -102,6 +102,7 @@ const QuestionCompe = () => {
             description: storedQuiz.description || ' ',
             category_id: storedQuiz.category_id || 2,
             questions: formattedQuestions,
+            type: "MULTIPLE_CHOICE",
             isPublished: storedQuiz.isPublished || true,
         };
         console.log(newQuiz);
