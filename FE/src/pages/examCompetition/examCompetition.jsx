@@ -65,7 +65,10 @@ const ExamCompetition = () => {
     useEffect(() => {
         document.addEventListener("visibilitychange", handleVisibilityChange);
         console.log("đã đi vào");
-        
+        // return () => {
+        //     console.log("đã đi vào 2");
+        //     document.removeEventListener("visibilitychange", handleVisibilityChange);
+        // };
     }, []);
 
     useEffect(() => {
