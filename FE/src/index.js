@@ -46,6 +46,7 @@ import CreateQuizAI from "./pages/createQuizAI/createQuizAI.jsx";
 import CompeWithFile from "./components/questionCompe/CompeWithFile.jsx";
 import QuestionEssay from "./pages/questionEssay/questionEssay.jsx";
 import SubmitEssay from "./pages/submitEssay/submitEssay.jsx";
+import EssayGrading from "./pages/essayGrading/essayGrading.jsx";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
@@ -62,6 +63,7 @@ root.render(
             <Route path="/ViewQuiz" element={<ViewQuiz />} />
             <Route path="/" element={<Explore />} />
             <Route path="/result/:idResult" element={<Result />} />
+            <Route path="/essaygrading/:idResult" element={<EssayGrading />} />
             <Route path="/resultdetail/:idResult" element={<Result />} />
             <Route path="/reportquizresult" element={<ReportQuizResult />} />
             <Route path="/usercompetitions" element={<UserCompetitions />} />

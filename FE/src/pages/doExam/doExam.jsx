@@ -68,6 +68,8 @@ const QuizExam = () => {
             totalCorrect: numberOfCorrect,
             submittedTime: timeSubmit,
         };
+        console.log(quizResult);
+
         try {
             const response = await axios.post('https://api.trandai03.online/api/v1/quizs/submit', quizResult, {
                 headers: {

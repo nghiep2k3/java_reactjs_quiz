@@ -95,8 +95,6 @@ const JoinCompetition = () => {
         const startTime = new Date(competitionData.startTime).getTime();
         const endTime = startTime + competitionData.time * 1000;
         const remainingTime = (endTime - Date.now()) / 1000;
-        console.log("ok", competitionData);
-
         if (competitionData?.competitionQuizResponses?.length > 0) {
             const randomQuiz = competitionData.competitionQuizResponses[Math.floor(Math.random() * competitionData.competitionQuizResponses.length)];
             console.log("randomQuiz", randomQuiz);

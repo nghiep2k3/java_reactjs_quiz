@@ -202,7 +202,6 @@ const ExamCompetition = () => {
             backgroundColor: "#f9f9f9", borderRadius: "10px",
         }}>
 
-            {console.log("selectedAnswers", selectedAnswers[478])}
             <Row style={{ display: "flex", justifyContent: "space-around" }}>
                 <Col span={5}>
                     <Card title={quizData?.title} bordered={false} style={{ width: 300, boxShadow: "0px 4px 12px rgba(0, 0, 0, 0.1)", borderRadius: "8px" }}>
