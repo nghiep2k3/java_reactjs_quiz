@@ -88,6 +88,7 @@ const InforQuiz = () => {
             questions: [],
             isPublished: isPublished,
             userCreate: userCreate,
+            image: previewUrl,
         };
         localStorage.setItem('quizInfo', JSON.stringify(quizData));
         navigate('/createquiz/createquestion');
@@ -102,6 +103,7 @@ const InforQuiz = () => {
             questions: [],
             isPublished: isPublished,
             userCreate: userCreate,
+            image: previewUrl,
         };
         localStorage.setItem('quizInfo', JSON.stringify(quizData));
         navigate('/createquiz/createquizAI');
@@ -188,7 +190,7 @@ const InforQuiz = () => {
             <Form.Item>
                 <Button type="primary" htmlType="submit" style={{ width: '150px' }}
                     onClick={handleSave}>
-                    Tạo đề thi
+                    Tạo câu hỏi
                 </Button>
                 <Button
                     type="default"

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Form, Input, Button, Select, notification } from 'antd';
+import { Form, Input, Button, Select, notification, Radio } from 'antd';
 import { useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
 const { TextArea } = Input;
@@ -12,6 +12,7 @@ const CreateQuizCompetition = () => {
     const storedQuiz = localStorage.getItem('quizInfo');
     const token = localStorage.getItem("token");
     const navigate = useNavigate();
+    const [position, setPosition] = useState('choice');
     const { competitionId } = useParams()
     useEffect(() => {
         const fetchCategories = async () => {
@@ -48,7 +49,11 @@ const CreateQuizCompetition = () => {
             userCreate: userCreate,
         };
         localStorage.setItem('quizCompe', JSON.stringify(quizData));
-        navigate(`/createcompetition/questioncompe/${competitionId}`);
+        if (position === 'choice')
+            navigate(`/createcompetition/questioncompe/${competitionId}`);
+        else if (position === 'essay') {
+            navigate(`/createcompetition/questionessay/${competitionId}`);
+        }
     };
     const handleSaveWithFile = async () => {
         const values = form.getFieldsValue();
@@ -99,6 +104,12 @@ const CreateQuizCompetition = () => {
                         </Option>
                     ))}
                 </Select>
+            </Form.Item>
+            <Form.Item>
+                <Radio.Group value={position} onChange={(e) => setPosition(e.target.value)}>
+                    <Radio.Button value="choice">Đề thi trắc nghiệm</Radio.Button>
+                    <Radio.Button value="essay">Đề thi tự luận</Radio.Button>
+                </Radio.Group>
             </Form.Item>
             <Form.Item>
                 <Button type="primary" htmlType="submit" style={{ width: '150px' }}

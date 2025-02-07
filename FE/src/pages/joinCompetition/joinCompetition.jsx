@@ -61,8 +61,9 @@ const JoinCompetition = () => {
 
         fetchCompetitionData();
     }, [token, code]);
-    console.log(competitionData);
-
+    if (!competitionData) {
+        return <Loading />;
+    }
     const handleJoin = () => {
         if (isSubmited === true) {
             message.error("Bài thi đã được hoàn thành");
@@ -94,23 +95,35 @@ const JoinCompetition = () => {
         const startTime = new Date(competitionData.startTime).getTime();
         const endTime = startTime + competitionData.time * 1000;
         const remainingTime = (endTime - Date.now()) / 1000;
+        console.log("ok", competitionData);
+
         if (competitionData?.competitionQuizResponses?.length > 0) {
             const randomQuiz = competitionData.competitionQuizResponses[Math.floor(Math.random() * competitionData.competitionQuizResponses.length)];
-            navigate(`/examcompetition/${randomQuiz?.quizResponses.id}`, {
-                state: {
-                    quizData: randomQuiz.quizResponses,
-                    remainingTime: remainingTime,
-                    idCompetition: competitionData.id
-                }
-            });
+            console.log("randomQuiz", randomQuiz);
+
+            if (randomQuiz.quizResponses.type === "MULTIPLE_CHOICE") {
+                navigate(`/examcompetition/${randomQuiz?.quizResponses.id}`, {
+                    state: {
+                        quizData: randomQuiz.quizResponses,
+                        remainingTime: remainingTime,
+                        idCompetition: competitionData.id
+                    }
+                });
+            }
+            else if (randomQuiz.quizResponses.type === "ESSAY") {
+                navigate(`/submitessay/${randomQuiz?.quizResponses.id}`, {
+                    state: {
+                        quizData: randomQuiz.quizResponses,
+                        remainingTime: remainingTime,
+                        idCompetition: competitionData.id
+                    }
+                });
+            }
         } else {
             message.error("Không có đề thi nào khả dụng.");
         }
         setIsModalVisible(false);
     };
-    if (!competitionData) {
-        return <Loading />;
-    }
     const timeInMinutes = competitionData.time / 60;
     return (
         <Row>

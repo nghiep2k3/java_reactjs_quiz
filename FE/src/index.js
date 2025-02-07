@@ -44,71 +44,75 @@ import FavoriteQuizzes from "./pages/favoriteQuizzes/favoriteQuizzes.jsx";
 import ReportCompetition from "./pages/reportCompetition/reportCompetition.jsx";
 import CreateQuizAI from "./pages/createQuizAI/createQuizAI.jsx";
 import CompeWithFile from "./components/questionCompe/CompeWithFile.jsx";
+import QuestionEssay from "./pages/questionEssay/questionEssay.jsx";
+import SubmitEssay from "./pages/submitEssay/submitEssay.jsx";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   // <React.StrictMode>
-    <FileProvider>
-      <Router future={{ v7_startTransition: true }}>
-        <Routes>
-          <Route path="/verify" element={<VerifyAccount />} />
-          <Route path="/test" element={<Test2 />} />
-          <Route element={<PrivateRoute />}>
-            <Route path="/" element={<App />}>
-              <Route path="/joincompetition/:code" element={<JoinCompetition />} />
-              <Route path="/mylibrary" element={<MyLibrary />} />
-              <Route path="/ViewQuiz" element={<ViewQuiz />} />
-              <Route path="/" element={<Explore />} />
-              <Route path="/result/:idResult" element={<Result />} />
-              <Route path="/resultdetail/:idResult" element={<Result />} />
-              <Route path="/reportquizresult" element={<ReportQuizResult />} />
-              <Route path="/usercompetitions" element={<UserCompetitions />} />
-              <Route path="/reportcompetition/:competitionId" element={<ReportCompetition />} />
-              <Route path="/favorexam" element={<FavoriteQuizzes />} />
-              <Route path="/createquiz" element={<CreateQuiz />}>
-                <Route path="createquizAI" element={<CreateQuizAI />} />
-                <Route path="inforquiz" element={<InforQuiz />} />
-                <Route path="createquestion" element={<CreateQuestion />} />
-              </Route>
-              <Route path="/createcompetition" element={<CreateCompetition />}>
-                <Route path="competition" element={<Competion />} />
-                <Route path="createquizcompetition/:competitionId" element={<CreateQuizCompetition />} />
-                <Route path="questioncompe/:competitionId" element={<QuestionCompe />} />
-                <Route path="withfile/:competitionId" element={<CompeWithFile />} />
-                <Route path="showquizcompe/:competitionId" element={<ShowQuizCompe />} />
-              </Route>
-              <Route path="/update" element={<Update />}>
-                <Route path="updatecompetition/:competitionId" element={<UpdateCompetition />} />
-              </Route>
-              <Route path="/edit" element={<Edit />}>
-                <Route path="editquiz/:id" element={<EditQuiz />} />
-                <Route path="editquestion/:id" element={<EditQuestion />} />
-              </Route>
-              <Route path="/quizlist" element={<QuizList />} />
-              <Route path="/profile" element={<Profile />} />
+  <FileProvider>
+    <Router future={{ v7_startTransition: true }}>
+      <Routes>
+        <Route path="/verify" element={<VerifyAccount />} />
+        <Route path="/test" element={<Test2 />} />
+        <Route element={<PrivateRoute />}>
+          <Route path="/" element={<App />}>
+            <Route path="/joincompetition/:code" element={<JoinCompetition />} />
+            <Route path="/mylibrary" element={<MyLibrary />} />
+            <Route path="/ViewQuiz" element={<ViewQuiz />} />
+            <Route path="/" element={<Explore />} />
+            <Route path="/result/:idResult" element={<Result />} />
+            <Route path="/resultdetail/:idResult" element={<Result />} />
+            <Route path="/reportquizresult" element={<ReportQuizResult />} />
+            <Route path="/usercompetitions" element={<UserCompetitions />} />
+            <Route path="/reportcompetition/:competitionId" element={<ReportCompetition />} />
+            <Route path="/favorexam" element={<FavoriteQuizzes />} />
+            <Route path="/createquiz" element={<CreateQuiz />}>
+              <Route path="createquizAI" element={<CreateQuizAI />} />
+              <Route path="inforquiz" element={<InforQuiz />} />
+              <Route path="createquestion" element={<CreateQuestion />} />
+            </Route>
+            <Route path="/createcompetition" element={<CreateCompetition />}>
+              <Route path="competition" element={<Competion />} />
+              <Route path="createquizcompetition/:competitionId" element={<CreateQuizCompetition />} />
+              <Route path="questionessay/:competitionId" element={<QuestionEssay />} />
+              <Route path="questioncompe/:competitionId" element={<QuestionCompe />} />
+              <Route path="withfile/:competitionId" element={<CompeWithFile />} />
+              <Route path="showquizcompe/:competitionId" element={<ShowQuizCompe />} />
+            </Route>
+            <Route path="/update" element={<Update />}>
+              <Route path="updatecompetition/:competitionId" element={<UpdateCompetition />} />
+            </Route>
+            <Route path="/edit" element={<Edit />}>
+              <Route path="editquiz/:id" element={<EditQuiz />} />
+              <Route path="editquestion/:id" element={<EditQuestion />} />
             </Route>
             <Route path="/quizlist" element={<QuizList />} />
             <Route path="/profile" element={<Profile />} />
           </Route>
-        </Routes>
+          <Route path="/quizlist" element={<QuizList />} />
+          <Route path="/profile" element={<Profile />} />
+        </Route>
+      </Routes>
 
-        <Routes>
-          <Route element={<PrivateRoute />}>
-            <Route path="/quizdetail" element={<QuizDetail />} >
-              <Route path="examcontent/:id" element={<ExamContent />} />
-            </Route>
-            <Route path="/changepass" element={<ChangePassword />} />
-            <Route path="/doexam/:id" element={<DoExam />} />
-            <Route path="/examcompetition/:id" element={<ExamCompetition />} />
+      <Routes>
+        <Route element={<PrivateRoute />}>
+          <Route path="/quizdetail" element={<QuizDetail />} >
+            <Route path="examcontent/:id" element={<ExamContent />} />
           </Route>
-        </Routes>
-        <Routes>
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
-          <Route path="/forgotpass" element={<ForgotPassword />} />
-        </Routes>
-      </Router>
-    </FileProvider>
+          <Route path="/changepass" element={<ChangePassword />} />
+          <Route path="/doexam/:id" element={<DoExam />} />
+          <Route path="/examcompetition/:id" element={<ExamCompetition />} />
+          <Route path="/submitessay/:id" element={<SubmitEssay />} />
+        </Route>
+      </Routes>
+      <Routes>
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+        <Route path="/forgotpass" element={<ForgotPassword />} />
+      </Routes>
+    </Router>
+  </FileProvider>
   // </React.StrictMode >
 );
 

@@ -7,12 +7,7 @@ const items = [
         key: '1',
         label: 'Thông tin cơ bản',
         path: "/createquiz/inforquiz",
-    },
-    {
-        key: '2',
-        label: 'Soạn câu hỏi',
-        path: '/createquiz/createquestion',
-    },
+    }
 ];
 const CreateQuiz = () => {
     const navigate = useNavigate();

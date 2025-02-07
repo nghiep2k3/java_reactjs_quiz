@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { Card, List, Tag, Typography, Button, Row, Col, Space, Divider } from 'antd';
+import { Card, List, Tag, Typography, Button, Row, Col, Space, Divider, notification, Modal } from 'antd';
 import axios from 'axios';
 import { useNavigate, useParams } from 'react-router-dom';
 import moment from 'moment';
-import { PlusOutlined } from "@ant-design/icons";
+import { PlusOutlined, DeleteOutlined } from "@ant-design/icons";
 import Loading from '../loading/loading';
 
 const { Title, Text } = Typography;
@@ -32,9 +32,38 @@ const ShowQuizCompe = () => {
         };
         fetchCompetition();
     }, [competitionId, token]);
-
+    const handleDelete = async (quizId) => {
+        Modal.confirm({
+            title: 'Xác nhận xóa',
+            content: 'Bạn có chắc muốn xóa quiz này không?',
+            okText: 'Xóa',
+            okType: 'danger',
+            cancelText: 'Hủy',
+            onOk: async () => {
+                try {
+                    const response = await axios.delete(`https://api.trandai03.online/api/v1/competitions/quiz/delete/${competitionId}/${quizId}`, {
+                        headers: {
+                            Authorization: `Bearer ${token}`,
+                            'Content-Type': 'application/json'
+                        }
+                    });
+                    if (response.status === 200) {
+                        setCompetition({
+                            ...competition,
+                            competitionQuizResponses: competition.competitionQuizResponses.filter((quiz) => quiz.quizResponses.id !== quizId)
+                        });
+                        notification.success({
+                            message: 'Xóa Quiz Thành Công',
+                            description: 'Đã xóa quiz khỏi cuộc thi',
+                        })
+                    }
+                } catch (error) {
+                    console.error("Failed to delete quiz", error);
+                }
+            }
+        });
+    }
     if (!competition) return <Loading />;
-
     return (
         <div style={{ padding: '20px' }}>
             <Card
@@ -79,11 +108,21 @@ const ShowQuizCompe = () => {
                 renderItem={(quizItem) => (
                     <List.Item key={quizItem.id}>
                         <Card
+
                             title={<Text style={{ color: "#fff" }}>{quizItem.quizResponses.title}</Text>}
                             style={{ backgroundColor: '#fafafa', borderRadius: '8px' }}
                             actions={[
                                 <Button onClick={() => navigate(`/edit/editquiz/${quizItem?.quizResponses?.id}`)} type="primary">
                                     Xem Chi Tiết
+                                </Button>,
+                                <Button
+                                    key="delete"
+                                    onClick={() => handleDelete(quizItem.quizResponses.id)}
+                                    type="primary"
+                                    danger
+                                    icon={<DeleteOutlined />}
+                                >
+                                    Xóa Quiz
                                 </Button>
                             ]}
                         >

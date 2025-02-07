@@ -1,7 +1,7 @@
-import React, { useContext, useState } from 'react';
+import React, { useState } from 'react';
 import mammoth from 'mammoth';
 import { PDFDocument } from 'pdf-lib';
-import { Button, message, notification } from 'antd';
+import { Button, notification } from 'antd';
 import axios from 'axios';
 import { useNavigate, useParams } from 'react-router-dom';
 const CompeWithFile = () => {
@@ -70,6 +70,7 @@ const CompeWithFile = () => {
             description: storedQuiz.description || '',
             category_id: storedQuiz.category_id || 2,
             questions: questions,
+            type: "MULTIPLE_CHOICE",
             isPublished: storedQuiz.isPublished || false,
         };
         console.log(newQuiz);
