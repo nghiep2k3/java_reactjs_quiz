@@ -54,7 +54,14 @@ const UserCompetitions = () => {
         setSelectedCompetitionId(competitionId);
         setIsModalOpen(true);
     };
-
+    const handleNavigate = (competition) => {
+        if (competition.competitionQuizResponses[0].quizResponses.type === "ESSAY") {
+            navigate(`/essaygrading/${competition.id}`);
+        }
+        else if (competition.competitionQuizResponses[0].quizResponses.type === "MULTIPLE_CHOICE") {
+            navigate(`/reportcompetition/${competition.id}`);
+        }
+    }
     return (
         <div className="user-competitions-container">
             <Title level={3} className="user-competitions-title">Các Cuộc Thi của Bạn</Title>
@@ -79,7 +86,7 @@ const UserCompetitions = () => {
                                 </Button>,
                                 <Button
                                     icon={<UnorderedListOutlined />}
-                                    onClick={() => navigate(`/reportcompetition/${competition.id}`)}
+                                    onClick={() => handleNavigate(competition)}
                                     className="view-results-button"
                                 >
                                     Xem kết quả
