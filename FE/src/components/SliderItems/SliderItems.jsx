@@ -108,10 +108,10 @@ const SliderItems = () => {
 	const [data, setData] = useState([]);
 	const [dataCardQuery, setDataCardQuery] = useState([]);
 	const token = localStorage.getItem("token");
+
+	
 	const handleCategorySelect = async (categoryId) => {
 		setSelectedCategory(categoryId);
-
-
 		if (categoryId === "") {
 			await fetchAllQuizs();
 		} else {

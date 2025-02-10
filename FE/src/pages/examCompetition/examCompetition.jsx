@@ -64,7 +64,6 @@ const ExamCompetition = () => {
     useEffect(() => {
         document.addEventListener("visibilitychange", handleVisibilityChange);
         console.log("đã đi vào");
-
     }, []);
 
     useEffect(() => {

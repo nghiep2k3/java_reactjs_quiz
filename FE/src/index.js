@@ -55,7 +55,7 @@ root.render(
     <Router future={{ v7_startTransition: true }}>
       <Routes>
         <Route path="/verify" element={<VerifyAccount />} />
-        <Route path="/test" element={<Test2 />} />
+        <Route path="/test" element={<Test />} />
         <Route element={<PrivateRoute />}>
           <Route path="/" element={<App />}>
             <Route path="/joincompetition/:code" element={<JoinCompetition />} />
