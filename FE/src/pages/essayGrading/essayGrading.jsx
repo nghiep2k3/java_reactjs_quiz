@@ -5,12 +5,15 @@ import { useParams } from 'react-router-dom';
 
 const { Title, Text } = Typography;
 const { Panel } = Collapse;
+
 const EssayGrading = () => {
     const { idResult } = useParams();
     const [results, setResults] = useState([]);
+    const [resultFetch, setResultFetch] = useState([]);
     const [editingResult, setEditingResult] = useState(null);
     const [form] = Form.useForm();
     const token = localStorage.getItem('token');
+
     useEffect(() => {
         const fetchResults = async () => {
             try {
@@ -21,16 +24,14 @@ const EssayGrading = () => {
                         'Accept': '*/*',
                     },
                 });
-                setResults(response.data);
-                console.log(response.data);
-
-
+                setResults(response.data.resultResponses);
+                setResultFetch(response.data.competitionResponse);
             } catch (error) {
                 message.error('Không thể tải dữ liệu kết quả');
             }
         };
         fetchResults();
-    }, []);
+    }, [idResult, token]);
 
     const handleEdit = (record) => {
         setEditingResult(record);
@@ -47,16 +48,26 @@ const EssayGrading = () => {
     const handleSave = async () => {
         try {
             const values = await form.validateFields();
+            console.log(values);
+
             const updatedResult = {
                 id: editingResult.id,
                 totalScore: values.totalScore,
                 questions: values.questions.map(q => ({
                     id: q.id,
-                    score: q.score,
+                    score: Number(q.score),
                     feedback: q.feedback,
                 })),
             };
-            await axios.post('https://api.trandai03.online/api/v1/result', updatedResult);
+            console.log('update', updatedResult);
+
+            await axios.put('https://api.trandai03.online/api/v1/result', updatedResult, {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                    'Accept': '*/*',
+                },
+            });
             message.success('Lưu kết quả thành công');
             setResults(prevResults =>
                 prevResults.map(result =>
@@ -64,6 +75,7 @@ const EssayGrading = () => {
                 )
             );
             setEditingResult(null);
+            window.location.reload();
         } catch (error) {
             message.error('Lưu kết quả thất bại');
         }
@@ -124,7 +136,7 @@ const EssayGrading = () => {
                             {(fields) => (
                                 <>
                                     {fields.map(({ key, name, ...restField }) => {
-                                        const question = editingResult.competitionResponse.competitionQuizResponses[0].quizResponses.essayQuestions[key];
+                                        const question = resultFetch.competitionQuizResponses[0].quizResponses.essayQuestions[key];
                                         const userAnswer = editingResult.essayQuestionResultRespones[key];
 
                                         return (

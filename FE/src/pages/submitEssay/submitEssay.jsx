@@ -93,8 +93,6 @@ const SubmitEssay = () => {
             submittedTime: timeSubmit,
             competitionId: idCompetition,
         };
-        console.log(essayResult);
-
         try {
             const token = localStorage.getItem("token");
             const response = await axios.post('https://api.trandai03.online/api/v1/quizs/submitEssay', essayResult, {
