@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import CodeMirror from "@uiw/react-codemirror";
 import { oneDark } from "@codemirror/theme-one-dark";
 import { javascript } from "@codemirror/lang-javascript";
@@ -29,7 +29,7 @@ const CodeEditor = () => {
       // Tạo iframe để chạy code an toàn
       const iframe = iframeRef.current;
       const iframeDocument = iframe.contentDocument || iframe.contentWindow.document;
-      
+
       // Xóa output cũ
       iframeDocument.open();
       iframeDocument.write(`
@@ -60,7 +60,17 @@ const CodeEditor = () => {
       setOutput("Lỗi: " + err.message);
     }
   };
+  useEffect(() => {
+    const handleResize = () => {
+      // Xử lý sự kiện thay đổi kích thước nếu cần
+    };
 
+    window.addEventListener("resize", handleResize);
+
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
+  }, []);
   return (
     <div style={{ display: "flex", width: "100%", height: "100vh", padding: "10px" }}>
       {/* Code Editor */}
@@ -78,7 +88,6 @@ const CodeEditor = () => {
         </button>
       </div>
 
-      {/* Kết quả biên dịch */}
       <div style={{ flex: 1, paddingLeft: "10px" }}>
         <h3>Output</h3>
         <iframe ref={iframeRef} style={{ width: "100%", height: "400px", border: "1px solid #ccc" }}></iframe>

@@ -1,10 +1,21 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Form, Button, message, Upload, Row, Col, Card, Modal, Image, Typography, Alert } from 'antd';
+import { Form, Button, message, Row, Col, Card, Modal, Image, Typography, Alert, Input } from 'antd';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { ClockCircleOutlined, UploadOutlined } from '@ant-design/icons';
+import { ClockCircleOutlined, CodeOutlined } from '@ant-design/icons';
 import axios from 'axios';
-import mammoth from 'mammoth';
+import ReactCodeMirror from '@uiw/react-codemirror';
+import CodeMirror from "@uiw/react-codemirror";
+import { oneDark } from "@codemirror/theme-one-dark";
+import { javascript } from "@codemirror/lang-javascript";
+import { autocompletion, completeFromList } from "@codemirror/autocomplete";
 const { Title, Text } = Typography;
+const jsCompletions = completeFromList([
+    { label: "alert()", type: "function", detail: "Hiển thị hộp thoại cảnh báo" },
+    { label: "console.log()", type: "function", detail: "In dữ liệu ra console" },
+    { label: "setTimeout()", type: "function", detail: "Hàm hẹn giờ" },
+    { label: "setInterval()", type: "function", detail: "Hàm chạy lặp sau khoảng thời gian" },
+    { label: "document.getElementById()", type: "function", detail: "Tìm phần tử theo ID" },
+]);
 const SubmitEssay = () => {
     const location = useLocation();
     const navigate = useNavigate();
@@ -22,32 +33,8 @@ const SubmitEssay = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isModalOpen2, setIsModalOpen2] = useState(false);
     const [submittedTime, setSubmittedTime] = useState(null);
-    const [fileContent, setFileContent] = useState([]);
-    const handleUpload = async (file) => {
-        try {
-            const arrayBuffer = await file.arrayBuffer();
-            const result = await mammoth.extractRawText({ arrayBuffer });
-            const text = result.value.split('\n').filter(line => line.trim() !== '');
-            const answers = new Array(quizData.essayQuestions.length).fill('');
-            text.forEach(line => {
-                const match = line.match(/Đáp án (\d+):\s*(.*)/i);
-                if (match) {
-                    const index = parseInt(match[1], 10) - 1;
-                    if (index >= 0 && index < answers.length) {
-                        answers[index] = match[2].trim();
-                    }
-                }
-            });
-
-            setFileContent(answers);
-
-            return false;
-        } catch (error) {
-            message.error('Lỗi khi đọc file');
-            return false;
-        }
-    };
-
+    const [codeModes, setCodeModes] = useState([]);
+    const [answers, setAnswers] = useState([]);
     useEffect(() => {
         const examEndTime = localStorage.getItem('examEndTime');
         if (examEndTime) {
@@ -84,7 +71,7 @@ const SubmitEssay = () => {
         setSubmittedTime(calculatedTime);
         const essayQuestionResultDTOS = quizData.essayQuestions.map((q, index) => ({
             questionId: q.id,
-            answer: fileContent[index] || '',
+            answer: answers[index] || '',
         }));
 
         const essayResult = {
@@ -93,28 +80,40 @@ const SubmitEssay = () => {
             submittedTime: timeSubmit,
             competitionId: idCompetition,
         };
-        try {
-            const token = localStorage.getItem("token");
-            const response = await axios.post('https://api.trandai03.online/api/v1/quizs/submitEssay', essayResult, {
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json',
-                    'Accept': '*/*',
-                },
-            });
+        console.log(essayResult);
 
-            if (response.status === 200) {
-                message.success('Nộp bài thi tự luận thành công');
-                console.log(response.data);
-                setIsModalOpen(false);
-                setIsModalOpen2(true);
-                localStorage.removeItem("selectedAnswers");
-            }
-        } catch (error) {
-            message.error('Nộp bài thi tự luận thất bại');
-        }
+        // try {
+        //     const token = localStorage.getItem("token");
+        //     const response = await axios.post('https://api.trandai03.online/api/v1/quizs/submitEssay', essayResult, {
+        //         headers: {
+        //             'Authorization': `Bearer ${token}`,
+        //             'Content-Type': 'application/json',
+        //             'Accept': '*/*',
+        //         },
+        //     });
+
+        //     if (response.status === 200) {
+        //         message.success('Nộp bài thi tự luận thành công');
+        //         console.log(response.data);
+        //         setIsModalOpen(false);
+        //         setIsModalOpen2(true);
+        //         localStorage.removeItem("selectedAnswers");
+        //     }
+        // } catch (error) {
+        //     message.error('Nộp bài thi tự luận thất bại');
+        // }
+    };
+    const toggleCodeMode = (index) => {
+        const newCodeModes = [...codeModes];
+        newCodeModes[index] = !newCodeModes[index];
+        setCodeModes(newCodeModes);
     };
 
+    const handleAnswerChange = (index, value) => {
+        const newAnswers = [...answers];
+        newAnswers[index] = value;
+        setAnswers(newAnswers);
+    };
     return (
         <div className="quiz-exam" style={{
             maxWidth: 1200,
@@ -239,38 +238,30 @@ const SubmitEssay = () => {
                                         </div>
                                         <Text strong style={{ fontSize: 16 }}>{q.question}</Text>
                                     </div>
+                                    {codeModes[index] ? (
+                                        <ReactCodeMirror
+                                            value={answers[index] || ''}
+                                            height="200px"
+                                            theme={oneDark}
+                                            extensions={[javascript({ jsx: true }), autocompletion({ override: [jsCompletions] })]}
+                                            onChange={(value) => handleAnswerChange(index, value)}
+                                        />
+                                    ) : (
+                                        <Input.TextArea
+                                            value={answers[index] || ''}
+                                            onChange={(e) => handleAnswerChange(index, e.target.value)}
+                                            rows={4}
+                                        />
+                                    )}
+                                    <Button
+                                        icon={<CodeOutlined />}
+                                        onClick={() => toggleCodeMode(index)}
+                                        style={{ marginTop: 8 }}
+                                    >
+                                        {codeModes[index] ? 'Chế độ văn bản' : 'Code mode'}
+                                    </Button>
                                 </div>
                             ))}
-                            <div style={{ marginTop: 32 }}>
-                                <Title level={5} style={{ marginBottom: 16 }}>Nộp bài làm</Title>
-                                <Card
-                                    bordered={false}
-                                    style={{ background: '#fafbff', borderRadius: 8 }}
-                                >
-                                    <Upload
-                                        beforeUpload={handleUpload}
-                                        showUploadList={false}
-                                        accept=".docx"
-                                    >
-                                        <Button
-                                            icon={<UploadOutlined />}
-                                            size="large"
-                                            style={{
-                                                height: 48,
-                                                padding: '0 32px',
-                                                borderRadius: 8,
-                                                borderStyle: 'dashed',
-                                                borderWidth: 2
-                                            }}
-                                        >
-                                            Tải lên file Word
-                                        </Button>
-                                    </Upload>
-                                    <Text type="secondary" style={{ display: 'block', marginTop: 8 }}>
-                                        Định dạng file .docx, tối đa 5MB
-                                    </Text>
-                                </Card>
-                            </div>
                         </Form>
                     </Card>
                 </Col>
