@@ -82,26 +82,26 @@ const SubmitEssay = () => {
         };
         console.log(essayResult);
 
-        // try {
-        //     const token = localStorage.getItem("token");
-        //     const response = await axios.post('https://api.trandai03.online/api/v1/quizs/submitEssay', essayResult, {
-        //         headers: {
-        //             'Authorization': `Bearer ${token}`,
-        //             'Content-Type': 'application/json',
-        //             'Accept': '*/*',
-        //         },
-        //     });
+        try {
+            const token = localStorage.getItem("token");
+            const response = await axios.post('https://api.trandai03.online/api/v1/quizs/submitEssay', essayResult, {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                    'Accept': '*/*',
+                },
+            });
 
-        //     if (response.status === 200) {
-        //         message.success('Nộp bài thi tự luận thành công');
-        //         console.log(response.data);
-        //         setIsModalOpen(false);
-        //         setIsModalOpen2(true);
-        //         localStorage.removeItem("selectedAnswers");
-        //     }
-        // } catch (error) {
-        //     message.error('Nộp bài thi tự luận thất bại');
-        // }
+            if (response.status === 200) {
+                message.success('Nộp bài thi tự luận thành công');
+                console.log(response.data);
+                setIsModalOpen(false);
+                setIsModalOpen2(true);
+                localStorage.removeItem("selectedAnswers");
+            }
+        } catch (error) {
+            message.error('Nộp bài thi tự luận thất bại');
+        }
     };
     const toggleCodeMode = (index) => {
         const newCodeModes = [...codeModes];
@@ -114,6 +114,16 @@ const SubmitEssay = () => {
         newAnswers[index] = value;
         setAnswers(newAnswers);
     };
+    useEffect(() => {
+        const handleResize = () => {
+        };
+
+        window.addEventListener("resize", handleResize);
+
+        return () => {
+            window.removeEventListener("resize", handleResize);
+        };
+    }, []);
     return (
         <div className="quiz-exam" style={{
             maxWidth: 1200,

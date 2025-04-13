@@ -35,15 +35,20 @@ const EssayGrading = () => {
 
     const handleEdit = (record) => {
         setEditingResult(record);
+        const questions = record.essayQuestionResultRespones.map(q => ({
+            id: q.id,
+            score: q.score || 0,
+            feedback: q.feedback || '',
+        }));
+
+        const totalScore = questions.reduce((sum, q) => sum + q.score, 0);
+
         form.setFieldsValue({
-            totalScore: record.score,
-            questions: record.essayQuestionResultRespones.map(q => ({
-                id: q.id,
-                score: q.score,
-                feedback: q.feedback,
-            })),
+            totalScore,
+            questions,
         });
     };
+
 
     const handleSave = async () => {
         try {
@@ -52,7 +57,7 @@ const EssayGrading = () => {
 
             const updatedResult = {
                 id: editingResult.id,
-                totalScore: values.totalScore,
+                totalScore: Number(values.totalScore),
                 questions: values.questions.map(q => ({
                     id: q.id,
                     score: Number(q.score),
@@ -74,6 +79,7 @@ const EssayGrading = () => {
                     result.id === editingResult.id ? { ...result, ...updatedResult } : result
                 )
             );
+            form.setFieldValue(updatedResult);
             setEditingResult(null);
             window.location.reload();
         } catch (error) {
@@ -161,7 +167,21 @@ const EssayGrading = () => {
                                                         name={[name, 'score']}
                                                         rules={[{ required: true, message: 'Vui lòng nhập điểm' }]}
                                                     >
-                                                        <Input type="number" max={question.maxScore} placeholder="Điểm" />
+                                                        <Input
+                                                            type="number"
+                                                            max={question.maxScore}
+                                                            placeholder="Điểm"
+                                                            onChange={(e) => {
+                                                                const newScore = Number(e.target.value);
+                                                                const currentValues = form.getFieldValue('questions');
+                                                                currentValues[name].score = newScore;
+                                                                const newTotalScore = currentValues.reduce((sum, q) => sum + (q.score || 0), 0);
+                                                                form.setFieldsValue({
+                                                                    questions: currentValues,
+                                                                    totalScore: newTotalScore,
+                                                                });
+                                                            }}
+                                                        />
                                                     </Form.Item>
                                                     <Form.Item
                                                         {...restField}
