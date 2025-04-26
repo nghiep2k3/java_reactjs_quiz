@@ -62,8 +62,15 @@ const ExamCompetition = () => {
     };
 
     useEffect(() => {
+        if (!localStorage.getItem("tabChangeCount")) {
+            localStorage.setItem("tabChangeCount", "0");
+        }
+
         document.addEventListener("visibilitychange", handleVisibilityChange);
-        console.log("đã đi vào");
+
+        return () => {
+            document.removeEventListener("visibilitychange", handleVisibilityChange);
+        };
     }, []);
 
     useEffect(() => {

@@ -48,7 +48,13 @@ const EssayGrading = () => {
             questions,
         });
     };
-
+    const watchedQuestions = Form.useWatch('questions', form);
+    useEffect(() => {
+        if (watchedQuestions) {
+            const sum = watchedQuestions.reduce((s, q) => s + (Number(q.score) || 0), 0);
+            form.setFieldsValue({ totalScore: sum });
+        }
+    }, [watchedQuestions, form]);
 
     const handleSave = async () => {
         try {
