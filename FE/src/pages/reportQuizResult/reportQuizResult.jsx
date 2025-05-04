@@ -8,6 +8,7 @@ import axios from 'axios';
 const ReportQuizResult = () => {
     const [resultThiThu, setResultThiThu] = useState(null);
     const [resultCompetition, setResultCompetition] = useState(null);
+    const [resultCompetitionWithAI, setResultCompetitionWithAI] = useState(null);
     const [currentTab, setCurrentTab] = useState("1");
     const [tableData, setTableData] = useState([]);
     const navigate = useNavigate();
@@ -47,8 +48,26 @@ const ReportQuizResult = () => {
             }
         };
 
+        const fetchCompetitionDataWithAI = async () => {
+            try {
+                const response = await axios.get('https://api.trandai03.online/api/v1/result/competition/user', {
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                        'Content-Type': 'application/json',
+                        'Accept': '*/*'
+                    }
+                });
+                if (response.status === 200) {
+                    setResultCompetitionWithAI(response.data);
+                }
+            } catch (error) {
+                console.error('Error fetching Competition result:', error);
+            }
+        };
+
         fetchThiThuData();
         fetchCompetitionData();
+        fetchCompetitionDataWithAI();
     }, []);
 
     useEffect(() => {
@@ -66,6 +85,34 @@ const ReportQuizResult = () => {
             })));
         } else if (currentTab === "2" && resultCompetition) {
             setTableData(resultCompetition.map((res) => {
+                const timeStart = new Date(res.competitionResponse.startTime).getTime();
+                const duration = res.competitionResponse.time * 1000;
+                const timeEnd = timeStart + duration;
+                const checked = Date.now() - timeEnd;
+
+                const submitedTimeMinutes = Math.floor(res.submittedTime / 60);
+                const submitedTimeSeconds = res.submittedTime % 60;
+                const calculatedTime = submitedTimeMinutes < 1
+                    ? `${submitedTimeSeconds} giây`
+                    : `${submitedTimeMinutes} phút ${submitedTimeSeconds} giây`;
+                if (checked >= 0) {
+                    return {
+                        idResult: res.id,
+                        quizTitle: res.quizTitle,
+                        score: res.score,
+                        rating: res.score >= 8 ? "Giỏi" : res.score >= 5 ? "Trung bình" : "Yếu",
+                        correctAnswers: res.totalCorrect || 0,
+                        incorrectAnswers: res.resultQuestionResponses.length - res.totalCorrect || 0,
+                        totalQuestions: res.resultQuestionResponses.length,
+                        completedTime: calculatedTime,
+                        finishTime: new Date(res.completedAt).toLocaleString(),
+                    };
+                }
+                return null;
+            }).filter(item => item !== null));
+        }
+        else if (currentTab === "3" && resultCompetitionWithAI) {
+            setTableData(resultCompetitionWithAI.map((res) => {
                 const timeStart = new Date(res.competitionResponse.startTime).getTime();
                 const duration = res.competitionResponse.time * 1000;
                 const timeEnd = timeStart + duration;
@@ -166,6 +213,9 @@ const ReportQuizResult = () => {
                     <Table columns={columns} dataSource={tableData} rowKey="idResult" />
                 </Tabs.TabPane>
                 <Tabs.TabPane tab="Cuộc thi" key="2">
+                    <Table columns={columns} dataSource={tableData} rowKey="idResult" />
+                </Tabs.TabPane>
+                <Tabs.TabPane tab="Cuộc thi hỗ trợ AI chấm điểm" key="3">
                     <Table columns={columns} dataSource={tableData} rowKey="idResult" />
                 </Tabs.TabPane>
             </Tabs>
